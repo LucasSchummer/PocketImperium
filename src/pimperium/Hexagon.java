@@ -6,6 +6,7 @@ public class Hexagon {
 	private int pos_x;
 	private int pos_y;
 	private ArrayList<Hexagon> neighbours;
+	private HSystem system;
 	
 	
 	public Hexagon(int x, int y) {
@@ -14,6 +15,10 @@ public class Hexagon {
 		this.pos_y = y;
 		this.neighbours = new ArrayList<Hexagon>();
 		
+	}
+	
+	public void addSystem(HSystem system) {
+		this.system = system;
 	}
 	
 	public void addNeighbour(Hexagon hex) {
