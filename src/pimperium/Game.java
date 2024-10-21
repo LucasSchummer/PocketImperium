@@ -1,41 +1,47 @@
 package pimperium;
-import java.util.Random;
+//import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Game {
 	
+	private static final int MAP_ROWS = 9;
+	private static final int MAP_COLS = 6;
+
 	private int round;
 	private Hexagon[][] hexs;
 	private Sector[] sectors;
 	
 	public Game() {
-		
+		//Initialization in the constructor
+		this.round = 0; 
+		this.hexs = new Hexagon[MAP_ROWS][MAP_COLS];
+		this.sectors = new Sector[MAP_ROWS]; //9 sectors
 	}
 	
 	public void generateMap() {
 		
 		//Generate hexagons
-		this.hexs = new Hexagon[9][6];
 		for (int i=0; i<9; i++) {
-			int line_width = 5 + (i%2==0? 1:0);
-			for (int j=0; j<line_width; j++) {
+			int lineWidth = 5 + (i%2==0? 1:0);
+			for (int j=0; j<lineWidth; j++) {
 				hexs[i][j] = new Hexagon(i, j);
 			}
 		}
 		
 		
 		//Generate Sectors
-		this.sectors = new Sector[9];
-		final Sector[] temp_NormalSectors = new Sector[6];
-		temp_NormalSectors[0] = new NormalSector(0,0,1,0,2,1);
-		temp_NormalSectors[1] = new NormalSector(2,0,0,0,1,0);
-		temp_NormalSectors[2] = new NormalSector(2,1,0,0,0,1);
-		temp_NormalSectors[3] = new NormalSector(1,0,2,0,2,1);
-		temp_NormalSectors[4] = new NormalSector(1,0,0,0,2,0);
-		temp_NormalSectors[5] = new NormalSector(1,0,0,0,0,1);
-		
+		final Sector[] temp_NormalSectors = {
+		    new NormalSector(0, 0, 1, 0, 2, 1),
+		    new NormalSector(2, 0, 0, 0, 1, 0),
+		    new NormalSector(2, 1, 0, 0, 0, 1),
+		    new NormalSector(1, 0, 2, 0, 2, 1),
+		    new NormalSector(1, 0, 0, 0, 2, 0),
+		    new NormalSector(1, 0, 0, 0, 0, 1)
+		}; // (plus simple)
+
+
 		List<Integer> indexes = new ArrayList<>();
 		for (int i = 0; i <= 5; i++) {
 		    indexes.add(i);
@@ -43,7 +49,7 @@ public class Game {
 		Collections.shuffle(indexes);
 		
 		//Add the 3 top sectors
-		for (int i = 0; i <= 2; i++) {
+		for (int i = 0; i < 3; i++) {
 			this.sectors[i] = temp_NormalSectors[indexes.get(i)];
 		}
 		//Add the central row
@@ -57,32 +63,33 @@ public class Game {
 			this.sectors[5] = new SideSector(0,0,1,0,2,0);
 		}
 		//Add the 3 bottom sectors
-		for (int i = 3; i <= 5; i++) {
+		for (int i = 3; i < 6; i++) {
 			this.sectors[i+3] = temp_NormalSectors[indexes.get(i)];
 		}
 		
 		
+		
 		//Assign systems to the right hexs
-		for (int i=0; i<9; i++) {
+		for (int i=0; i < MAP_ROWS; i++) {
 			int i_i = i / 3;
 			int i_j = i % 3;
 			ArrayList<HSystem> systems = this.sectors[i].getSystems();
-			ArrayList<Integer> systems_coords = this.sectors[i].getSystemsCoordinates();
+			ArrayList<Integer> systemsCoords = this.sectors[i].getSystemsCoordinates();
 			for (int j=0; j<systems.size(); j++) {
 				Hexagon hex;
 				if (i != 4) {
 					//On the last line, the sectors are upside down, so the indexes of hexes won't be the same
 					if (i_i<2) {
-						hex = this.hexs[3*i_i + systems_coords.get(2*j)][2*i_j + systems_coords.get(2*j+1)];
+						hex = this.hexs[3*i_i + systemsCoords.get(2*j)][2*i_j + systemsCoords.get(2*j+1)];
 					} else {
 						//The row index is simple, it is 2-i, however it is more complicated for the column index
-						//On  the first and third row, we have to switch 0 and 1, while on the second line, 0 stays 0
-						int sys_line = systems_coords.get(2*j);
-						int sector_column = 0;
-						if (sys_line != 1) {
-							sector_column = 1 - systems_coords.get(2*j+1);
+						//On the first and third row, we have to switch 0 and 1, while on the second line, 0 stays 0
+						int sysLine = systemsCoords.get(2*j);
+						int sectorColumn = 0;
+						if (sysLine != 1) {
+							sectorColumn = 1 - systemsCoords.get(2*j+1);
 						}
-						hex = this.hexs[3*i_i + (2 - sys_line)][2*i_j + sector_column];
+						hex = this.hexs[3*i_i + (2 - sysLine)][2*i_j + sectorColumn];
 					}
 				} else {
 					hex = this.hexs[3][2];
@@ -99,16 +106,16 @@ public class Game {
 	
 	public void createHexNeighbours() {
 		
-		for (int i=0; i<9; i++) {
-			int line_width = 5 + (i%2==0? 1:0);
-			for (int j=0; j<line_width; j++) {
+		for (int i=0; i<MAP_ROWS; i++) {
+			int lineWidth = 5 + (i%2==0? 1:0);
+			for (int j=0; j<lineWidth; j++) {
 				Hexagon hex = hexs[i][j];
 				//Left neighbour
 				if (j>0) {
 					hex.addNeighbour(hexs[i][j-1]);
 				}
 				//Right neighbour
-				if (j<line_width-1) {
+				if (j<lineWidth-1) {
 					hex.addNeighbour(hexs[i][j+1]);
 				}
 				
@@ -119,7 +126,7 @@ public class Game {
 						if (j>0) {
 							hex.addNeighbour(hexs[i-1][j-1]);
 						}
-						if (j<line_width-1) {
+						if (j<lineWidth-1) {
 							hex.addNeighbour(hexs[i-1][j]);
 						}
 					}
@@ -131,13 +138,13 @@ public class Game {
 				}
 				
 				//Bottom neighbours
-				if (i<8) {
+				if (i<MAP_ROWS - 1) {
 					//Even lines
 					if (i%2==0) {
 						if (j>0) {
 							hex.addNeighbour(hexs[i+1][j-1]);
 						}
-						if (j<line_width-1) {
+						if (j<lineWidth-1) {
 							hex.addNeighbour(hexs[i+1][j]);
 						}
 					}
@@ -153,26 +160,30 @@ public class Game {
 	}
 
 	
-	public Hexagon[][] get_map() {
+	public Hexagon[][] getMap() {
 		return this.hexs;
 	}
 	
 	//Test Methods
-	public void displayMap() {
-		for (int i=0; i<9; i++) {
-			int line_width = 5 + (i%2==0? 1:0);
-			for (int j=0; j<line_width; j++) {
-				System.out.println(hexs[i][j]);
-			}
-		}
-	}
-	
-	public void displayMap(int line) {
-		int line_width = 5 + (line%2==0? 1:0);
-		for (int j=0; j<line_width; j++) {
-			System.out.println(hexs[line][j]);
-		}
-	}
+	public String displayMap() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < MAP_ROWS; i++) {
+            int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
+            for (int j = 0; j < lineWidth; j++) {
+                sb.append(hexs[i][j]).append("\n");
+            }
+        }
+        return sb.toString();
+    }
+    
+    public String displayMap(int line) {
+        StringBuilder sb = new StringBuilder();
+        int lineWidth = 5 + (line % 2 == 0 ? 1 : 0);
+        for (int j = 0; j < lineWidth; j++) {
+            sb.append(hexs[line][j]).append("\n");
+        }
+        return sb.toString();
+    }
 	
 	
 	//Main method
@@ -182,7 +193,7 @@ public class Game {
 		Game game = new Game();
 		game.generateMap();
 		game.createHexNeighbours();
-		//game.displayMap();
+		System.out.println(game.displayMap());
 
 
 	}
