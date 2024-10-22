@@ -3,15 +3,24 @@ package pimperium;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Game {
 	
 	private static final int MAP_ROWS = 9;
 	private static final int MAP_COLS = 6;
+	private static final int NB_PLAYERS = 3;
 
 	private int round;
+	private int round_step;
 	private Hexagon[][] hexs;
 	private Sector[] sectors;
+	private Player[] players;
+	//The players ordered for the round (line i is the order for the ith action)
+	private Player[][] orderPlayers;
+	private Integer[][] efficiencies;
+	
 	
 	public Game() {
 		//Initialization in the constructor
@@ -31,7 +40,7 @@ public class Game {
 		}
 		
 		
-		//Generate Sectors
+		//Generate the 6 Normal Sectors
 		final Sector[] temp_NormalSectors = {
 		    new NormalSector(0, 0, 1, 0, 2, 1),
 		    new NormalSector(2, 0, 0, 0, 1, 0),
@@ -39,9 +48,10 @@ public class Game {
 		    new NormalSector(1, 0, 2, 0, 2, 1),
 		    new NormalSector(1, 0, 0, 0, 2, 0),
 		    new NormalSector(1, 0, 0, 0, 0, 1)
-		}; // (plus simple)
+		}; 
 
-
+		
+		//Create a random list of indexes to shuffle the normal sectors
 		List<Integer> indexes = new ArrayList<>();
 		for (int i = 0; i <= 5; i++) {
 		    indexes.add(i);
@@ -94,8 +104,9 @@ public class Game {
 				} else {
 					hex = this.hexs[3][2];
 				}
-
-				System.out.println(hex);
+				
+				//Link the system to the corresponding hex
+				//System.out.println(hex);
 				hex.addSystem(systems.get(j));
 				systems.get(j).setHex(hex);
 
@@ -158,6 +169,94 @@ public class Game {
 			}
 		}
 	}
+	
+	//Create the players according to their type
+	public void createPlayers() {
+
+		System.out.println("Warning! Not implemented");
+		this.players = new Player[] {
+				new Human(this),
+				new Human(this),
+				new Human(this),
+		};
+		this.players[0].setPseudo("Luke Skywalker");
+		this.players[1].setPseudo("Obiwan Kenobi");
+		this.players[2].setPseudo("Han Solo");
+	}
+	
+	//Ask all the players to place their initial fleet
+	public void setupFleets() {
+		//Should call the method twice on each player in a specific order
+		System.out.println("Warning! Not implemented");
+		for (Player player: this.players) {
+			player.setupInitialFleet();
+		}
+	}
+
+	public void getPlayOrder(int[] order1, int[] order2, int[] order3) {
+		System.out.println("Warning! Not implemented");
+		this.orderPlayers = new Player[][] {
+			{this.players[0], this.players[2], this.players[1]},
+			{this.players[1], this.players[0], this.players[2]},
+			{this.players[2], this.players[1], this.players[0]}
+		};
+		this.efficiencies = new Integer[][] {
+			{2,1,1},
+			{1,2,2},
+			{2,2,2}
+		};
+	}
+	
+	public void playRound() {
+		
+		System.out.println("Warning! Changing start player not implemented");
+		int[] order1 = this.players[0].chooseOrderCommands();
+		int[] order2 = this.players[1].chooseOrderCommands();
+		int[] order3 = this.players[2].chooseOrderCommands();
+		
+		//Set play order and efficiencies for the round
+		this.getPlayOrder(order1, order2, order3);
+		
+		this.round_step = 0;
+		
+		for (int i=0; i<3; i++) {
+			this.playRoundStep();
+			this.round_step++;
+		}
+		
+	}
+	
+	public void playRoundStep() {
+		
+		for (int j=0; j<NB_PLAYERS; j++) {
+			this.orderPlayers[this.round_step][j].doAction(j, this.efficiencies[this.round_step][j]);
+		}
+		
+	}
+	
+	//Assert that the expand move from the player is valid
+	public boolean checkExpandValidity(List<Ship> ships) {
+		//The only way that the expand could be invalid is if the player tries to expand twice on the same ship
+		//We create a set to remove the duplicates and compare the sizes
+		
+		Set<Ship> uniqueShips = new HashSet<>(ships);
+		return uniqueShips.size() == ships.size();
+		
+	}
+	
+	//Assert that the explore move from the player is valid
+	public boolean checkExploreValidity(List<Ship> ships, List<Hexagon> targets) {
+		System.out.println("Warning! Not implemented");
+		boolean validity = true;
+		return validity;
+	}
+	
+	//Assert that the exterminate move from the player is valid
+	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
+		System.out.println("Warning! Not implemented");
+		boolean validity = true;
+		return validity;
+	}
 
 	
 	public Hexagon[][] getMap() {
@@ -189,11 +288,15 @@ public class Game {
 	//Main method
 	public static void main(String[] args) {
 		
-		System.out.println("Hello World !");
 		Game game = new Game();
+		//Should put all of this is a setup() method
 		game.generateMap();
 		game.createHexNeighbours();
-		System.out.println(game.displayMap());
+		game.createPlayers();
+		game.setupFleets();
+		game.playRound();
+		
+		//System.out.println(game.displayMap());
 
 
 	}

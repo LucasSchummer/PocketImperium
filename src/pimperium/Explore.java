@@ -4,23 +4,30 @@ import java.util.List;
 
 public class Explore implements Command {
     private Player player;
-    private Hexagon targetHexagons;
+    private List<Hexagon> targetHexagons;
     private List<Ship> shipsInvolved;
 
-    public Explore(Player player, Hexagon targetHexagons, List<Ship> shipsInvolved) {
+    public Explore(Player player) {
         this.player = player;
-        this.targetHexagons = targetHexagons;
-        this.shipsInvolved = shipsInvolved;
+    }
+    
+    public void setShips(List<Ship> shipsInvolved) {
+    	this.shipsInvolved = shipsInvolved;
+    }
+    
+    public void setTargets(List<Hexagon> targetHexagons) {
+    	this.targetHexagons = targetHexagons;
     }
 
     @Override
     public void execute() {
         // Logic for exploring (scouting or revealing information in the hex)
-        System.out.println(player.getPseudo() + " is exploring hex " + targetHexagons);
+        //System.out.println(player.getPseudo() + " is exploring hex " + targetHexagons);
         
-         // Add the ships to the target hex 
-         for (Ship ship : shipsInvolved) {
-            ship.move(targetHexagons); 
-        }
+         // Move each ship to its destination
+         for (int i=0; i<this.shipsInvolved.size(); i++) {
+        	 this.shipsInvolved.get(i).move(this.targetHexagons.get(i));
+         }
+         
     }
 }

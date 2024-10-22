@@ -4,23 +4,26 @@ import java.util.List;
 
 public class Expand implements Command {
     private Player player;
-    private Hexagon targetHexagon;
     private List<Ship> shipsInvolved;
 
-    public Expand(Player player, Hexagon targetHexagon, List<Ship> shipsInvolved) {
-        this.player = player;
-        this.targetHexagon = targetHexagon;
-        this.shipsInvolved = shipsInvolved;
+    public Expand(Player player) {
+        this.player = player;      
     }
+    
+    public void setShips(List<Ship> shipsInvolved) {
+    	this.shipsInvolved = shipsInvolved;
+    }
+    
 
     @Override
     public void execute() {
         // Moving ships to a new hexagon
-        System.out.println(player.getPseudo() + " is expanding to hex " + targetHexagon);
+        
 
         // Add ships to hex
-        for (Ship ship : shipsInvolved) {
-            player.addShip(ship, targetHexagon);
+        for (int i=0; i<this.shipsInvolved.size(); i++) {
+        	System.out.println(this.shipsInvolved.get(i) + " expanded");
+            this.player.addShip(this.shipsInvolved.get(i).getPosition());
         }
     }
 }
