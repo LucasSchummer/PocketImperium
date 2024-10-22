@@ -18,6 +18,7 @@ public class Human extends Player{
 		System.out.println("Enter the positon of the hex where you want to place your fleet : " );
 		int i = scanner.nextInt();
 		int j = scanner.nextInt();
+		scanner.close();
 		
 		//Find the target hex and create 2 ships on it
 		Hexagon hex = this.game.getMap()[i][j];
@@ -64,6 +65,7 @@ public class Human extends Player{
 				System.out.println("Enter the index of the ship you want to expand : " );
 				int index = scanner.nextInt();
 				expandShips.add(this.ships.get(index));
+				scanner.close();
 			}
 			
 			validity = game.checkExpandValidity(expandShips);
@@ -96,6 +98,7 @@ public class Human extends Player{
 				System.out.println("Enter the position of the hex you want to move this ship into : " );
 				int i_hex = scanner.nextInt();
 				int j_hex = scanner.nextInt();
+				scanner.close();
 				
 				Hexagon hex = this.game.getMap()[i_hex][j_hex];
 				targetHexagons.add(hex);
@@ -132,6 +135,7 @@ public class Human extends Player{
 				System.out.println("Enter the position of the hex you want to attack : " );
 				int i_hex = scanner.nextInt();
 				int j_hex = scanner.nextInt();
+				scanner.close();
 				
 				Hexagon hex = this.game.getMap()[i_hex][j_hex];
 				targetHexagons.add(hex);
