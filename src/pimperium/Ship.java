@@ -20,6 +20,12 @@ public class Ship {
         this.position = position;
     }
 
+
+    public Player getOwner() {
+        return this.player;
+    }
+
+
     // Move method to change the ship's position
     public void move(Hexagon newPosition) {
         this.position = newPosition;

@@ -4,6 +4,7 @@ public class HSystem {
 	
 	private int level;
 	private Hexagon hex;
+	private Player controller;
 	
 	public HSystem(int level) {
 		this.level = level;
@@ -15,6 +16,14 @@ public class HSystem {
 	
 	public void setHex(Hexagon hex) {
 		this.hex = hex;
+	}
+
+	public Player getController() {
+		return this.controller;
+	}
+
+	public void setController(Player controller) {
+		this.controller = controller;
 	}
 
 	public static void main(String[] args) {
