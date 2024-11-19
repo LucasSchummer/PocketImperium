@@ -28,7 +28,7 @@ public abstract class Player {
     //Ex: {1,0,2} : Explore/Expand/Exterminate
     public abstract int[] chooseOrderCommands();
 
-    // On doit les rajouter dans le diagramme de Classes ?
+
     public void addShip(Hexagon target) {
     	Ship ship = new Ship(target, this);
         this.ships.add(ship);

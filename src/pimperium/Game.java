@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class Game {
 	
 	private static final int MAP_ROWS = 9;
@@ -281,16 +284,82 @@ public class Game {
         for (int j = 0; j < lineWidth; j++) {
             sb.append(hexs[line][j]).append("\n");
         }
-        return sb.toString();
-    }
+		return sb.toString();
+	}
+
+	// Display the board (graphic interface)
+	public void displayBoard() {
+		JFrame frame = new JFrame("Plateau de jeu");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(650, 800);
 	
+		JPanel panel = new JPanel() {
+			Image backgroundImage = new ImageIcon(getClass().getResource("/assets/background2.png")).getImage();
+			
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
 	
+				// Dessiner l'image de fond
+				g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+	
+				// Dessiner les hexagones
+				g.setColor(Color.BLUE);
+				drawHexagons(g);
+			}
+		};
+
+		frame.add(panel);
+		frame.setVisible(true);
+	}
+
+
+	// Draws all the hexagons on the board
+	private void drawHexagons(Graphics g) {
+		int panelWidth = 650;
+		int panelHeight = 800;
+		int hexWidth = 90; // 1.5 times the original width
+		int hexHeight = 75; // 1.5 times the original height
+		int totalHexWidth = 5 * hexWidth + hexWidth / 2;
+		int totalHexHeight = MAP_ROWS * hexHeight;
+		int offsetX = (panelWidth - totalHexWidth) / 2;
+		int offsetY = (panelHeight - totalHexHeight) / 2;
+
+		for (int i = 0; i < MAP_ROWS; i++) {
+			int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
+			for (int j = 0; j < lineWidth; j++) {
+				Hexagon hex = hexs[i][j];
+				int x = offsetX + j * hexWidth + (i % 2) * (hexWidth / 2);
+				int y = offsetY + i * hexHeight;
+				drawHexagon(g, x, y);
+			}
+		}
+	}
+
+	// Detail to draw one hexagon
+	private void drawHexagon(Graphics g, int x, int y) {
+		Polygon hex = new Polygon();
+		int radius = 45; // 1.5 times the original radius
+		for (int i = 0; i < 6; i++) {
+			int angleDeg = 60 * i + 30;
+			double angleRad = Math.toRadians(angleDeg);
+			int xPoint = x + (int)(radius * Math.cos(angleRad));
+			int yPoint = y + (int)(radius * Math.sin(angleRad));
+			hex.addPoint(xPoint, yPoint);
+		}
+		g.drawPolygon(hex);
+	}
+
+
 	//Main method
 	public static void main(String[] args) {
 		
 		Game game = new Game();
-		//Should put all of this is a setup() method
+
 		game.generateMap();
+    	game.displayBoard();
+
+		//Should put all of this is a setup() method
 		game.createHexNeighbours();
 		game.createPlayers();
 		game.setupFleets();
