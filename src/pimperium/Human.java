@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class Human extends Player{
+public class Human extends Player {
 	
 	public Human(Game game) {
 		super(game);
@@ -12,24 +12,49 @@ public class Human extends Player{
 	
 	//Choose a lvl-1 system to place 2 ships
 	public void setupInitialFleet() {
-		System.out.println("Warning! Not implemented");
-		//Should assert that the hex chosen indeed has a lvl-1 system and that it is in an unoccupied sector
 		Scanner scanner = new Scanner(System.in);
-		System.out.println("Enter the positon of the hex where you want to place your fleet : " );
+		System.out.println("Entrez la position du hexagone où vous souhaitez placer votre flotte (i j) : ");
 		int i = scanner.nextInt();
 		int j = scanner.nextInt();
 		scanner.close();
+
+		// Valider les coordonnées
+		if (i < 0 || i >= Game.MAP_ROWS || j < 0 || j >= Game.MAP_COLS) {
+			System.out.println("Coordonnées invalides. Veuillez réessayer.");
+			setupInitialFleet();
+			return;
+		}
 		
-		//Find the target hex and create 2 ships on it
 		Hexagon hex = this.game.getMap()[i][j];
+		if (hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
+			System.out.println("Hexagone invalide pour placer la flotte. Veuillez choisir un autre hexagone.");
+			setupInitialFleet();
+			return;
+		}
+		
+		// Ajouter 2 navires sur le hexagone sélectionné
 		this.addShip(hex);
 		this.addShip(hex);
+		System.out.println("Deux navires ont été placés sur le hexagone " + hex);
+		
+		scanner.close();
 	}
-	
+
 	public int[] chooseOrderCommands() {
-		System.out.println("Warning! Not implemented");
-		this.orderCommands = new int[] {0,2,1};
-		return orderCommands;
+		Scanner scanner = new Scanner(System.in);
+		int[] order = new int[3];
+		System.out.println("Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
+		for (int i = 0; i < 3; i++) {
+			System.out.print("Commande " + (i + 1) + " : ");
+			order[i] = scanner.nextInt();
+			if (order[i] < 0 || order[i] > 2) {
+				System.out.println("Commande invalide. Veuillez réessayer.");
+				i--;
+			}
+		}
+		scanner.close();
+		this.orderCommands = order;
+		return order;
 	}
 	
 	public void doAction(int index, int efficiency) {

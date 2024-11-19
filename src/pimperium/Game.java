@@ -11,9 +11,9 @@ import java.awt.*;
 
 public class Game {
 	
-	private static final int MAP_ROWS = 9;
-	private static final int MAP_COLS = 6;
-	private static final int NB_PLAYERS = 3;
+	public static final int MAP_ROWS = 9;
+	public static final int MAP_COLS = 6;
+	public static final int NB_PLAYERS = 3;
 
 	private int round;
 	private int round_step;
@@ -241,7 +241,6 @@ public class Game {
 	public boolean checkExpandValidity(List<Ship> ships) {
 		//The only way that the expand could be invalid is if the player tries to expand twice on the same ship
 		//We create a set to remove the duplicates and compare the sizes
-		
 		Set<Ship> uniqueShips = new HashSet<>(ships);
 		return uniqueShips.size() == ships.size();
 		
@@ -249,16 +248,26 @@ public class Game {
 	
 	//Assert that the explore move from the player is valid
 	public boolean checkExploreValidity(List<Ship> ships, List<Hexagon> targets) {
-		System.out.println("Warning! Not implemented");
-		boolean validity = true;
-		return validity;
+		// Verify that each ship moves to a different position
+		Set<Ship> uniqueShips = new HashSet<>(ships);
+		Set<Hexagon> uniqueTargets = new HashSet<>(targets);
+		return uniqueShips.size() == ships.size() && uniqueTargets.size() == targets.size();
 	}
-	
+
+
 	//Assert that the exterminate move from the player is valid
 	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
-		System.out.println("Warning! Not implemented");
-		boolean validity = true;
-		return validity;
+		// Verify that the ships target different hexagons and that the targets are adjacent
+		if (ships.size() != targets.size()) {
+			return false;
+		}
+		for (Hexagon hex : targets) {
+			if (hex.getShips().isEmpty()) {
+				return false; // No enemy to exterminate in this hexagon
+			}
+		}
+		Set<Hexagon> uniqueTargets = new HashSet<>(targets);
+		return uniqueTargets.size() == targets.size();
 	}
 
 	
@@ -318,8 +327,8 @@ public class Game {
 	private void drawHexagons(Graphics g) {
 		int panelWidth = 650;
 		int panelHeight = 800;
-		int hexWidth = 90; // 1.5 times the original width
-		int hexHeight = 75; // 1.5 times the original height
+		int hexWidth = 90; 
+		int hexHeight = 75;
 		int totalHexWidth = 5 * hexWidth + hexWidth / 2;
 		int totalHexHeight = MAP_ROWS * hexHeight;
 		int offsetX = (panelWidth - totalHexWidth) / 2;
@@ -339,7 +348,7 @@ public class Game {
 	// Detail to draw one hexagon
 	private void drawHexagon(Graphics g, int x, int y) {
 		Polygon hex = new Polygon();
-		int radius = 45; // 1.5 times the original radius
+		int radius = 45; 
 		for (int i = 0; i < 6; i++) {
 			int angleDeg = 60 * i + 30;
 			double angleRad = Math.toRadians(angleDeg);

@@ -58,4 +58,6 @@ public abstract class Player {
     public abstract void doExpand(int efficiency);
     public abstract void doExplore(int efficiency);
     public abstract void doExterminate(int efficiency);
+
+    
 }
