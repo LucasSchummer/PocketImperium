@@ -181,35 +181,42 @@ public class Game {
 	public void createPlayers() {
 		this.players = new Player[NB_PLAYERS];
 		Scanner scanner = new Scanner(System.in);
-
+		Set<String> usedPseudos = new HashSet<>();
+	
 		for (int i = 0; i < NB_PLAYERS; i++) {
-			System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
-			String type = scanner.nextLine().trim().toLowerCase();
-
-			if (type.equals("oui") || type.equals("o")) {
-				System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
-				String pseudo = scanner.nextLine().trim();
-				Human human = new Human(this);
-				human.setPseudo(pseudo);
-				this.players[i] = human;
-			} else {
-				// TODO : Changer par la classe Bot
-				List<String> botNames = Arrays.asList(
-					"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
-					"Darth Vader", "Leia Organa", "Yoda", 
-					"Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
-					"Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
-					"Kylo Ren", "Finn", "Poe Dameron"
-				);
-				Random random = new Random();
-				String botPseudo = botNames.get(random.nextInt(botNames.size()));
-				Human bot = new Human(this);
-				bot.setPseudo(botPseudo);
-				this.players[i] = bot;
+			String pseudo;
+			while (true) {
+				System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
+				String type = scanner.nextLine().trim().toLowerCase();
+	
+				if (type.equals("oui") || type.equals("o")) {
+					System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
+					pseudo = scanner.nextLine().trim();
+				} else {
+					// TODO : Changer par la classe Bot
+					List<String> botNames = Arrays.asList(
+						"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
+						"Darth Vader", "Leia Organa", "Yoda", 
+						"Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
+						"Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
+						"Kylo Ren", "Finn", "Poe Dameron"
+					);
+					Random random = new Random();
+					pseudo = botNames.get(random.nextInt(botNames.size()));
+				}
+	
+				if (!usedPseudos.contains(pseudo)) {
+					usedPseudos.add(pseudo);
+					break;
+				} else {
+					System.out.println("Le pseudo " + pseudo + " est déjà pris. Veuillez en choisir un autre.");
+				}
 			}
+	
+			Human player = new Human(this);
+			player.setPseudo(pseudo);
+			this.players[i] = player;
 		}
-
-		scanner.close();
 	}
 	
 	//Ask all the players to place their initial fleet
@@ -282,10 +289,6 @@ public class Game {
 
 	//Assert that the exterminate move from the player is valid
 	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
-		// Verify that the ships target different hexagons and that the targets are adjacent
-		if (ships.size() != targets.size()) {
-			return false;
-		}
 		for (Hexagon hex : targets) {
 			if (hex.getShips().isEmpty()) {
 				return false; // No enemy to exterminate in this hexagon

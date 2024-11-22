@@ -5,18 +5,18 @@ import java.util.Scanner;
 
 
 public class Human extends Player {
+	private Scanner scanner;
 	
 	public Human(Game game) {
 		super(game);
+		this.scanner = new Scanner(System.in);
 	}
 	
 	//Choose a lvl-1 system to place 2 ships
 	public void setupInitialFleet() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Entrez la position du hexagone où vous souhaitez placer votre flotte (i j) : ");
+		System.out.println(this.getPseudo()+", entrez la position de l'hexagone où vous souhaitez placer votre flotte (i j) : ");
 		int i = scanner.nextInt();
 		int j = scanner.nextInt();
-		scanner.close();
 
 		// Valider les coordonnées
 		if (i < 0 || i >= Game.MAP_ROWS || j < 0 || j >= Game.MAP_COLS) {
@@ -32,18 +32,16 @@ public class Human extends Player {
 			return;
 		}
 		
-		// Ajouter 2 navires sur le hexagone sélectionné
+		// Ajouter 2 navires sur l'hexagone sélectionné
 		this.addShip(hex);
 		this.addShip(hex);
-		System.out.println("Deux navires ont été placés sur le hexagone " + hex);
+		System.out.println("Deux navires à "+this.getPseudo()+" ont été placés sur l'hexagone " + hex);
 		
-		scanner.close();
 	}
 
 	public int[] chooseOrderCommands() {
-		Scanner scanner = new Scanner(System.in);
 		int[] order = new int[3];
-		System.out.println("Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
+		System.out.println(this.getPseudo()+", choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
 		for (int i = 0; i < 3; i++) {
 			System.out.print("Commande " + (i + 1) + " : ");
 			order[i] = scanner.nextInt();
@@ -52,7 +50,7 @@ public class Human extends Player {
 				i--;
 			}
 		}
-		scanner.close();
+
 		this.orderCommands = order;
 		return order;
 	}
@@ -72,7 +70,7 @@ public class Human extends Player {
 			break;
 		}
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + index);
+			throw new IllegalArgumentException("Valeur innatendue: " + index);
 		}
 	}
 	
@@ -84,15 +82,12 @@ public class Human extends Player {
 		
 		List<Ship> expandShips = new ArrayList<Ship>();
 		while (!validity) {
-			expandShips = new ArrayList<Ship>();
-			for (int i=0; i<efficiency; i++) {
-				Scanner scanner = new Scanner(System.in);
-				System.out.println("Enter the index of the ship you want to expand : " );
+			expandShips.clear();
+			for (int i = 0; i < efficiency; i++) {
+				System.out.print("Entrez l'indice du vaisseau que vous souhaitez étendre : ");
 				int index = scanner.nextInt();
 				expandShips.add(this.ships.get(index));
-				scanner.close();
 			}
-			
 			validity = game.checkExpandValidity(expandShips);
 		}
 		
