@@ -35,6 +35,15 @@ public class Game {
 		this.hexs = new Hexagon[MAP_ROWS][MAP_COLS];
 		this.sectors = new Sector[MAP_ROWS]; //9 sectors
 	}
+
+	public void setup() {
+		this.generateMap();
+		this.createHexNeighbours();
+		this.createTriPrime();
+		this.createPlayers();
+		//this.setupFleets();
+
+	}
 	
 	public void generateMap() {
 		
@@ -130,11 +139,11 @@ public class Game {
 				Hexagon hex = hexs[i][j];
 				//Left neighbour
 				if (j>0) {
-					hex.addNeighbour(hexs[i][j-1]);
+					hex.addNeighbor(hexs[i][j-1]);
 				}
 				//Right neighbour
 				if (j<lineWidth-1) {
-					hex.addNeighbour(hexs[i][j+1]);
+					hex.addNeighbor(hexs[i][j+1]);
 				}
 				
 				//Top neighbours
@@ -142,16 +151,16 @@ public class Game {
 					//Even lines
 					if (i%2==0) {
 						if (j>0) {
-							hex.addNeighbour(hexs[i-1][j-1]);
+							hex.addNeighbor(hexs[i-1][j-1]);
 						}
 						if (j<lineWidth-1) {
-							hex.addNeighbour(hexs[i-1][j]);
+							hex.addNeighbor(hexs[i-1][j]);
 						}
 					}
 					//Odd lines
 					else {
-						hex.addNeighbour(hexs[i-1][j]);
-						hex.addNeighbour(hexs[i-1][j+1]);
+						hex.addNeighbor(hexs[i-1][j]);
+						hex.addNeighbor(hexs[i-1][j+1]);
 					}
 				}
 				
@@ -160,21 +169,61 @@ public class Game {
 					//Even lines
 					if (i%2==0) {
 						if (j>0) {
-							hex.addNeighbour(hexs[i+1][j-1]);
+							hex.addNeighbor(hexs[i+1][j-1]);
 						}
 						if (j<lineWidth-1) {
-							hex.addNeighbour(hexs[i+1][j]);
+							hex.addNeighbor(hexs[i+1][j]);
 						}
 					}
 					//Odd lines
 					else {
-						hex.addNeighbour(hexs[i+1][j]);
-						hex.addNeighbour(hexs[i+1][j+1]);
+						hex.addNeighbor(hexs[i+1][j]);
+						hex.addNeighbor(hexs[i+1][j+1]);
 					}
 				}
 
 			}
 		}
+	}
+
+	//Gather the 4 middle hexs into one hex to create Tri-Prime
+	public void createTriPrime() {
+
+		Set<Hexagon> centralHexs = new HashSet<Hexagon>();
+		centralHexs.add(this.hexs[3][2]);
+		centralHexs.add(this.hexs[4][2]);
+		centralHexs.add(this.hexs[4][3]);
+		centralHexs.add(this.hexs[5][2]);
+
+		//Create triPrime and set its neighbors as the neighbors of the 4 central hexs
+		Hexagon triPrime = new Hexagon(3, 2);
+		triPrime.setTriPrime();
+		for (Hexagon hex : centralHexs) {
+			triPrime.addNeighbor(hex.getNeighbours());
+		}
+
+		//For each hex, if it has one of the central hexes as a neighbor, we assign triPrime instead
+		for (int i=0; i<9; i++) {
+			int lineWidth = 5 + (i%2==0? 1:0);
+			for (int j=0; j<lineWidth; j++) {
+				Set<Hexagon> intersection = new HashSet<Hexagon>(centralHexs);
+				intersection.retainAll(this.hexs[i][j].getNeighbours());
+				if (!intersection.isEmpty()) {
+					this.hexs[i][j].addNeighbor(triPrime);
+					this.hexs[i][j].removeNeighbor(centralHexs);
+				}
+			}
+		}
+
+		//Delete the central hexs from triPrime's neighbors
+		triPrime.removeNeighbor(centralHexs);
+
+		this.hexs[3][2] = triPrime;
+
+		this.hexs[4][2] = null;
+		this.hexs[4][3] = null;
+		this.hexs[5][2] = null;
+
 	}
 	
 	//Create the players according to their type
@@ -273,10 +322,32 @@ public class Game {
 	
 	//Assert that the explore move from the player is valid
 	public boolean checkExploreValidity(List<Ship> ships, List<Hexagon> targets) {
-		// Verify that each ship moves to a different position
+		// For each move to be valid, there are a few conditions :
+		// Target hexagon is 1 or 2 hexs away from origin
+		// Ship can not go through Tri-Prime
+		// A ship can only be moved once
+
 		Set<Ship> uniqueShips = new HashSet<>(ships);
-		Set<Hexagon> uniqueTargets = new HashSet<>(targets);
-		return uniqueShips.size() == ships.size() && uniqueTargets.size() == targets.size();
+		boolean notTwice = uniqueShips.size() == ships.size();
+
+		boolean distanceGood = true;
+		for (int i = 0; i < ships.size(); i++) {
+			Set<Hexagon> distance1Targets = targets.get(i).getNeighbours();
+			Set<Hexagon> distance2Targets = new HashSet<Hexagon>();
+			//We add the 2nd degree neighbors for each hex except triPrime
+			for (Hexagon hex1 : distance1Targets) {
+				if (!hex1.isTriPrime()) {
+					distance2Targets.addAll(hex1.getNeighbours());
+				}
+			}
+
+			//Get all the possible targets for the ship and make sure that the target is among them
+			distance1Targets.addAll(distance2Targets);
+			if (!distance1Targets.contains(targets.get(i))) distanceGood = false;
+
+		}
+
+		return notTwice & distanceGood;
 	}
 
 
@@ -389,14 +460,10 @@ public class Game {
 	public static void main(String[] args) {
 		
 		Game game = new Game();
+		game.setup();
 
-		game.generateMap();
     	game.displayBoard();
 
-		//Should put all of this is a setup() method
-		game.createHexNeighbours();
-		game.createPlayers();
-		game.setupFleets();
 		game.playRound();
 		
 		//System.out.println(game.displayMap());

@@ -2,7 +2,7 @@ package pimperium;
 
 public class CentralSector extends Sector{
 	
-	//A super useless comment
+	//A very useless comment
 	public CentralSector() {
 		this.systems.add(new HSystem(3));
 	}
