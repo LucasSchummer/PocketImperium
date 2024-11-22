@@ -101,11 +101,11 @@ public class Human extends Player {
 		while (!validity) {
 			expandShips = new ArrayList<Ship>();
 			for (int i=0; i<efficiency; i++) {
-				Scanner scanner = new Scanner(System.in);
+
 				System.out.println("Enter the index of the ship you want to expand : " );
-				int index = scanner.nextInt();
+				int index = this.game.scanner.nextInt();
 				expandShips.add(this.ships.get(index));
-				scanner.close();
+
 			}
 
 			validity = game.checkExpandValidity(expandShips);
@@ -131,14 +131,14 @@ public class Human extends Player {
 			exploreShips = new ArrayList<Ship>();
 			targetHexagons = new ArrayList<Hexagon>();
 			for (int i=0; i<efficiency; i++) {
-				Scanner scanner = new Scanner(System.in);
+
 				System.out.println("Enter the index of the ship you want to move : " );
-				int indexShip = scanner.nextInt();
+				int indexShip = this.game.scanner.nextInt();
 				exploreShips.add(this.ships.get(indexShip));
 				System.out.println("Enter the position of the hex you want to move this ship into : " );
-				int i_hex = scanner.nextInt();
-				int j_hex = scanner.nextInt();
-				scanner.close();
+				int i_hex = this.game.scanner.nextInt();
+				int j_hex = this.game.scanner.nextInt();
+
 
 				Hexagon hex = this.game.getMap()[i_hex][j_hex];
 				targetHexagons.add(hex);
@@ -168,14 +168,13 @@ public class Human extends Player {
 			exterminateShips = new ArrayList<Ship>();
 			targetHexagons = new ArrayList<Hexagon>();
 			for (int i=0; i<efficiency; i++) {
-				Scanner scanner = new Scanner(System.in);
+
 				System.out.println("Enter the index of the ship you want to send to fight : " );
-				int indexShip = scanner.nextInt();
+				int indexShip = this.game.scanner.nextInt();
 				exterminateShips.add(this.ships.get(indexShip));
 				System.out.println("Enter the position of the hex you want to attack : " );
-				int i_hex = scanner.nextInt();
-				int j_hex = scanner.nextInt();
-				scanner.close();
+				int i_hex = this.game.scanner.nextInt();
+				int j_hex = this.game.scanner.nextInt();
 
 				Hexagon hex = this.game.getMap()[i_hex][j_hex];
 				targetHexagons.add(hex);

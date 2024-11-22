@@ -23,10 +23,10 @@ public class Ship {
 
     // Move method to change the ship's position
     public void move(Hexagon newPosition) {
+        System.out.println(this + "moved to new position: " + this.position);
         this.position.removeShip(this);
         this.position = newPosition;
         this.position.addShip(this);
-        System.out.println(this + "moved to new position: " + this.position);
     }
 
     // Destroy method to remove the ship from the player's fleet
