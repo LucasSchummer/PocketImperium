@@ -9,6 +9,7 @@ public class Ship {
     public Ship(Hexagon position, Player player) {
         this.position = position;
         this.player = player;
+        this.position.addShip(this);
     }
 
     // Getter and Setter for position
@@ -16,25 +17,22 @@ public class Ship {
         return this.position;
     }
 
-    public void setPosition(Hexagon position) {
-        this.position = position;
-    }
-
-
     public Player getOwner() {
         return this.player;
     }
 
-
     // Move method to change the ship's position
     public void move(Hexagon newPosition) {
+        this.position.removeShip(this);
         this.position = newPosition;
-        System.out.println(this + "moved to new position: " + newPosition);
+        this.position.addShip(this);
+        System.out.println(this + "moved to new position: " + this.position);
     }
 
     // Destroy method to remove the ship from the player's fleet
     public void destroy() {
         player.removeShip(this);
+        position.removeShip(this);
         System.out.println("Ship destroyed");
     }
     

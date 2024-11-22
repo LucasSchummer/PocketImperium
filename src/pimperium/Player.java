@@ -2,6 +2,8 @@ package pimperium;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 public abstract class Player {
     protected List<Ship> ships;
@@ -38,6 +40,10 @@ public abstract class Player {
     public void removeShip(Ship ship) {
         this.ships.remove(ship);
         this.shipCount--;
+    }
+
+    public List<Ship> getShips() {
+        return this.ships;
     }
 
     public int getShipCount() {

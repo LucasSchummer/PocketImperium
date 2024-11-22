@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
@@ -27,6 +26,8 @@ public class Game {
 	//The players ordered for the round (line i is the order for the ith action)
 	private Player[][] orderPlayers;
 	private Integer[][] efficiencies;
+
+	public Scanner scanner = new Scanner(System.in);
 	
 	
 	public Game() {
@@ -41,7 +42,7 @@ public class Game {
 		this.createHexNeighbours();
 		this.createTriPrime();
 		this.createPlayers();
-		//this.setupFleets();
+		this.setupFleets();
 
 	}
 	
@@ -229,7 +230,6 @@ public class Game {
 	//Create the players according to their type
 	public void createPlayers() {
 		this.players = new Player[NB_PLAYERS];
-		Scanner scanner = new Scanner(System.in);
 
 		for (int i = 0; i < NB_PLAYERS; i++) {
 			System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
@@ -258,7 +258,6 @@ public class Game {
 			}
 		}
 
-		scanner.close();
 	}
 	
 	//Ask all the players to place their initial fleet
@@ -316,8 +315,8 @@ public class Game {
 		//The only way that the expand could be invalid is if the player tries to expand twice on the same ship
 		//We create a set to remove the duplicates and compare the sizes
 		Set<Ship> uniqueShips = new HashSet<>(ships);
+
 		return uniqueShips.size() == ships.size();
-		
 	}
 	
 	//Assert that the explore move from the player is valid
@@ -325,6 +324,7 @@ public class Game {
 		// For each move to be valid, there are a few conditions :
 		// Target hexagon is 1 or 2 hexs away from origin
 		// Ship can not go through Tri-Prime
+		// Ship can not go through or into a hex controlled by another player
 		// A ship can only be moved once
 
 		Set<Ship> uniqueShips = new HashSet<>(ships);
@@ -332,8 +332,13 @@ public class Game {
 
 		boolean distanceGood = true;
 		for (int i = 0; i < ships.size(); i++) {
-			Set<Hexagon> distance1Targets = targets.get(i).getNeighbours();
+			Set<Hexagon> distance1Targets = ships.get(i).getPosition().getNeighbours();
+
+			// Remove from the list of possible targets the hexs controlled by another player
+			distance1Targets.removeIf(hex -> hex.getOccupant() != null & hex.getOccupant() != ships.getFirst().getOwner());
+
 			Set<Hexagon> distance2Targets = new HashSet<Hexagon>();
+
 			//We add the 2nd degree neighbors for each hex except triPrime
 			for (Hexagon hex1 : distance1Targets) {
 				if (!hex1.isTriPrime()) {
@@ -341,15 +346,16 @@ public class Game {
 				}
 			}
 
-			//Get all the possible targets for the ship and make sure that the target is among them
+			//Get all the possible targets for the ship (and remove the hexs controlled by another player)
 			distance1Targets.addAll(distance2Targets);
+			distance1Targets.removeIf(hex -> hex.getOccupant() != null & hex.getOccupant() != ships.getFirst().getOwner());
+
 			if (!distance1Targets.contains(targets.get(i))) distanceGood = false;
 
 		}
 
 		return notTwice & distanceGood;
 	}
-
 
 	//Assert that the exterminate move from the player is valid
 	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
@@ -366,7 +372,6 @@ public class Game {
 		return uniqueTargets.size() == targets.size();
 	}
 
-	
 	public Hexagon[][] getMap() {
 		return this.hexs;
 	}
@@ -418,7 +423,6 @@ public class Game {
 		frame.setVisible(true);
 	}
 
-
 	// Draws all the hexagons on the board
 	private void drawHexagons(Graphics g) {
 		int panelWidth = 650;
@@ -455,19 +459,32 @@ public class Game {
 		g.drawPolygon(hex);
 	}
 
-
 	//Main method
 	public static void main(String[] args) {
 		
 		Game game = new Game();
 		game.setup();
 
-    	game.displayBoard();
+    	//game.displayBoard();
+
+		//Test on CheckExploreValidity
+/*		Hexagon hex = game.getMap()[3][2];
+		game.players[0].addShip(hex);
+
+		Hexagon hex2 = game.getMap()[1][3];
+		game.players[1].addShip(hex2);
+
+		List<Ship> exploreShips = new ArrayList<Ship>();
+		List<Hexagon> targetHexagons = new ArrayList<Hexagon>();
+
+		exploreShips.add(game.players[0].getShips().getFirst());
+		targetHexagons.add(game.getMap()[1][3]);
+
+		System.out.println(game.checkExploreValidity(exploreShips, targetHexagons));*/
 
 		game.playRound();
 		
 		//System.out.println(game.displayMap());
-
 
 	}
 

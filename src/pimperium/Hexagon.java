@@ -11,13 +11,13 @@ public class Hexagon {
 	private boolean isTriPrime = false;
 	private Set<Hexagon> neighbors;
 	private HSystem system;
-	private List<Ship> ships; 
+	private List<Ship> ships;
 	
 	public Hexagon(int x, int y) {
 		this.pos_x = x;
 		this.pos_y = y;
 		this.neighbors = new HashSet<>();
-		this.ships = new ArrayList<Ship>(); 
+		this.ships = new ArrayList<Ship>();
 	}
 	
 	public void addSystem(HSystem system) {
@@ -82,6 +82,14 @@ public class Hexagon {
 		return this.system;
 	}
 
+	public Player getOccupant() {
+		if (this.ships.isEmpty()) {
+			return null;
+		} else {
+			return this.ships.getFirst().getOwner();
+		}
+	}
+
 	public void setSystem(HSystem system) {
 		this.system = system;
 	}
@@ -89,6 +97,14 @@ public class Hexagon {
 
 	public List<Ship> getShips() {
 		return this.ships;
+	}
+
+	public void addShip(Ship ship) {
+		this.ships.add(ship);
+	}
+
+	public void removeShip(Ship ship) {
+		this.ships.remove(ship);
 	}
 
 	public void setShips(List<Ship> ships) {
