@@ -97,7 +97,7 @@ public class Game {
 		
 		
 		//Assign systems to the right hexs
-		for (int i=0; i < MAP_ROWS; i++) {
+		for (int i=0; i < 9; i++) {
 			int i_i = i / 3;
 			int i_j = i % 3;
 			ArrayList<HSystem> systems = this.sectors[i].getSystems();

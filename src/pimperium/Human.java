@@ -34,16 +34,28 @@ public class Human extends Player {
 				}
 
 				Hexagon hex = this.game.getMap()[i][j];
-				if (hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
+				if (hex == null || hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
 					System.out.println("Hexagone invalide pour placer la flotte. Veuillez choisir un autre hexagone.");
 					continue; // Ask for input again
 				}
 
-				// TODO: Check that the hex is not already occupied by anyone
+				// Check that the hex is not already occupied by anyone and not empty
+				if (hex.getSystem().getController() != null && hex.getSystem().getController() != this) {
+					System.out.println("Ce système est déjà contrôlé par un autre joueur. Veuillez choisir un autre hexagone.");
+					continue; // Ask for input again
+				}
+
+				if (!hex.getShips().isEmpty()) {
+					System.out.println("Cet hexagone contient déjà des vaisseaux. Veuillez choisir un autre hexagone.");
+					continue; // Ask for input again
+				}
 
 				// Add ships to the selected hexagon
 				this.addShip(hex);
 				this.addShip(hex);
+				
+				hex.getSystem().setController(this);
+
 				System.out.println("Deux navires à " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
 
 				validInput = true; // Exit the loop
