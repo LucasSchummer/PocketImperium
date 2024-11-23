@@ -30,6 +30,9 @@ public abstract class Player {
     //Ex: {1,0,2} : Explore/Expand/Exterminate
     public abstract int[] chooseOrderCommands();
 
+    public int[] getOrderCommands() {
+        return this.orderCommands;
+    }
 
     public void addShip(Hexagon target) {
     	Ship ship = new Ship(target, this);
@@ -60,7 +63,28 @@ public abstract class Player {
     }
     
     public abstract void setupInitialFleet();
-    public abstract void doAction(int index, int efficiency);
+
+    public void doAction(int index, int efficiency) {
+        int action = this.orderCommands[index];
+        switch (action) {
+            case 0: {
+                this.doExpand(efficiency);
+                break;
+            }
+            case 1: {
+                this.doExplore(efficiency);
+                break;
+            }
+            case 2: {
+                this.doExterminate(efficiency);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + index);
+        }
+    }
+
+
     public abstract void doExpand(int efficiency);
     public abstract void doExplore(int efficiency);
     public abstract void doExterminate(int efficiency);

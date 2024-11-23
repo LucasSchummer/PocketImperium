@@ -269,29 +269,47 @@ public class Game {
 		}
 	}
 
-	public void getPlayOrder(int[] order1, int[] order2, int[] order3) {
-		System.out.println("Warning! Not implemented");
-		this.orderPlayers = new Player[][] {
-			{this.players[0], this.players[2], this.players[1]},
-			{this.players[1], this.players[0], this.players[2]},
-			{this.players[2], this.players[1], this.players[0]}
-		};
+	public void getPlayOrder() {
+
+		this.orderPlayers = new Player[3][NB_PLAYERS];
+		for (int i = 0; i < 3; i++) {
+
+			//Set the default order for the ith action (the ith line of orderPlayers)
+			this.orderPlayers[i] = new Player[]{this.players[0], this.players[1], this.players[2]};
+
+			//Bubble sort to order the players for the ith action
+			for (int j = 0; j < 3 - 1; j++) {
+				// Traverse the array up to the unsorted portion
+				for (int k = 0; k < 3 - j - 1; k++) {
+					// Compare ith action of adjacent players
+					if (orderPlayers[i][k].getOrderCommands()[i] > orderPlayers[i][k + 1].getOrderCommands()[i]) {
+						//Switch players
+						Player temp = this.orderPlayers[i][k];
+						this.orderPlayers[i][k] = this.orderPlayers[i][k + 1];
+						this.orderPlayers[i][k+1] = temp;
+					}
+				}
+			}
+
+		}
+
+		//TODO Calculate efficiency of each action
 		this.efficiencies = new Integer[][] {
-			{2,1,1},
-			{1,2,2},
-			{2,2,2}
+			{1,1,1},
+			{1,1,1},
+			{1,1,1}
 		};
 	}
 	
 	public void playRound() {
 		
 		System.out.println("Warning! Changing start player not implemented");
-		int[] order1 = this.players[0].chooseOrderCommands();
-		int[] order2 = this.players[1].chooseOrderCommands();
-		int[] order3 = this.players[2].chooseOrderCommands();
+		for (Player player : this.players) {
+			player.chooseOrderCommands();
+		}
 		
 		//Set play order and efficiencies for the round
-		this.getPlayOrder(order1, order2, order3);
+		this.getPlayOrder();
 		
 		this.round_step = 0;
 		
@@ -305,7 +323,7 @@ public class Game {
 	public void playRoundStep() {
 		
 		for (int j=0; j<NB_PLAYERS; j++) {
-			this.orderPlayers[this.round_step][j].doAction(j, this.efficiencies[this.round_step][j]);
+			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
 		}
 		
 	}
@@ -467,6 +485,8 @@ public class Game {
 
     	//game.displayBoard();
 
+		game.playRound();
+
 		//Test on CheckExploreValidity
 /*		Hexagon hex = game.getMap()[3][2];
 		game.players[0].addShip(hex);
@@ -482,9 +502,10 @@ public class Game {
 
 		System.out.println(game.checkExploreValidity(exploreShips, targetHexagons));*/
 
-		game.playRound();
+
 		
 		//System.out.println(game.displayMap());
+
 
 	}
 

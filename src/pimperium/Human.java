@@ -69,8 +69,9 @@ public class Human extends Player {
 
 	public int[] chooseOrderCommands() {
 
+		//TODO Check that the command is not selected twice
 		int[] order = new int[3];
-		System.out.println("Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
+		System.out.println(this.getPseudo() +" Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
 		for (int i = 0; i < 3; i++) {
 			System.out.print("Commande " + (i + 1) + " : ");
 			order[i] = this.game.scanner.nextInt();
@@ -81,26 +82,8 @@ public class Human extends Player {
 		}
 
 		this.orderCommands = order;
-		return order;
-	}
 
-	public void doAction(int index, int efficiency) {
-		switch (index) {
-		case 0: {
-			this.doExpand(efficiency);
-			break;
-		}
-		case 1: {
-			this.doExplore(efficiency);
-			break;
-		}
-		case 2: {
-			this.doExterminate(efficiency);
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + index);
-		}
+		return order;
 	}
 
 	public void doExpand(int efficiency) {
@@ -126,7 +109,6 @@ public class Human extends Player {
 		//Set the ships and execute the command
 		this.expand.setShips(expandShips);
 		this.expand.execute();
-
 
 	}
 
@@ -202,6 +184,7 @@ public class Human extends Player {
 		this.exterminate.execute();
 
 	}
+
 
 	public static void main(String[] args) {
 
