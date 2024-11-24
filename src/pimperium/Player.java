@@ -28,7 +28,7 @@ public abstract class Player {
     
     //Return and set the order of commands as a list of int
     //Ex: {1,0,2} : Explore/Expand/Exterminate
-    public abstract int[] chooseOrderCommands();
+    public abstract void chooseOrderCommands();
 
     public int[] getOrderCommands() {
         return this.orderCommands;
@@ -83,7 +83,6 @@ public abstract class Player {
                 throw new IllegalArgumentException("Unexpected value: " + index);
         }
     }
-
 
     public abstract void doExpand(int efficiency);
     public abstract void doExplore(int efficiency);

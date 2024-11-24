@@ -67,23 +67,30 @@ public class Human extends Player {
 
 	}
 
-	public int[] chooseOrderCommands() {
+	public void chooseOrderCommands() {
 
-		//TODO Check that the command is not selected twice
 		int[] order = new int[3];
+		int input;
+		Set<Integer> alreadyChosen = new HashSet<Integer>();
 		System.out.println(this.getPseudo() +" Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
 		for (int i = 0; i < 3; i++) {
-			System.out.print("Commande " + (i + 1) + " : ");
-			order[i] = this.game.scanner.nextInt();
-			if (order[i] < 0 || order[i] > 2) {
-				System.out.println("Commande invalide. Veuillez réessayer.");
-				i--;
+			boolean validInput = false;
+			while (!validInput) {
+				System.out.print("Commande " + (i + 1) + " : ");
+				input = this.game.scanner.nextInt();
+				if (input < 0 || input > 2 || alreadyChosen.contains(input)) {
+					System.out.println("Commande invalide. Veuillez réessayer.");
+				} else {
+					validInput = true;
+					alreadyChosen.add(input);
+					order[i] = input;
+				}
 			}
+
 		}
 
 		this.orderCommands = order;
 
-		return order;
 	}
 
 	public void doExpand(int efficiency) {

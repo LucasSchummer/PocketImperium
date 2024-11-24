@@ -294,7 +294,9 @@ public class Game {
 		}
 
 		// Calculate efficiency of each action
-		this.efficiencies = new Integer[3][NB_PLAYERS];
+		//TODO Setup initial fleets correctly, so that each player have 4 ships. Otherwise, having efficency 3 will cause infinite loop
+		//Commented for debugging purposes, but seems to work fine
+/*		this.efficiencies = new Integer[3][NB_PLAYERS];
 		for (int i = 0; i < 3; i++) {
 			int[] commandCount = new int[3]; // To count occurrences of each command (0: Expand, 1: Explore, 2: Exterminate)
 			for (int j = 0; j < NB_PLAYERS; j++) {
@@ -316,12 +318,29 @@ public class Game {
 						break;
 				}
 			}
-		}
+		}*/
+
+		this.efficiencies = new Integer[][] {
+				{1,1,1},
+				{1,1,1},
+				{1,1,1}
+		};
+
 	}
-	
+
+	//Switch the start player
+	public void switchStartPlayer() {
+		Player temp = this.players[0];
+		for (int i = 0; i < this.players.length-1; i++) {
+			this.players[i] = this.players[i+1];
+		}
+		this.players[this.players.length-1] = temp;
+	}
+
 	public void playRound() {
-		
-		System.out.println("Warning! Changing start player not implemented");
+
+		if (this.round > 0) this.switchStartPlayer();
+
 		for (Player player : this.players) {
 			player.chooseOrderCommands();
 		}
@@ -331,10 +350,12 @@ public class Game {
 		
 		this.round_step = 0;
 		
-		for (int i=0; i<3; i++) {
+		for (int i = 0; i < 3; i++) {
 			this.playRoundStep();
 			this.round_step++;
 		}
+
+		this.round++;
 		
 	}
 	
@@ -501,7 +522,7 @@ public class Game {
 		Game game = new Game();
 		game.setup();
 
-    	//game.displayBoard();
+    	game.displayBoard();
 
 		game.playRound();
 
