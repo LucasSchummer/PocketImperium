@@ -293,12 +293,30 @@ public class Game {
 
 		}
 
-		//TODO Calculate efficiency of each action
-		this.efficiencies = new Integer[][] {
-			{1,1,1},
-			{1,1,1},
-			{1,1,1}
-		};
+		// Calculate efficiency of each action
+		this.efficiencies = new Integer[3][NB_PLAYERS];
+		for (int i = 0; i < 3; i++) {
+			int[] commandCount = new int[3]; // To count occurrences of each command (0: Expand, 1: Explore, 2: Exterminate)
+			for (int j = 0; j < NB_PLAYERS; j++) {
+				int command = this.orderPlayers[i][j].getOrderCommands()[i];
+				commandCount[command]++;
+			}
+	
+			for (int j = 0; j < NB_PLAYERS; j++) {
+				int command = this.orderPlayers[i][j].getOrderCommands()[i];
+				switch (commandCount[command]) {
+					case 3:
+						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
+						break;
+					case 2:
+						this.efficiencies[i][j] = 2;
+						break;
+					default:
+						this.efficiencies[i][j] = 3; 
+						break;
+				}
+			}
+		}
 	}
 	
 	public void playRound() {
