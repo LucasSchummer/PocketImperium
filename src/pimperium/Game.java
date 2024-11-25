@@ -223,9 +223,9 @@ public class Game {
 
 		this.hexs[3][2] = triPrime;
 
-		this.hexs[4][2] = null;
-		this.hexs[4][3] = null;
-		this.hexs[5][2] = null;
+		this.hexs[4][2] = triPrime;
+		this.hexs[4][3] = triPrime;
+		this.hexs[5][2] = triPrime;
 
 	}
 	
