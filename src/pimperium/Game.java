@@ -42,6 +42,8 @@ public class Game {
 		this.createHexNeighbours();
 		this.createTriPrime();
 		this.createPlayers();
+		System.out.println("Plateau de jeu :");
+		System.out.println(this.displayMap());
 		this.setupFleets();
 
 	}
@@ -435,22 +437,38 @@ public class Game {
 	
 	//Test Methods
 	public String displayMap() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < MAP_ROWS; i++) {
-            int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
-            for (int j = 0; j < lineWidth; j++) {
-                sb.append(hexs[i][j]).append("\n");
-            }
-        }
-        return sb.toString();
-    }
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < MAP_ROWS; i++) {
+			int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
+			if (i % 2 == 1) {
+				sb.append("  "); 
+			}
+			for (int j = 0; j < lineWidth; j++) {
+				Hexagon hex = hexs[i][j];
+				if (hex != null && hex.getSystem() != null) {
+					// TODO : Inititalize Hexs of TripPrime to Level 3 (0 currently)
+					sb.append("[" + hex.getSystem().getLevel() + "] ");
+				} else {
+					sb.append("[0] ");
+				}
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
     
     public String displayMap(int line) {
-        StringBuilder sb = new StringBuilder();
-        int lineWidth = 5 + (line % 2 == 0 ? 1 : 0);
-        for (int j = 0; j < lineWidth; j++) {
-            sb.append(hexs[line][j]).append("\n");
-        }
+		StringBuilder sb = new StringBuilder();
+		int lineWidth = 5 + (line % 2 == 0 ? 1 : 0);
+		for (int j = 0; j < lineWidth; j++) {
+			Hexagon hex = hexs[line][j];
+			if (hex != null && hex.getSystem() != null) {
+				sb.append(hex.getSystem().getLevel()).append(" ");
+			} else {
+				sb.append("0 ").append(" ");
+			}
+		}
+		sb.append("\n");
 		return sb.toString();
 	}
 

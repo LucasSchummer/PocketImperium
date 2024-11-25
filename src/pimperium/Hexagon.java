@@ -64,8 +64,9 @@ public class Hexagon {
 		return this.pos_y;
 	}
 	
+	@Override
 	public String toString() {
-		return "hex"+pos_x+"_"+pos_y;
+		return "[" + this.pos_x + "," + this.pos_y + "]";
 	}
 
 	// Remove all ships from the hexagon
@@ -110,6 +111,7 @@ public class Hexagon {
 	public void setShips(List<Ship> ships) {
 		this.ships = ships;
 	}
+
 
 	public static void main(String[] args) {
 		System.out.println("Hello World !");
