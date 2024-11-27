@@ -53,10 +53,8 @@ public class Human extends Player {
 				// Add ships to the selected hexagon
 				this.addShip(hex);
 				this.addShip(hex);
-				
-				hex.getSystem().setController(this);
 
-				System.out.println("Deux navires à " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
+				System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
 
 				validInput = true; // Exit the loop
 			} catch (Exception e) {
@@ -64,6 +62,7 @@ public class Human extends Player {
 				this.game.scanner.nextLine(); // Clear the invalid input
 			}
 		}
+
 
 	}
 

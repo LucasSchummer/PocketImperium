@@ -83,6 +83,14 @@ public class Hexagon {
 		return this.system;
 	}
 
+	public int getSystemLevel() {
+		if (this.system == null) {
+			return 0;
+		} else {
+			return this.system.getLevel();
+		}
+	}
+
 	public Player getOccupant() {
 		if (this.ships.isEmpty()) {
 			return null;
@@ -94,7 +102,6 @@ public class Hexagon {
 	public void setSystem(HSystem system) {
 		this.system = system;
 	}
-
 
 	public List<Ship> getShips() {
 		return this.ships;

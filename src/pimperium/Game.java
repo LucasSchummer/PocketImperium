@@ -44,7 +44,7 @@ public class Game {
 		this.createPlayers();
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
-		this.setupFleets();
+		//this.setupFleets();
 
 	}
 	
@@ -264,8 +264,7 @@ public class Game {
 	
 	//Ask all the players to place their initial fleet
 	public void setupFleets() {
-		//Should call the method twice on each player in a specific order
-		System.out.println("Warning! Not implemented");
+		//TODO Ask each player twice in a specific order
 		for (Player player: this.players) {
 			player.setupInitialFleet();
 		}
@@ -296,9 +295,7 @@ public class Game {
 		}
 
 		// Calculate efficiency of each action
-		//TODO Setup initial fleets correctly, so that each player have 4 ships. Otherwise, having efficency 3 will cause infinite loop
-		//Commented for debugging purposes, but seems to work fine
-/*		this.efficiencies = new Integer[3][NB_PLAYERS];
+		this.efficiencies = new Integer[3][NB_PLAYERS];
 		for (int i = 0; i < 3; i++) {
 			int[] commandCount = new int[3]; // To count occurrences of each command (0: Expand, 1: Explore, 2: Exterminate)
 			for (int j = 0; j < NB_PLAYERS; j++) {
@@ -313,14 +310,14 @@ public class Game {
 						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
 						break;
 					case 2:
-						this.efficiencies[i][j] = 2;
+						this.efficiencies[i][j] = Math.max(2, this.orderPlayers[i][j].countShips());
 						break;
 					default:
-						this.efficiencies[i][j] = 3; 
+						this.efficiencies[i][j] = Math.max(3, this.orderPlayers[i][j].countShips());
 						break;
 				}
 			}
-		}*/
+		}
 
 		this.efficiencies = new Integer[][] {
 				{1,1,1},
@@ -538,30 +535,18 @@ public class Game {
 	public static void main(String[] args) {
 		
 		Game game = new Game();
+
 		game.setup();
+    	//game.displayBoard();
+		//game.playRound();
 
-    	game.displayBoard();
+		Possibilities poss = Possibilities.getInstance(game);
+		List<Hexagon> hexs = poss.setupFleet();
 
-		game.playRound();
+		for (Hexagon hex : hexs) {
+			System.out.println(hex);
+		}
 
-		//Test on CheckExploreValidity
-/*		Hexagon hex = game.getMap()[3][2];
-		game.players[0].addShip(hex);
-
-		Hexagon hex2 = game.getMap()[1][3];
-		game.players[1].addShip(hex2);
-
-		List<Ship> exploreShips = new ArrayList<Ship>();
-		List<Hexagon> targetHexagons = new ArrayList<Hexagon>();
-
-		exploreShips.add(game.players[0].getShips().getFirst());
-		targetHexagons.add(game.getMap()[1][3]);
-
-		System.out.println(game.checkExploreValidity(exploreShips, targetHexagons));*/
-
-
-		
-		//System.out.println(game.displayMap());
 
 
 	}

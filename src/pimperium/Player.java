@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 
 public abstract class Player {
     protected List<Ship> ships;
-    protected int shipCount;
     protected String pseudo;
     protected Game game;
     protected int[] orderCommands;
@@ -18,7 +17,6 @@ public abstract class Player {
 
     public Player(Game game) {
         this.ships = new ArrayList<Ship>();
-        this.shipCount = 0;
         this.pseudo = ""; 
         this.game = game;
         this.expand = new Expand(this);
@@ -36,22 +34,22 @@ public abstract class Player {
 
     public void addShip(Hexagon target) {
     	Ship ship = new Ship(target, this);
+        target.getSystem().setController(this);
         this.ships.add(ship);
-        this.shipCount++;
     }
 
     public void removeShip(Ship ship) {
         this.ships.remove(ship);
-        this.shipCount--;
+    }
+
+    public int countShips() {
+        return this.ships.size();
     }
 
     public List<Ship> getShips() {
         return this.ships;
     }
 
-    public int getShipCount() {
-        return this.shipCount;
-    }
 
     // Getter and setter for the pseudo
     public String getPseudo() {
