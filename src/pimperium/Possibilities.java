@@ -31,4 +31,16 @@ public class Possibilities {
         return hexs;
     }
 
+    public List<Ship> expand(Player player) {
+        List<Ship> ships = new ArrayList<>();
+        for (Hexagon[] row : game.getMap()) {
+            for (Hexagon hex : row) {
+                if (hex != null && hex.getOccupant() == player ) {
+                    ships.addAll(hex.getShips());
+                }
+            }
+        }
+        return ships;
+    }
+
 }
