@@ -244,7 +244,7 @@ public class Game {
 				human.setPseudo(pseudo);
 				this.players[i] = human;
 			} else {
-				// TODO : Changer par la classe Bot
+				// TODO : Change bot type
 				List<String> botNames = Arrays.asList(
 					"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
 					"Darth Vader", "Leia Organa", "Yoda", 
