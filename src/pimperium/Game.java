@@ -44,7 +44,7 @@ public class Game {
 		this.createPlayers();
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
-		//this.setupFleets();
+		this.setupFleets();
 
 	}
 	
@@ -254,7 +254,7 @@ public class Game {
 				);
 				Random random = new Random();
 				String botPseudo = botNames.get(random.nextInt(botNames.size()));
-				Human bot = new Human(this);
+				Bot bot = new RandomBot(this);
 				bot.setPseudo(botPseudo);
 				this.players[i] = bot;
 			}
@@ -537,8 +537,8 @@ public class Game {
 		Game game = new Game();
 
 		game.setup();
-    	//game.displayBoard();
-		//game.playRound();
+    	game.displayBoard();
+		game.playRound();
 
 		Possibilities poss = Possibilities.getInstance(game);
 		List<Hexagon> hexs = poss.setupFleet();
