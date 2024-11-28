@@ -22,10 +22,13 @@ public class Hexagon {
 	
 	public void addSystem(HSystem system) {
 		this.system = system;
+		system.setHex(this);
 	}
 
 	public void setTriPrime() {
 		this.isTriPrime = true;
+		HSystem system = new HSystem(3);
+		this.addSystem(system);
 	}
 
 	public boolean isTriPrime() {

@@ -127,7 +127,6 @@ public class Game {
 				//Link the system to the corresponding hex
 				//System.out.println(hex);
 				hex.addSystem(systems.get(j));
-				systems.get(j).setHex(hex);
 
 			}
 		}
