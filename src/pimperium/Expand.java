@@ -19,13 +19,11 @@ public class Expand implements Command {
 
     @Override
     public void execute() {
-        // Moving ships to a new hexagon
-        
 
         // Add ships to hex
         for (int i=0; i<this.shipsInvolved.size(); i++) {
         	System.out.println(this.shipsInvolved.get(i) + " expanded");
-            this.player.addShip(this.shipsInvolved.get(i).getPosition());
+            this.player.createShip(this.shipsInvolved.get(i).getPosition());
         }
     }
 }

@@ -260,7 +260,19 @@ public class Game {
 		}
 
 	}
-	
+
+	public Sector findSector(Hexagon hex) {
+		//Initialize the sector as the first one
+		Sector sector = this.sectors[0];
+		//Find the sector that contains the hex
+		for (Sector s : this.sectors) {
+			if (s.getSystems().contains(hex.getSystem())) {
+				sector = s;
+			}
+		}
+		return sector;
+	}
+
 	//Ask all the players to place their initial fleet
 	public void setupFleets() {
 		//TODO Ask each player twice in a specific order
@@ -429,6 +441,10 @@ public class Game {
 
 	public Hexagon[][] getMap() {
 		return this.hexs;
+	}
+
+	public Sector[] getSectors() {
+		return this.sectors;
 	}
 	
 	//Test Methods

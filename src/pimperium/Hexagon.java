@@ -77,11 +77,6 @@ public class Hexagon {
 		this.ships.clear(); 
 	}
 
-	// Remove specific ships from the hexagon
-	public void removeShips(List<Ship> shipsToRemove) {
-		this.ships.removeAll(shipsToRemove);
-	}
-
 	public HSystem getSystem() {
 		return this.system;
 	}
@@ -116,6 +111,11 @@ public class Hexagon {
 
 	public void removeShip(Ship ship) {
 		this.ships.remove(ship);
+	}
+
+	// Remove specific ships from the hexagon
+	public void removeShips(List<Ship> shipsToRemove) {
+		this.ships.removeAll(shipsToRemove);
 	}
 
 	public void setShips(List<Ship> ships) {

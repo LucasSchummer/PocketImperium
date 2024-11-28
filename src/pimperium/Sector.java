@@ -21,6 +21,17 @@ public class Sector {
 	public ArrayList<HSystem> getSystems() {
 		return this.systems;
 	}
+
+	public boolean isOccupied() {
+		boolean occupied = false;
+		for (HSystem system : this.systems) {
+			if (system.getController() != null) {
+				occupied = true;
+				break;
+			}
+		}
+		return occupied;
+	}
 	
 	public ArrayList<Integer> getSystemsCoordinates() {
 		return new ArrayList<Integer>();

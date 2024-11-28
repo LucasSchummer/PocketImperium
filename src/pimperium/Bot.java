@@ -23,8 +23,8 @@ public abstract class Bot extends Player{
         Hexagon hex = possHexs.get(random.nextInt(possHexs.size()));
 
         // Add ships to the selected hexagon
-        this.addShip(hex);
-        this.addShip(hex);
+        this.createShip(hex);
+        this.createShip(hex);
 
         System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
     }

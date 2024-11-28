@@ -50,9 +50,16 @@ public class Human extends Player {
 					continue; // Ask for input again
 				}
 
+
+				// Check that the hex is in a unoccupied sector
+				if (game.findSector(hex).isOccupied()) {
+					System.out.println("Cet hexagone se situe dans un secteur déjà controlé par un joueur. Veuillez choisir un autre hexagone.");
+					continue; // Ask for input again
+				}
+
 				// Add ships to the selected hexagon
-				this.addShip(hex);
-				this.addShip(hex);
+				this.createShip(hex);
+				this.createShip(hex);
 
 				System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
 
@@ -119,6 +126,9 @@ public class Human extends Player {
 	}
 
 	public void doExplore(int efficiency) {
+
+		//TODO Complexify user-input (not mandatory to do 'efficiency' moves, can do less /
+		// possibility to move multiple ships as a single fleet)
 
 		System.out.println(this.getPseudo() + " is exploring");
 

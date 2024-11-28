@@ -32,9 +32,9 @@ public abstract class Player {
         return this.orderCommands;
     }
 
-    public void addShip(Hexagon target) {
+    public void createShip(Hexagon target) {
     	Ship ship = new Ship(target, this);
-        target.getSystem().setController(this);
+        if (target.getSystem() != null) target.getSystem().setController(this);
         this.ships.add(ship);
     }
 
