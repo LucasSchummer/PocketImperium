@@ -275,9 +275,11 @@ public class Game {
 
 	//Ask all the players to place their initial fleet
 	public void setupFleets() {
-		//TODO Ask each player twice in a specific order
 		for (Player player: this.players) {
 			player.setupInitialFleet();
+		}
+		for (int i = 0; i < this.players.length; i++) {
+			this.players[this.players.length-1-i].setupInitialFleet();
 		}
 	}
 
