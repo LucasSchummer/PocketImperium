@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
+import javafx.util.Pair;
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,15 +27,17 @@ public class Game {
 	//The players ordered for the round (line i is the order for the ith action)
 	private Player[][] orderPlayers;
 	private Integer[][] efficiencies;
+	private Possibilities possibilities;
 
 	public Scanner scanner = new Scanner(System.in);
-	
-	
+
+
 	public Game() {
 		//Initialization in the constructor
 		this.round = 0; 
 		this.hexs = new Hexagon[MAP_ROWS][MAP_COLS];
-		this.sectors = new Sector[MAP_ROWS]; //9 sectors
+		this.sectors = new Sector[9];
+		this.possibilities = Possibilities.getInstance(this);
 	}
 
 	public void setup() {
@@ -381,49 +384,47 @@ public class Game {
 	
 	//Assert that the expand move from the player is valid
 	public boolean checkExpandValidity(List<Ship> ships) {
-		//The only way that the expand could be invalid is if the player tries to expand twice on the same ship
-		//We create a set to remove the duplicates and compare the sizes
-		Set<Ship> uniqueShips = new HashSet<>(ships);
-
-		return uniqueShips.size() == ships.size();
-	}
-	
-	//Assert that the explore move from the player is valid
-	public boolean checkExploreValidity(List<Ship> ships, List<Hexagon> targets) {
-		// For each move to be valid, there are a few conditions :
-		// Target hexagon is 1 or 2 hexs away from origin
-		// Ship can not go through Tri-Prime
-		// Ship can not go through or into a hex controlled by another player
-		// A ship can only be moved once
-
+		//Check that no ship is expanded twice
 		Set<Ship> uniqueShips = new HashSet<>(ships);
 		boolean notTwice = uniqueShips.size() == ships.size();
 
-		boolean distanceGood = true;
-		for (int i = 0; i < ships.size(); i++) {
-			Set<Hexagon> distance1Targets = ships.get(i).getPosition().getNeighbours();
+		//Get all the possible ships to expand on
+		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
+		boolean allPossible = possShips.containsAll(ships);
 
-			// Remove from the list of possible targets the hexs controlled by another player
-			distance1Targets.removeIf(hex -> hex.getOccupant() != null & hex.getOccupant() != ships.getFirst().getOwner());
+		return notTwice && allPossible;
+	}
+	
+	//Assert that the explore move from the player is valid
+	public boolean checkExploreValidity(List<Pair<List<Ship>, List<Hexagon>>> moves) {
 
-			Set<Hexagon> distance2Targets = new HashSet<Hexagon>();
-
-			//We add the 2nd degree neighbors for each hex except triPrime
-			for (Hexagon hex1 : distance1Targets) {
-				if (!hex1.isTriPrime()) {
-					distance2Targets.addAll(hex1.getNeighbours());
-				}
-			}
-
-			//Get all the possible targets for the ship (and remove the hexs controlled by another player)
-			distance1Targets.addAll(distance2Targets);
-			distance1Targets.removeIf(hex -> hex.getOccupant() != null & hex.getOccupant() != ships.getFirst().getOwner());
-
-			if (!distance1Targets.contains(targets.get(i))) distanceGood = false;
-
+		// Each origin is different
+		// All moves in possibilities
+		Set<Hexagon> origins = new HashSet<Hexagon>();
+		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
+			origins.add(move.getKey().getFirst().getPosition());
 		}
 
-		return notTwice & distanceGood;
+		boolean notTwice = origins.size() == moves.size();
+
+		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(moves.getFirst().getKey().getFirst().getOwner());
+
+		boolean allPossible = possibleMoves.containsAll(moves);
+
+/*		// Check that no ship moves twice
+		Set<Ship> uniqueShips = new HashSet<>(ships);
+		boolean notTwice = uniqueShips.size() == ships.size();
+
+		// Check that all the moves are possible
+		List<Pair<Ship, Hexagon>> possibleMoves = possibilities.explore(ships.getFirst().getOwner());
+
+		List<Pair<Ship, Hexagon>> moves = new ArrayList<>();
+		for (int i = 0; i < ships.size(); i++) {
+			moves.add(new Pair<>(ships.get(i), targets.get(i)));
+		}
+		boolean allPossible = possibleMoves.containsAll(moves);*/
+
+		return notTwice && allPossible;
 	}
 
 	//Assert that the exterminate move from the player is valid
@@ -445,10 +446,7 @@ public class Game {
 		return this.hexs;
 	}
 
-	public Sector[] getSectors() {
-		return this.sectors;
-	}
-	
+
 	//Test Methods
 	public String displayMap() {
 		StringBuilder sb = new StringBuilder();

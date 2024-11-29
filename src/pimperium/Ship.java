@@ -23,7 +23,7 @@ public class Ship {
 
     // Move method to change the ship's position
     public void move(Hexagon newPosition) {
-        System.out.println(this + "moved to new position: " + newPosition);
+        System.out.println(this + " moved to new position: " + newPosition);
         this.position.removeShip(this);
         this.position = newPosition;
         this.position.addShip(this);

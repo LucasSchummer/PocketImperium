@@ -1,9 +1,7 @@
 package pimperium;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Scanner;
+import javafx.util.Pair;
+
+import java.util.*;
 
 
 public class Human extends Player {
@@ -70,7 +68,6 @@ public class Human extends Player {
 			}
 		}
 
-
 	}
 
 	public void chooseOrderCommands() {
@@ -127,41 +124,94 @@ public class Human extends Player {
 
 	public void doExplore(int efficiency) {
 
-		//TODO Complexify user-input (not mandatory to do 'efficiency' moves, can do less /
-		// possibility to move multiple ships as a single fleet)
+		//TODO Complexify user-input (Move only a part of the ships of the fleet/drop ships on the way/
+		// add ships to the fleet on the way)
 
 		System.out.println(this.getPseudo() + " is exploring");
 
-		boolean validity = false;
+		List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
 
-		List<Ship> exploreShips = new ArrayList<Ship>();
-		List<Hexagon> targetHexagons = new ArrayList<Hexagon>();
+		boolean validMoves = false;
 
-		while (!validity) {
-			exploreShips = new ArrayList<Ship>();
-			targetHexagons = new ArrayList<Hexagon>();
-			for (int i=0; i<efficiency; i++) {
+		while (!validMoves) {
 
-				System.out.println("Enter the index of the ship you want to move : " );
-				int indexShip = this.game.scanner.nextInt();
-				exploreShips.add(this.ships.get(indexShip));
-				System.out.println("Enter the position of the hex you want to move this ship into : " );
-				int i_hex = this.game.scanner.nextInt();
-				int j_hex = this.game.scanner.nextInt();
+			boolean newMove = true;
+			moves = new ArrayList<>();
+			while (moves.size() < efficiency && newMove) {
 
+				boolean validInput = false;
+				int i, j;
 
-				Hexagon hex = this.game.getMap()[i_hex][j_hex];
-				targetHexagons.add(hex);
+				// Loop until valid input is received
+				while (!validInput) {
+					try {
+						System.out.println(this.getPseudo() + ", entrez la position de la flotte que vous voulez déplacer (i j) : ");
+						i = this.game.scanner.nextInt();
+						j = this.game.scanner.nextInt();
+
+						List<Ship> fleet = this.game.getMap()[i][j].getShips();
+
+						// Check that the user chose a hex he has a fleet on
+						if (fleet.isEmpty() || fleet.getFirst().getOwner() != this) {
+							throw(new Exception());
+						}
+
+						System.out.println(this.getPseudo() + ", entrez la position où vous voulez déplacer la flotte (i j) : ");
+						i = this.game.scanner.nextInt();
+						j = this.game.scanner.nextInt();
+
+						Hexagon target = this.game.getMap()[i][j];
+						if (target == null) {
+							throw(new Exception());
+						}
+
+						// Add the move to the moves list
+						moves.add(new Pair<>(fleet, new ArrayList<>(Collections.nCopies(fleet.size(), target))));
+
+						validInput = true; // Exit the loop
+					} catch (Exception e) {
+						System.out.println("Entrée invalide. Veuillez entrer deux entiers séparés par un espace.");
+						this.game.scanner.nextLine(); // Clear the invalid input
+					}
+
+				}
+
+				if (moves.size() < efficiency) {
+					// Ask the user if he wants to move another fleet
+					validInput = false;
+					while (!validInput) {
+						System.out.print("Voulez-vous déplacer une autre flotte ? (0/1) : ");
+						try {
+							int input = this.game.scanner.nextInt();
+							if (input != 0 && input != 1) {
+								throw(new Exception());
+							}
+							newMove = input == 1;
+							validInput = true;
+						} catch (Exception e) {
+							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+						}
+
+					}
+				}
 
 			}
 
-			validity = game.checkExploreValidity(exploreShips, targetHexagons);
+			validMoves = game.checkExploreValidity(moves);
+
+			if (!validMoves) {
+				System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
+			}
 		}
 
-		//Set the ships and execute the command
-		this.explore.setShips(exploreShips);
-		this.explore.setTargets(targetHexagons);
-		this.explore.execute();
+
+		// Execute each move
+		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
+			//Set the ships and execute the command
+			this.explore.setShips(move.getKey());
+			this.explore.setTargets(move.getValue());
+			this.explore.execute();
+		}
 
 	}
 
@@ -200,7 +250,6 @@ public class Human extends Player {
 		this.exterminate.execute();
 
 	}
-
 
 	public static void main(String[] args) {
 
