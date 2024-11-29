@@ -352,6 +352,11 @@ public class Game {
 		this.players[this.players.length-1] = temp;
 	}
 
+	public void start() {
+		// TODO Count the score of the players and check victory/defeat on each round_step
+		//(in case a player lost all of his ships)
+	}
+
 	public void playRound() {
 
 		if (this.round > 0) this.switchStartPlayer();
@@ -398,8 +403,7 @@ public class Game {
 	//Assert that the explore move from the player is valid
 	public boolean checkExploreValidity(List<Pair<List<Ship>, List<Hexagon>>> moves) {
 
-		// Each origin is different
-		// All moves in possibilities
+		// Check that no ship is moved twice
 		Set<Hexagon> origins = new HashSet<Hexagon>();
 		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
 			origins.add(move.getKey().getFirst().getPosition());
@@ -407,22 +411,9 @@ public class Game {
 
 		boolean notTwice = origins.size() == moves.size();
 
-		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(moves.getFirst().getKey().getFirst().getOwner());
-
-		boolean allPossible = possibleMoves.containsAll(moves);
-
-/*		// Check that no ship moves twice
-		Set<Ship> uniqueShips = new HashSet<>(ships);
-		boolean notTwice = uniqueShips.size() == ships.size();
-
 		// Check that all the moves are possible
-		List<Pair<Ship, Hexagon>> possibleMoves = possibilities.explore(ships.getFirst().getOwner());
-
-		List<Pair<Ship, Hexagon>> moves = new ArrayList<>();
-		for (int i = 0; i < ships.size(); i++) {
-			moves.add(new Pair<>(ships.get(i), targets.get(i)));
-		}
-		boolean allPossible = possibleMoves.containsAll(moves);*/
+		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(moves.getFirst().getKey().getFirst().getOwner());
+		boolean allPossible = possibleMoves.containsAll(moves);
 
 		return notTwice && allPossible;
 	}
@@ -440,6 +431,8 @@ public class Game {
 		}
 		Set<Hexagon> uniqueTargets = new HashSet<>(targets);
 		return uniqueTargets.size() == targets.size();
+
+
 	}
 
 	public Hexagon[][] getMap() {
@@ -554,15 +547,6 @@ public class Game {
 		game.setup();
     	game.displayBoard();
 		game.playRound();
-
-		Possibilities poss = Possibilities.getInstance(game);
-		List<Hexagon> hexs = poss.setupFleet();
-
-		for (Hexagon hex : hexs) {
-			System.out.println(hex);
-		}
-
-
 
 	}
 

@@ -68,6 +68,38 @@ public class RandomBot extends Bot{
 
     public void doExterminate(int efficiency) {
 
+        System.out.println(this.getPseudo() + " is exterminating");
+
+        List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
+        System.out.println("Possible moves : " + possibleMoves.size());
+
+        List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
+        Set<Hexagon> targets = new HashSet<Hexagon>();
+
+        Random random = new Random();
+
+        // TODO Check somewhere that the player CAN do 'efficiency' exterminates
+
+        // Adding randomly selected ships and targets to the list of ships/targets to explore
+        while (moves.size() < efficiency) {
+            int index = random.nextInt(possibleMoves.size());
+            Pair<List<Ship>, Hexagon> move = possibleMoves.get(index);
+            // Check that the randomly chosen move doesn't target a hex that has has already been targeted
+            if (!targets.contains(move.getValue())) {
+                moves.add(move);
+                targets.add(move.getValue());
+            }
+        }
+
+        // Execute each move
+        for (Pair<List<Ship>, Hexagon> move : moves) {
+            //Set the ships and execute the command
+            this.explore.setShips(move.getKey());
+            this.explore.setTargets(new ArrayList<>(Collections.nCopies(move.getKey().size(), move.getValue())));
+            this.explore.execute();
+        }
+
+
     }
 
 }

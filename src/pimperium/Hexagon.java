@@ -122,7 +122,6 @@ public class Hexagon {
 		this.ships = ships;
 	}
 
-
 	public static void main(String[] args) {
 		System.out.println("Hello World !");
 	}

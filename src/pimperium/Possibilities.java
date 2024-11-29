@@ -48,36 +48,6 @@ public class Possibilities {
     }
 
     public List<Pair<List<Ship>, List<Hexagon>>> explore(Player player) {
-        /*
-        List<Pair<Ship, Hexagon>> possibleMoves = new ArrayList<>();
-        //For each player's ship, get all the possible destinations
-        for(Ship ship : player.getShips()) {
-
-            Set<Hexagon> distance1Targets = ship.getPosition().getNeighbours();
-
-            // Remove from the list of possible targets the hexs controlled by another player
-            distance1Targets.removeIf(hex -> hex.getOccupant() != null && hex.getOccupant() != player);
-
-            Set<Hexagon> distance2Targets = new HashSet<Hexagon>();
-
-            //We add the 2nd degree neighbors for each hex except triPrime
-            for (Hexagon hex : distance1Targets) {
-                if (!hex.isTriPrime()) {
-                    distance2Targets.addAll(hex.getNeighbours());
-                }
-            }
-
-            //Get all the possible targets for the ship (and remove the hexs controlled by another player)
-            distance1Targets.addAll(distance2Targets);
-            distance1Targets.removeIf(hex -> hex.getOccupant() != null & hex.getOccupant() != player);
-
-            //Add all the available moves for the ship as pairs
-            for (Hexagon hex : distance1Targets) {
-                possibleMoves.add(new Pair<>(ship, hex));
-            }
-
-        }*/
-
 
         // The possible moves are all the pairs (Fleet, Set of Destination)
         List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = new ArrayList<>();
@@ -101,7 +71,7 @@ public class Possibilities {
                 distance1Targets.removeIf(hex -> hex.getOccupant() != null && hex.getOccupant() != player);
 
                 for (Hexagon target1 : distance1Targets) {
-                    // Add the simplest move (the whole fleet moves to the 1-hex away desination)
+                    // Add the simplest move (the whole fleet moves to the 1-hex away destination)
                     possibleMoves.add(new Pair<>(fleet, new ArrayList<>(Collections.nCopies(fleet.size(), target1))));
 
                     // Add all the distance-2 moves if the hex is not Tri-Prime
@@ -123,7 +93,7 @@ public class Possibilities {
                                 List<Hexagon> destination2 = new ArrayList<>(Collections.nCopies(subFleet2.size(), target2));
                                 List<Hexagon> destination1 = new ArrayList<>(Collections.nCopies(subFleet1.size(), target1));
 
-                                // Concatenant the fleets and destinations
+                                // Concatenate the fleets and destinations
                                 subFleet1.addAll(subFleet2);
                                 destination1.addAll(destination2);
                                 possibleMoves.add(new Pair<>( subFleet1, destination1));
@@ -141,5 +111,63 @@ public class Possibilities {
 
     }
 
+    public List<Pair<List<Ship>, Hexagon>> exterminate(Player player) {
+
+        List<Pair<List<Ship>, Hexagon>> possibleMoves = new ArrayList<>();
+
+        List<Hexagon> targets = new ArrayList<Hexagon>();
+        for (Hexagon[] row : game.getMap()) {
+            for (Hexagon hex : row) {
+                if (hex != null && hex.getSystemLevel() >= 1 && hex.getOccupant() != player) {
+                    targets.add(hex);
+                }
+            }
+        }
+
+        for (Hexagon target : targets) {
+            List<Hexagon> origins = new ArrayList<Hexagon>();
+            // Find all the hexs the player can attack from
+            for (Hexagon hex : target.getNeighbours()) {
+                if (hex.getOccupant() == player) origins.add(hex);
+            }
+
+            // Get the number of ships on each origin hex
+            int[] fleetSizes = new int[origins.size()];
+            for (int i = 0; i < origins.size(); i++) {
+                fleetSizes[i] = origins.get(i).getShips().size();
+            }
+
+            // All the possible distributions of ships from the origin fleets
+            List<int[]> distributions = new ArrayList<>();
+            int numOrigins = origins.size();
+
+            int[] distribution = new int[numOrigins];
+            while (true) {
+                distributions.add(distribution.clone());
+
+                // Increment the distribution vector
+                int i = 0;
+                while (i < numOrigins && distribution[i] == fleetSizes[i]) {
+                    distribution[i] = 0;
+                    i++;
+                }
+                if (i == numOrigins) break; // We've exhausted all combinations
+                distribution[i]++;
+            }
+
+            // Convert ship distributions to moves
+            for (int[] dist : distributions) {
+                List<Ship> fleet = new ArrayList<>();
+                for (int i = 0; i < dist.length; i++) {
+                    fleet.addAll(origins.get(i).getShips().subList(0, dist[i]));
+                }
+                possibleMoves.add(new Pair<>(fleet, target));
+            }
+
+        }
+
+        return possibleMoves;
+
+    }
 
 }
