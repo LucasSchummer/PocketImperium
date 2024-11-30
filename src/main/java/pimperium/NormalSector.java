@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class NormalSector extends Sector{
 	
-	private int id;
 	private int sys_2_x;
 	private int sys_2_y;
 	private int sys_1_x1;
@@ -12,6 +11,8 @@ public class NormalSector extends Sector{
 	private int sys_1_x2;
 	private int sys_1_y2;
 	private ArrayList<Integer> systems_coordinates;
+
+	private int id;
 
 	
 	public NormalSector(int sys_2_x, int sys_2_y, int sys_1_x1, int sys_1_y1, int sys_1_x2, int  sys_1_y2, int id) {

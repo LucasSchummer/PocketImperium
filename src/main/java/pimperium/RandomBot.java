@@ -4,10 +4,38 @@ import java.util.*;
 
 import javafx.util.Pair;
 
-public class RandomBot extends Bot{
+public class RandomBot extends Bot {
 
     public RandomBot(Game game) {
         super(game);
+    }
+
+    @Override
+    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+        Random random = new Random();
+        Sector chosenSector = null;
+        boolean validChoice = false;
+        int sectorId = -1;
+        System.out.println(this.getPseudo() + " chooses the sector to score");
+
+        while (!validChoice) {
+            sectorId = random.nextInt(1, sectors.length+1);
+            chosenSector = sectors[sectorId-1];
+
+            if (chosenSector == null) {
+                continue; // Invalid sector, try another
+            } else if (chosenSector.isTriPrime()) {
+                continue; // Cannot choose the Tri-Prime sector
+            } else if (!chosenSector.isOccupied()) {
+                continue; // Cannot choose an unoccupied sector
+            } else if (scoredSectors.contains(chosenSector)) {
+                continue; // Sector already chosen, try another
+            } else {
+                validChoice = true;
+            }
+        }
+        System.out.println(this.getPseudo() + " has chosen the sector " + (sectorId-1) + " to score.");
+        return chosenSector;
     }
 
     public void doExpand(int efficiency) {

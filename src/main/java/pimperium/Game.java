@@ -94,13 +94,13 @@ public class Game{
 		}
 		//Add the central row
 		if (Math.random() > 0.5) {
-			this.sectors[3] = new SideSector(0,0,1,0,2,0);
+			this.sectors[3] = new SideSector(0,0,1,0,2,0,1);
 			this.sectors[4] = new CentralSector();
-			this.sectors[5] = new SideSector(1,1,0,0,2,0);
+			this.sectors[5] = new SideSector(1,1,0,0,2,0,2);
 		} else {
-			this.sectors[3] = new SideSector(1,1,0,0,2,0);
+			this.sectors[3] = new SideSector(1,1,0,0,2,0,2);
 			this.sectors[4] = new CentralSector();
-			this.sectors[5] = new SideSector(0,0,1,0,2,0);
+			this.sectors[5] = new SideSector(0,0,1,0,2,0,1);
 		}
 		//Add the 3 bottom sectors
 		for (int i = 3; i < 6; i++) {
@@ -381,16 +381,90 @@ public class Game{
 			this.round_step++;
 		}
 
-		this.round++;
+		this.sustainShips();
+		this.doFinalScore();
 		
+		this.round++;
+
 	}
 	
 	public void playRoundStep() {
-		
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
 		}
 		
+	}
+
+	// Remove excess ships on every hexagon
+	public void sustainShips() {
+		for (int i = 0; i < MAP_ROWS; i++) {
+			for (int j = 0; j < MAP_COLS; j++) {
+				Hexagon hex = hexs[i][j];
+				if (hex != null) {
+					int systemLevel = hex.getSystemLevel();
+					int maxShips = 1 + systemLevel;
+					List<Ship> ships = hex.getShips();
+					if (ships.size() > maxShips) {
+						int shipsToRemove = ships.size() - maxShips;
+						for (int k = 0; k < shipsToRemove; k++) {
+							Ship ship = ships.get(k);
+							ship.destroy(); // Return the ship to the reserve
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Return the controller of the TriPrime (if existing)
+	public Player getTriPrimeController() {
+		// Retrieve the Tri-Prime sector
+		Sector triPrimeSector = this.sectors[4]; // TriPrime Sector
+		if (triPrimeSector != null) {
+			// First and uniq system of the Sector is the TriPrime
+			HSystem triPrimeSystem = triPrimeSector.getSystems().get(0); 
+			if (triPrimeSystem.getController() != null) {
+				return triPrimeSystem.getController();
+			}
+		}
+		return null;
+	}
+		
+	
+	public void doFinalScore() {
+		Set<Sector> scoredSectors = new HashSet<>();
+	
+		// Each player chooses a sector to score
+		for (Player player : this.players) {
+			Sector chosenSector = player.chooseSectorToScore(scoredSectors, this.sectors);
+			if (chosenSector != null) {
+				scoredSectors.add(chosenSector);
+			}
+		}
+	
+		// Check if a player controls Tri-Prime
+		Player triPrimeController = getTriPrimeController();
+		if (triPrimeController != null) {
+			// The player controlling Tri-Prime chooses an additional sector
+			Sector additionalSector = triPrimeController.chooseSectorToScore(scoredSectors, this.sectors);
+			if (additionalSector != null) {
+				scoredSectors.add(additionalSector);
+			}
+		}
+	
+		// Calculate points for each player
+		for (Player player : this.players) {
+			int score = 0;
+			for (Sector sector : scoredSectors) {
+				for (HSystem system : sector.getSystems()) {
+					if (system.getController() == player) {
+						score += system.getLevel();
+					}
+				}
+			}
+			player.addScore(score);
+			System.out.println("The score of " + player.getPseudo() + " is " + score);
+		}
 	}
 	
 	//Assert that the expand move from the player is valid
@@ -495,8 +569,6 @@ public class Game{
 	}
 
 /*	// Display the board (graphic interface)
-
-	// Display the board (graphic interface)
 	public void displayBoard() {
 		JFrame frame = new JFrame("Plateau de jeu");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

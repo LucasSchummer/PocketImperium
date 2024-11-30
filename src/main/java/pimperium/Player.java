@@ -8,9 +8,9 @@ import java.util.LinkedHashSet;
 public abstract class Player {
     protected List<Ship> ships;
     protected String pseudo;
+    protected int score;
     protected Game game;
     protected int[] orderCommands;
-    //protected int score;
     protected Expand expand;
     protected Explore explore;
     protected Exterminate exterminate;
@@ -60,6 +60,10 @@ public abstract class Player {
         this.pseudo = pseudo;
     }
     
+    public void addScore(int score) {
+        this.score += score;
+    }
+
     public abstract void setupInitialFleet();
 
     public void doAction(int index, int efficiency) {
@@ -82,9 +86,13 @@ public abstract class Player {
         }
     }
 
+    public abstract Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors);
+
     public abstract void doExpand(int efficiency);
     public abstract void doExplore(int efficiency);
     public abstract void doExterminate(int efficiency);
 
-    
 }
+    
+
+

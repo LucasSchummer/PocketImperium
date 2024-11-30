@@ -7,6 +7,11 @@ public class CentralSector extends Sector{
 		this.systems.add(new HSystem(3));
 	}
 
+	@Override
+	public boolean isTriPrime() {
+		return true;
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
