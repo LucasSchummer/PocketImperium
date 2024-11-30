@@ -3,6 +3,7 @@ package pimperium;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class GameController extends Application {
@@ -13,13 +14,13 @@ public class GameController extends Application {
         game = new Game();
         view = new Interface();
 
-        // Add event handlers for buttons
-        Button[][] buttons = view.getButtons();
+        // Add event handlers for imageViews
+        ImageView[][] imageViews = view.getImageViews();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int row = i;
                 int col = j;
-                buttons[i][j].setOnAction(event -> handleMove(row, col));
+                imageViews[i][j].setOnMouseClicked(event -> handleMove(row, col));
             }
         }
 
