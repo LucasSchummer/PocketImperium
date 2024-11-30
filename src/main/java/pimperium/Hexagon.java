@@ -42,6 +42,10 @@ public class Hexagon {
 	public void addNeighbor(Set<Hexagon> hexs) {
 		this.neighbors.addAll(hexs);
 	}
+	
+	public void setNeighbours(Set<Hexagon> neighbours) {
+		this.neighbors = neighbours;
+	}
 
 	public void removeNeighbor(Set<Hexagon> hexs) {
 		this.neighbors.removeAll(hexs);

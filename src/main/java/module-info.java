@@ -1,6 +1,7 @@
 module com.example.pimperium {
     requires javafx.controls;
     requires javafx.fxml;
+    requires transitive javafx.graphics;
     requires java.desktop;
 
     opens pimperium to javafx.fxml;

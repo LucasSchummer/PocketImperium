@@ -191,46 +191,42 @@ public class Game {
 		}
 	}
 
-	//Gather the 4 middle hexs into one hex to create Tri-Prime
+	// Gather the 4 middle hexes into one hex to create Tri-Prime
 	public void createTriPrime() {
-
-		Set<Hexagon> centralHexs = new HashSet<Hexagon>();
-		centralHexs.add(this.hexs[3][2]);
-		centralHexs.add(this.hexs[4][2]);
-		centralHexs.add(this.hexs[4][3]);
-		centralHexs.add(this.hexs[5][2]);
-
-		//Create triPrime and set its neighbors as the neighbors of the 4 central hexs
-		Hexagon triPrime = new Hexagon(3, 2);
+		// Create Tri-Prime
+		Hexagon triPrime = new Hexagon(4, 2);
 		triPrime.setTriPrime();
-		for (Hexagon hex : centralHexs) {
-			triPrime.addNeighbor(hex.getNeighbours());
-		}
-
-		//For each hex, if it has one of the central hexes as a neighbor, we assign triPrime instead
-		for (int i=0; i<9; i++) {
-			int lineWidth = 5 + (i%2==0? 1:0);
-			for (int j=0; j<lineWidth; j++) {
-				Set<Hexagon> intersection = new HashSet<Hexagon>(centralHexs);
-				intersection.retainAll(this.hexs[i][j].getNeighbours());
-				if (!intersection.isEmpty()) {
-					this.hexs[i][j].addNeighbor(triPrime);
-					this.hexs[i][j].removeNeighbor(centralHexs);
+		triPrime.addSystem(new HSystem(3)); // Level 3 system
+	
+		// List of coordinates of the central hexes
+		int[][] centralHexCoords = {{3,2}, {4,2}, {4,3}, {5,2}};
+	
+		// Set to store the neighbors of Tri-Prime
+		Set<Hexagon> triPrimeNeighbors = new HashSet<>();
+	
+		for (int[] coord : centralHexCoords) {
+			int i = coord[0];
+			int j = coord[1];
+			Hexagon hex = hexs[i][j];
+	
+			// Add the neighbors of the central hex to Tri-Prime
+			for (Hexagon neighbor : hex.getNeighbours()) {
+				if (!neighbor.isTriPrime()) {
+					triPrimeNeighbors.add(neighbor);
+					// Update the neighbors of each adjacent hex
+					neighbor.getNeighbours().remove(hex);
+					neighbor.addNeighbor(triPrime);
 				}
 			}
-		}
-
-		//Delete the central hexs from triPrime's neighbors
-		triPrime.removeNeighbor(centralHexs);
-
-		this.hexs[3][2] = triPrime;
-
-		this.hexs[4][2] = triPrime;
-		this.hexs[4][3] = triPrime;
-		this.hexs[5][2] = triPrime;
-
-	}
 	
+			// Replace the central hex with Tri-Prime in the grid
+			hexs[i][j] = triPrime;
+		}
+	
+		// Update the neighbors of Tri-Prime
+		triPrime.setNeighbours(triPrimeNeighbors);
+	}
+
 	//Create the players according to their type
 	public void createPlayers() {
 		this.players = new Player[NB_PLAYERS];
@@ -440,21 +436,32 @@ public class Game {
 	}
 
 
-	//Test Methods
+	// Test Methods
 	public String displayMap() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < MAP_ROWS; i++) {
 			int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
+			// Add spaces to align hexagons
 			if (i % 2 == 1) {
-				sb.append("  "); 
+				sb.append("  ");
 			}
 			for (int j = 0; j < lineWidth; j++) {
 				Hexagon hex = hexs[i][j];
-				if (hex != null && hex.getSystem() != null) {
-					// TODO : Inititalize Hexs of TripPrime to Level 3 (0 currently)
-					sb.append("[" + hex.getSystem().getLevel() + "] ");
-				} else {
-					sb.append("[0] ");
+				// Avoid displaying Tri-Prime multiple times
+				if (hex != null) {
+					if (hex.isTriPrime()) {
+						if (i == 4 && j == 2) {
+							sb.append("  [3]");
+						} else if (i == 4) {
+							sb.append("   ");
+						} else {
+							sb.append("    ");
+						}
+					} else if (hex.getSystem() != null) {
+						sb.append("[").append(hex.getSystem().getLevel()).append("] ");
+					} else {
+						sb.append("[0] ");
+					}
 				}
 			}
 			sb.append("\n");
