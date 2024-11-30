@@ -8,12 +8,20 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import javafx.util.Pair;
+
 import javax.swing.*;
 import java.awt.*;
 
 
-public class Game {
+public class Game{
 	
 	public static final int MAP_ROWS = 9;
 	public static final int MAP_COLS = 6;
@@ -348,9 +356,11 @@ public class Game {
 		this.players[this.players.length-1] = temp;
 	}
 
-	public void start() {
+	public void startGame() {
 		// TODO Count the score of the players and check victory/defeat on each round_step
 		//(in case a player lost all of his ships)
+		this.setup();
+		this.playRound();
 	}
 
 	public void playRound() {
@@ -484,7 +494,8 @@ public class Game {
 		return sb.toString();
 	}
 
-	/*
+/*	// Display the board (graphic interface)
+
 	// Display the board (graphic interface)
 	public void displayBoard() {
 		JFrame frame = new JFrame("Plateau de jeu");
@@ -549,7 +560,7 @@ public class Game {
 
 	//Main method
 	public static void main(String[] args) {
-		
+
 		Game game = new Game();
 
 		game.setup();
