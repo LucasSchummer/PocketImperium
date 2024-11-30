@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class NormalSector extends Sector{
 	
+	private int id;
 	private int sys_2_x;
 	private int sys_2_y;
 	private int sys_1_x1;
@@ -13,7 +14,7 @@ public class NormalSector extends Sector{
 	private ArrayList<Integer> systems_coordinates;
 
 	
-	public NormalSector(int sys_2_x, int sys_2_y, int sys_1_x1, int sys_1_y1, int sys_1_x2, int  sys_1_y2) {
+	public NormalSector(int sys_2_x, int sys_2_y, int sys_1_x1, int sys_1_y1, int sys_1_x2, int  sys_1_y2, int id) {
 		this.systems_coordinates = new ArrayList<Integer>();
 		this.systems_coordinates.add(sys_2_x);
 		this.systems_coordinates.add(sys_2_y);
@@ -30,6 +31,8 @@ public class NormalSector extends Sector{
 		this.systems.add(new HSystem(2));
 		this.systems.add(new HSystem(1));
 		this.systems.add(new HSystem(1));
+		
+		this.id = id;
 	}
 	
 	public ArrayList<Integer> getSystemsCoordinates() {

@@ -64,12 +64,12 @@ public class Game {
 		
 		//Generate the 6 Normal Sectors
 		final Sector[] temp_NormalSectors = {
-		    new NormalSector(0, 0, 1, 0, 2, 1),
-		    new NormalSector(2, 0, 0, 0, 1, 0),
-		    new NormalSector(2, 1, 0, 0, 0, 1),
-		    new NormalSector(1, 0, 2, 0, 2, 1),
-		    new NormalSector(1, 0, 0, 0, 2, 0),
-		    new NormalSector(1, 0, 0, 0, 0, 1)
+		    new NormalSector(0, 0, 1, 0, 2, 1, 4),
+		    new NormalSector(2, 0, 0, 0, 1, 0, 5),
+		    new NormalSector(2, 1, 0, 0, 0, 1, 6),
+		    new NormalSector(1, 0, 2, 0, 2, 1, 1),
+		    new NormalSector(1, 0, 0, 0, 2, 0, 2),
+		    new NormalSector(1, 0, 0, 0, 0, 1, 3)
 		}; 
 
 		
@@ -322,10 +322,10 @@ public class Game {
 						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
 						break;
 					case 2:
-						this.efficiencies[i][j] = Math.max(2, this.orderPlayers[i][j].countShips());
+						this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());
 						break;
 					default:
-						this.efficiencies[i][j] = Math.max(3, this.orderPlayers[i][j].countShips());
+						this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());
 						break;
 				}
 			}
@@ -484,6 +484,7 @@ public class Game {
 		return sb.toString();
 	}
 
+	/*
 	// Display the board (graphic interface)
 	public void displayBoard() {
 		JFrame frame = new JFrame("Plateau de jeu");
@@ -544,7 +545,7 @@ public class Game {
 			hex.addPoint(xPoint, yPoint);
 		}
 		g.drawPolygon(hex);
-	}
+	} */
 
 	//Main method
 	public static void main(String[] args) {
@@ -552,7 +553,7 @@ public class Game {
 		Game game = new Game();
 
 		game.setup();
-    	game.displayBoard();
+    	//game.displayBoard();
 		game.playRound();
 
 	}
