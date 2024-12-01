@@ -3,55 +3,54 @@ package pimperium;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
 
 public class Interface {
 
+    private Game game;
     private GridPane gridPane;
-    private Button[][] buttons;
     private ImageView[][] imageViews;
-    private Image[][] images;
 
-    public Interface() {
+    public Interface(Game game) {
+        this.game = game;
+
         gridPane = new GridPane();
-        buttons = new Button[3][3];
-        images = new Image[3][3];
         imageViews = new ImageView[3][3];
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-/*                Button button = new Button();
-                button.setPrefSize(100, 100); // Size of each cell
-                buttons[i][j] = button;
-                gridPane.add(button, j, i); // Add button to gridPane*/
-                Image image = new Image("file:assets/NormalSector1.png");
-                ImageView imageView = new ImageView(image);
-                imageView.setFitWidth(100); // Set size of each cell
-                imageView.setFitHeight(100);
-                imageViews[i][j] = imageView;
-                gridPane.add(imageView, i, j); // Add imageView to gridPane
+        gridPane.setPrefWidth(525);
+        gridPane.setPrefHeight(750);
+        // Remove spacing and padding
+        gridPane.setHgap(2); // Horizontal gap between columns
+        gridPane.setVgap(2); // Vertical gap between rows
+        gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
+
+        for (int i = 0; i < this.game.getSectors().length; i++) {
+            Image image = new Image("file:assets/" + this.game.getSectors()[i].getPath());
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(false);
+            imageView.setFitHeight(250);
+            imageView.setFitWidth(175);
+
+            // Flip vertically the last 3 sectors
+            if (i > 5) {
+                Rotate rotate = new Rotate(180, imageView.getFitWidth() / 2, imageView.getFitHeight() / 2); // Rotate around the center
+                imageView.getTransforms().add(rotate);
             }
+
+
+            imageViews[(int) i / 3][i % 3] = imageView;
+            gridPane.add(imageView, i % 3, (int) i / 3); // Add imageView to gridPane
         }
     }
-
-    public void updateView(String[][] board) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                buttons[i][j].setText(board[i][j]); // Update button text
-            }
-        }
-    }
-
 
     public GridPane getGridPane() {
         return gridPane;
-    }
-
-    public Button[][] getButtons() {
-        return buttons;
     }
 
     public ImageView[][] getImageViews() {

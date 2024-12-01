@@ -11,30 +11,20 @@ public class GameController extends Application {
     private Interface view;
 
     public void start(Stage primaryStage) {
-        game = new Game();
-        view = new Interface();
 
-        // Add event handlers for imageViews
-        ImageView[][] imageViews = view.getImageViews();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int row = i;
-                int col = j;
-                imageViews[i][j].setOnMouseClicked(event -> handleMove(row, col));
-            }
-        }
+        game = new Game();
+        game.startGame();
+
+        view = new Interface(game);
 
         // Set up the stage
-        Scene scene = new Scene(view.getGridPane(), 300, 300);
+        Scene scene = new Scene(view.getGridPane(), 529, 754);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Simple Game");
+        primaryStage.setTitle("Pocket Imperium");
         primaryStage.show();
+
     }
 
-
-    private void handleMove(int row, int col) {
-        view.updateView(new String[][]{}); // Update view after a valid move
-    }
 
     // Add event handlers to handle user interactions
     // e.g., responding to button clicks or key presses

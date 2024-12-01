@@ -8,20 +8,10 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
-
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import javax.swing.*;
-import java.awt.*;
 
-
-public class Game{
+public class Game implements Runnable{
 	
 	public static final int MAP_ROWS = 9;
 	public static final int MAP_COLS = 6;
@@ -38,6 +28,8 @@ public class Game{
 	private Possibilities possibilities;
 
 	public Scanner scanner = new Scanner(System.in);
+
+	private Thread t;
 
 
 	public Game() {
@@ -56,6 +48,13 @@ public class Game{
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
 		this.setupFleets();
+	}
+
+	public void startGame() {
+		// TODO Count the score of the players and check victory/defeat on each round_step
+		//(in case a player lost all of his ships)
+		this.t = new Thread(this, "Game");
+		this.t.start();
 
 	}
 	
@@ -72,12 +71,12 @@ public class Game{
 		
 		//Generate the 6 Normal Sectors
 		final Sector[] temp_NormalSectors = {
-		    new NormalSector(0, 0, 1, 0, 2, 1, 4),
-		    new NormalSector(2, 0, 0, 0, 1, 0, 5),
-		    new NormalSector(2, 1, 0, 0, 0, 1, 6),
-		    new NormalSector(1, 0, 2, 0, 2, 1, 1),
-		    new NormalSector(1, 0, 0, 0, 2, 0, 2),
-		    new NormalSector(1, 0, 0, 0, 0, 1, 3)
+		    new NormalSector(0, 0, 1, 0, 2, 1, "normal1.png"),
+		    new NormalSector(2, 0, 0, 0, 1, 0, "normal2.png"),
+		    new NormalSector(2, 1, 0, 0, 0, 1, "normal3.png"),
+		    new NormalSector(1, 0, 2, 0, 2, 1, "normal4.png"),
+		    new NormalSector(1, 0, 0, 0, 2, 0, "normal5.png"),
+		    new NormalSector(1, 0, 0, 0, 0, 1, "normal6.png")
 		}; 
 
 		
@@ -94,20 +93,19 @@ public class Game{
 		}
 		//Add the central row
 		if (Math.random() > 0.5) {
-			this.sectors[3] = new SideSector(0,0,1,0,2,0,1);
+			this.sectors[3] = new SideSector(0,0,1,0,2,0,"side1.png");
 			this.sectors[4] = new CentralSector();
-			this.sectors[5] = new SideSector(1,1,0,0,2,0,2);
+			this.sectors[5] = new SideSector(1,1,0,0,2,0,"side2.png");
 		} else {
-			this.sectors[3] = new SideSector(1,1,0,0,2,0,2);
+			this.sectors[3] = new SideSector(1,1,0,0,2,0,"side2.png");
 			this.sectors[4] = new CentralSector();
-			this.sectors[5] = new SideSector(0,0,1,0,2,0,1);
+			this.sectors[5] = new SideSector(0,0,1,0,2,0,"side1.png");
 		}
 		//Add the 3 bottom sectors
 		for (int i = 3; i < 6; i++) {
 			this.sectors[i+3] = temp_NormalSectors[indexes.get(i)];
 		}
-		
-		
+
 		
 		//Assign systems to the right hexs
 		for (int i=0; i < 9; i++) {
@@ -356,13 +354,6 @@ public class Game{
 		this.players[this.players.length-1] = temp;
 	}
 
-	public void startGame() {
-		// TODO Count the score of the players and check victory/defeat on each round_step
-		//(in case a player lost all of his ships)
-		this.setup();
-		this.playRound();
-	}
-
 	public void playRound() {
 
 		if (this.round > 0) this.switchStartPlayer();
@@ -519,6 +510,9 @@ public class Game{
 		return this.hexs;
 	}
 
+	public Sector[] getSectors() {
+		return this.sectors;
+	}
 
 	// Test Methods
 	public String displayMap() {
@@ -629,6 +623,15 @@ public class Game{
 		}
 		g.drawPolygon(hex);
 	} */
+
+	public void run() {
+		this.setup();
+
+		for (int i = 0; i < 9; i++) {
+			this.playRound();
+		}
+
+	}
 
 	//Main method
 	public static void main(String[] args) {

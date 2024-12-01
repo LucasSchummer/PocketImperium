@@ -5,6 +5,7 @@ public class CentralSector extends Sector{
 	//Testing commit
 	public CentralSector() {
 		this.systems.add(new HSystem(3));
+		this.path = "center.png";
 	}
 
 	@Override

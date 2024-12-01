@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Sector {
 	
 	protected ArrayList<HSystem> systems;
+	protected String path;
 	
 	public Sector() {
 		systems = new ArrayList<HSystem>();
@@ -39,6 +40,10 @@ public class Sector {
 	
 	public boolean isTriPrime() {
 		return false;
+	}
+
+	public String getPath() {
+		return this.path;
 	}
 
 	public static void main(String[] args) {
