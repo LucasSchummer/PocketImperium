@@ -20,7 +20,7 @@ public class GameController extends Application {
         view = new Interface(game);
 
         // Set up the stage
-        Scene scene = new Scene(view.getGridPane(), 529, 754);
+        Scene scene = new Scene(view.getRoot(), 529, 754);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium");
         primaryStage.show();

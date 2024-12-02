@@ -5,7 +5,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import pimperium.models.Game;
@@ -16,6 +19,7 @@ public class Interface {
 
     private Game game;
     private GridPane gridPane;
+    private Pane hexPane;
     private ImageView[][] imageViews;
 
     public Interface(Game game) {
@@ -44,15 +48,41 @@ public class Interface {
                 imageView.getTransforms().add(rotate);
             }
 
-
             imageViews[(int) i / 3][i % 3] = imageView;
             gridPane.add(imageView, i % 3, (int) i / 3); // Add imageView to gridPane
         }
+
+        hexPane = new Pane();
+        hexPane.setPickOnBounds(false);
+
+        Polygon hex = createHexagon(44, 75, 48);
+        hex.setOnMouseClicked(event -> handleHexagonClick());
+
+        hexPane.getChildren().add(hex);
         
     }
 
-    public GridPane getGridPane() {
-        return gridPane;
+    private Polygon createHexagon(double centerX, double centerY, double radius) {
+        Polygon hexagon = new Polygon();
+        for (int i = 0; i < 6; i++) {
+            double angle = Math.toRadians(60 * i - 30);
+            double x = centerX + radius * Math.cos(angle);
+            double y = centerY + radius * Math.sin(angle);
+            hexagon.getPoints().addAll(x, y);
+        }
+        hexagon.setFill(Color.RED); // Transparent fill
+        hexagon.setStroke(Color.TRANSPARENT); // No visible border
+        return hexagon;
+    }
+
+    private void handleHexagonClick() {
+        System.out.println("Hexagon clicked");
+    }
+
+    public Pane getRoot() {
+        Pane root = new Pane();
+        root.getChildren().addAll(gridPane, hexPane); // Add GridPane and overlay
+        return root;
     }
 
     public ImageView[][] getImageViews() {
