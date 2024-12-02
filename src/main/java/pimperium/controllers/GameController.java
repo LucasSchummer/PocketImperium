@@ -1,10 +1,12 @@
-package pimperium;
+package pimperium.controllers;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import pimperium.models.Game;
+import pimperium.views.Interface;
 
 public class GameController extends Application {
     private Game game;

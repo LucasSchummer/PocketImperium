@@ -1,7 +1,11 @@
-package pimperium;
+package pimperium.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import pimperium.models.Hexagon;
+import pimperium.models.Player;
+import pimperium.models.Ship;
 
 public class Explore implements Command {
     private Player player;

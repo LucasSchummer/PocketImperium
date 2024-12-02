@@ -1,4 +1,4 @@
-package pimperium;
+package pimperium.views;
 
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import pimperium.models.Game;
 import javafx.scene.control.Button;
 
 
@@ -47,6 +48,7 @@ public class Interface {
             imageViews[(int) i / 3][i % 3] = imageView;
             gridPane.add(imageView, i % 3, (int) i / 3); // Add imageView to gridPane
         }
+        
     }
 
     public GridPane getGridPane() {

@@ -1,6 +1,10 @@
-package pimperium;
+package pimperium.commands;
 
 import java.util.List;
+
+import pimperium.models.Hexagon;
+import pimperium.models.Player;
+import pimperium.models.Ship;
 
 public class Exterminate implements Command {
     private Player player;

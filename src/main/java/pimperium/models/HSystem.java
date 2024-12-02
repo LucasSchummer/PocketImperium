@@ -1,4 +1,4 @@
-package pimperium;
+package pimperium.models;
 
 public class HSystem {
 	

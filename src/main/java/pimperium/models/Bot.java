@@ -1,4 +1,4 @@
-package pimperium;
+package pimperium.models;
 
 import java.util.Random;
 import java.util.Collections;

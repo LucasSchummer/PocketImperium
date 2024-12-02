@@ -1,4 +1,4 @@
-package pimperium;
+package pimperium.views;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

@@ -1,8 +1,13 @@
-package pimperium;
+package pimperium.models;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import pimperium.commands.Expand;
+import pimperium.commands.Explore;
+import pimperium.commands.Exterminate;
+
 import java.util.LinkedHashSet;
 
 public abstract class Player {

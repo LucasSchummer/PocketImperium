@@ -4,6 +4,10 @@ module com.example.pimperium {
     requires transitive javafx.graphics;
     requires java.desktop;
 
-    opens pimperium to javafx.fxml;
-    exports pimperium; // Replace with your actual package name
+    opens pimperium.controllers to javafx.fxml;
+    opens pimperium.views to javafx.fxml;
+    exports pimperium.controllers;
+    exports pimperium.views;
+    exports pimperium.models;
+    exports pimperium.commands;
 }

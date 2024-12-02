@@ -1,7 +1,10 @@
-package pimperium;
+package pimperium.commands;
 
 import java.util.List;
 import java.util.Set;
+
+import pimperium.models.Player;
+import pimperium.models.Ship;
 
 
 public class Expand implements Command {

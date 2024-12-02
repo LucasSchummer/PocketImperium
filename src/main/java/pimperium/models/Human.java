@@ -1,4 +1,4 @@
-package pimperium;
+package pimperium.models;
 import javafx.util.Pair;
 
 import java.util.*;
