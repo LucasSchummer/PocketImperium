@@ -65,6 +65,14 @@ public abstract class Player {
         this.pseudo = pseudo;
     }
     
+    // Getter and setter for the pseudo
+    public int getScore() {
+        return this.score;
+    }
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public void addScore(int score) {
         this.score += score;
     }

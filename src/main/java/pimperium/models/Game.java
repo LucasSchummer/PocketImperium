@@ -53,6 +53,8 @@ public class Game implements Runnable{
 	public void startGame() {
 		// TODO Count the score of the players and check victory/defeat on each round_step
 		//(in case a player lost all of his ships)
+		this.setup();
+
 		this.t = new Thread(this, "Game");
 		this.t.start();
 
@@ -373,7 +375,7 @@ public class Game implements Runnable{
 		}
 
 		this.sustainShips();
-		this.doFinalScore();
+		this.doScore();
 		
 		this.round++;
 
@@ -421,8 +423,8 @@ public class Game implements Runnable{
 		return null;
 	}
 		
-	
-	public void doFinalScore() {
+	// Calculate the score of each player
+	public void doScore() {
 		Set<Sector> scoredSectors = new HashSet<>();
 	
 		// Each player chooses a sector to score
@@ -457,21 +459,59 @@ public class Game implements Runnable{
 			System.out.println("The score of " + player.getPseudo() + " is " + score);
 		}
 	}
-	
-	//Assert that the expand move from the player is valid
+
+
+	// Calculate the final score of each player
+	public void doFinalScore() {
+		System.out.println("Calculating final score...");
+		
+		// All sectors are scored again with doubled values
+		for (Player player : this.players) {
+			int finalScore = player.getScore(); // Add the points already scored during the game
+			for (Sector sector : this.sectors) {
+				for (HSystem system : sector.getSystems()) {
+					if (system.getController() == player) {
+						int systemValue = system.getLevel() * 2; // Double the value of the system
+						finalScore += systemValue;
+					}
+					}
+			}
+			System.out.println("Final score of " + player.getPseudo() + ": " + finalScore);
+			player.setScore(finalScore);
+		}
+		
+		// Determine the winner
+		Player winner = this.getWinner();
+
+		System.out.println("The winner is " + winner.getPseudo() + " with " + winner.getScore() + " points!");
+	}
+
+	// Get the winner of the game
+	public Player getWinner() {
+		Player winner = this.players[0];
+		for (Player player : this.players) {
+			if (player.getScore() > winner.getScore()) {
+				winner = player;
+			}
+		}
+
+		return winner;
+	}
+
+	// Assert that the expand move from the player is valid
 	public boolean checkExpandValidity(List<Ship> ships) {
-		//Check that no ship is expanded twice
+		// Check that no ship is expanded twice
 		Set<Ship> uniqueShips = new HashSet<>(ships);
 		boolean notTwice = uniqueShips.size() == ships.size();
 
-		//Get all the possible ships to expand on
+		// Get all the possible ships to expand on
 		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
 		boolean allPossible = possShips.containsAll(ships);
 
 		return notTwice && allPossible;
 	}
 	
-	//Assert that the explore move from the player is valid
+	// Assert that the explore move from the player is valid
 	public boolean checkExploreValidity(List<Pair<List<Ship>, List<Hexagon>>> moves) {
 
 		// Check that no ship is moved twice
@@ -489,7 +529,7 @@ public class Game implements Runnable{
 		return notTwice && allPossible;
 	}
 
-	//Assert that the exterminate move from the player is valid
+	// Assert that the exterminate move from the player is valid
 	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
 		// Verify that the ships target different hexagons and that the targets are adjacent
 		if (ships.size() != targets.size()) {
@@ -625,22 +665,36 @@ public class Game implements Runnable{
 	} */
 
 	public void run() {
-		this.setup();
-
-		for (int i = 0; i < 9; i++) {
+		boolean gameEnded = false;
+		while (this.round < 9 && !gameEnded) {
 			this.playRound();
+	
+			// Verifies if a player lost all his ships
+			for (Player player : this.players) {
+				if (player.countShips() == 0) {
+					System.out.println(player.getPseudo() + " a perdu toutes ses flottes.");
+					gameEnded = true;
+					break;
+				}
+			}
 		}
-
+	
+		// Final scoring
+		this.doFinalScore();
 	}
 
 	//Main method
 	public static void main(String[] args) {
 
 		Game game = new Game();
-
+		
+		/*
 		game.setup();
     	//game.displayBoard();
 		game.playRound();
+		*/
+
+		game.startGame();
 
 	}
 

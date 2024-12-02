@@ -50,7 +50,7 @@ public class Exterminate implements Command {
             hex.setShips(shipsInvolved);
             System.out.println(this.player + "has exterminate " + defender + "on the system " + hex.getSystem());
             } else if (shipsInvolved.size() == 0 && defenderShips.size() > 0) {
-                System.out.println(defender + "has defended");
+                System.out.println(defender.getPseudo() + " has defended!");
             } else {
             hex.getSystem().setController(null);
             }

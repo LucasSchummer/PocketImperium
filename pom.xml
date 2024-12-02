@@ -46,7 +46,7 @@
           <execution>
             <id>default-cli</id>
             <configuration>
-              <mainClass>pimperium.views.HelloFX</mainClass>
+              <mainClass>pimperium.views.Interface</mainClass>
             </configuration>
           </execution>
         </executions>

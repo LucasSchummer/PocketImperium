@@ -105,20 +105,31 @@ public class Human extends Player {
 		System.out.println(this.getPseudo() + " is choosing a sector to score");
 		
 		while (!validChoice) {
-			System.out.println(this.getPseudo() + ", choose a sector to score [1-4 | 6-9]:");
-			sectorId = scanner.nextInt();
-			chosenSector = sectors[sectorId-1];
+			try {
+				System.out.println(this.getPseudo() + ", choose a sector to score [1-4 | 6-9]:");
+				sectorId = scanner.nextInt();
+				
+				if (sectorId < 1 || sectorId > sectors.length || sectorId == 5) {
+					System.out.println("Invalid sector ID. Please try again.");
+					continue;
+				}
+				
+				chosenSector = sectors[sectorId-1];
 
-			if (chosenSector == null) {
-				System.out.println("Invalid sector. Please try again.");
-			} else if (chosenSector.isTriPrime()) {
-				System.out.println("You cannot choose the Tri-Prime sector. Please choose another one.");
-			} else if (!chosenSector.isOccupied()) {
-				System.out.println("You cannot choose an unoccupied sector. Please choose another one.");
-			} else if (scoredSectors.contains(chosenSector)) {
-				System.out.println("This sector has already been chosen. Please choose another one.");
-			} else {
-				validChoice = true;
+				if (chosenSector == null) {
+					System.out.println("Invalid sector. Please try again.");
+				} else if (chosenSector.isTriPrime()) {
+					System.out.println("You cannot choose the Tri-Prime sector. Please choose another one.");
+				} else if (!chosenSector.isOccupied()) {
+					System.out.println("You cannot choose an unoccupied sector. Please choose another one.");
+				} else if (scoredSectors.contains(chosenSector)) {
+					System.out.println("This sector has already been chosen. Please choose another one.");
+				} else {
+					validChoice = true;
+				}
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a number.");
+				scanner.nextLine(); // Clear the invalid input
 			}
 		}
 		System.out.println(this.getPseudo() + " has chosen sector " + (sectorId-1) + " to score.");
@@ -138,6 +149,11 @@ public class Human extends Player {
 
 				System.out.println("Enter the index of the ship you want to expand : " );
 				int index = this.game.scanner.nextInt();
+				if (index < 0 || index >= this.ships.size()) {
+					System.out.println("Index out of range. Please enter a valid index.");
+					i--; // Decrement i to retry this iteration
+					continue;
+				}
 				expandShips.add(this.ships.get(index));
 
 			}
