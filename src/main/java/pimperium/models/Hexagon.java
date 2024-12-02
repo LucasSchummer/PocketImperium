@@ -73,7 +73,11 @@ public class Hexagon {
 	
 	@Override
 	public String toString() {
-		return "[" + this.pos_x + "," + this.pos_y + "]";
+		if (this.isTriPrime) {
+			return "TriPrime";
+		} else {
+			return "[" + this.pos_x + "," + this.pos_y + "]";
+		}
 	}
 
 	// Remove all ships from the hexagon

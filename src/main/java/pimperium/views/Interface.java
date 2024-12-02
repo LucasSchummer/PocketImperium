@@ -1,29 +1,27 @@
 package pimperium.views;
 
-import javafx.scene.Scene;
+import pimperium.controllers.GameController;
+import java.util.List;
+import java.util.ArrayList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
-import pimperium.models.Game;
-import javafx.scene.control.Button;
+import javafx.util.Pair;
 
 
 public class Interface {
 
-    private Game game;
+    private GameController controller;
     private GridPane gridPane;
     private Pane hexPane;
     private ImageView[][] imageViews;
 
-    public Interface(Game game) {
-        this.game = game;
+    public Interface(GameController controller) {
+        this.controller = controller;
 
         gridPane = new GridPane();
         imageViews = new ImageView[3][3];
@@ -35,8 +33,8 @@ public class Interface {
         gridPane.setVgap(2); // Vertical gap between rows
         gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
 
-        for (int i = 0; i < this.game.getSectors().length; i++) {
-            Image image = new Image("file:assets/" + this.game.getSectors()[i].getPath());
+        for (int i = 0; i < this.controller.getGame().getSectors().length; i++) {
+            Image image = new Image("file:assets/" + this.controller.getGame().getSectors()[i].getPath());
             ImageView imageView = new ImageView(image);
             imageView.setPreserveRatio(false);
             imageView.setFitHeight(250);
@@ -52,14 +50,46 @@ public class Interface {
             gridPane.add(imageView, i % 3, (int) i / 3); // Add imageView to gridPane
         }
 
-        hexPane = new Pane();
-        hexPane.setPickOnBounds(false);
+        this.addHexagons();
 
-        Polygon hex = createHexagon(44, 75, 48);
-        hex.setOnMouseClicked(event -> handleHexagonClick());
+    }
 
-        hexPane.getChildren().add(hex);
-        
+    private void addHexagons() {
+
+        this.hexPane = new Pane();
+        this.hexPane.setPickOnBounds(false);
+
+        // Set the coordinates where we don't want to draw a hex, as TriPime is there
+        List<Pair<Integer, Integer>> coordsNoHex = new ArrayList<>();
+        coordsNoHex.add(new Pair<>(3,2));
+        coordsNoHex.add(new Pair<>(4,2));
+        coordsNoHex.add(new Pair<>(4,3));
+        coordsNoHex.add(new Pair<>(5,2));
+
+        for (int i = 0; i < 9; i++) {
+            int lineWidth = 5 + (i%2==0? 1:0);
+            int basePosX = 44 + (lineWidth==6? 0:44);
+            for (int j = 0; j < lineWidth; j++) {
+                if (!coordsNoHex.contains(new Pair<>(i,j))) {
+                    int centerX = basePosX + 88 * j + (lineWidth==6? 2*(int)(j/2):0);
+                    int centerY = 75 + 76 * i;
+                    int radius = 48;
+                    Polygon polygon = createHexagon(centerX, centerY, radius);
+                    polygon.setOnMouseClicked(event -> this.controller.handleHexagonClick(polygon));
+                    this.hexPane.getChildren().add(polygon);
+                    // Link the polygon to the Game Hex in two maps
+                    this.controller.getPolygonHexMap().put(polygon, this.controller.getGame().getMap()[i][j]);
+                    this.controller.getHexPolygonMap().put(this.controller.getGame().getMap()[i][j], polygon);
+                }
+            }
+        }
+
+        Polygon triPrime = createTriPrime();
+        triPrime.setOnMouseClicked(event -> this.controller.handleHexagonClick(triPrime));
+        this.hexPane.getChildren().add(triPrime);
+        this.controller.getPolygonHexMap().put(triPrime, this.controller.getGame().getMap()[3][2]);
+        this.controller.getHexPolygonMap().put(this.controller.getGame().getMap()[3][2], triPrime);
+
     }
 
     private Polygon createHexagon(double centerX, double centerY, double radius) {
@@ -73,6 +103,29 @@ public class Interface {
         hexagon.setFill(Color.RED); // Transparent fill
         hexagon.setStroke(Color.TRANSPARENT); // No visible border
         return hexagon;
+    }
+
+    private Polygon createTriPrime() {
+        Polygon triPrime = new Polygon();
+
+        triPrime.getPoints().addAll(264.5, 254.0);
+        triPrime.getPoints().addAll(306.5, 279.0);
+        triPrime.getPoints().addAll(306.5, 329.0);
+        triPrime.getPoints().addAll(349.5, 354.0);
+        triPrime.getPoints().addAll(349.5, 403.0);
+        triPrime.getPoints().addAll(306.5, 429.0);
+        triPrime.getPoints().addAll(306.5, 475.0);
+        triPrime.getPoints().addAll(264.5, 500.0);
+        triPrime.getPoints().addAll(222.5, 475.0);
+        triPrime.getPoints().addAll(222.5, 429.0);
+        triPrime.getPoints().addAll(179.5, 403.0);
+        triPrime.getPoints().addAll(179.5, 354.0);
+        triPrime.getPoints().addAll(222.5, 329.0);
+        triPrime.getPoints().addAll(222.5, 279.0);
+
+        triPrime.setFill(Color.BLUE); // Transparent fill
+        triPrime.setStroke(Color.TRANSPARENT); // No visible border
+        return triPrime;
     }
 
     private void handleHexagonClick() {
