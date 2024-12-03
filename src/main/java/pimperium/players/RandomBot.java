@@ -109,17 +109,23 @@ public class RandomBot extends Bot {
 
         List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
         System.out.println("Possible moves : " + possibleMoves.size());
-
+        
+        // I Verifies that the player can do exterminates
+        if (possibleMoves.isEmpty()) {
+            System.out.println("No extermination moves possible.");
+            return;
+        }
+        
         List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
         Set<Hexagon> targets = new HashSet<Hexagon>();
 
         Random random = new Random();
 
-        // TODO Check somewhere that the player CAN do 'efficiency' exterminates
-        // Otherwise crashes the game
+        // Just another verification
+        int maxEfficiency = Math.min(efficiency, possibleMoves.size());
 
         // Adding randomly selected ships and targets to the list of ships/targets to explore
-        while (moves.size() < efficiency) {
+        while (moves.size() < maxEfficiency) {
             int index = random.nextInt(possibleMoves.size());
             Pair<List<Ship>, Hexagon> move = possibleMoves.get(index);
             // Check that the randomly chosen move doesn't target a hex that has has already been targeted
