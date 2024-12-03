@@ -100,8 +100,13 @@ public class Interface {
             double y = centerY + radius * Math.sin(angle);
             hexagon.getPoints().addAll(x, y);
         }
-        hexagon.setFill(Color.RED); // Transparent fill
+        hexagon.setFill(Color.WHITE);
         hexagon.setStroke(Color.TRANSPARENT); // No visible border
+        hexagon.setOpacity(0); // Transparent fill
+
+        // Add oppacity events
+        hexagon.setOnMouseEntered(event -> hexagon.setOpacity(0.1));
+        hexagon.setOnMouseExited(event -> hexagon.setOpacity(0));
         return hexagon;
     }
 
@@ -123,8 +128,13 @@ public class Interface {
         triPrime.getPoints().addAll(222.5, 329.0);
         triPrime.getPoints().addAll(222.5, 279.0);
 
-        triPrime.setFill(Color.BLUE); // Transparent fill
+        triPrime.setFill(Color.WHITE); 
         triPrime.setStroke(Color.TRANSPARENT); // No visible border
+        triPrime.setOpacity(0); // Transparent fill
+
+        // Add oppacity events
+        triPrime.setOnMouseEntered(event -> triPrime.setOpacity(0.1));
+        triPrime.setOnMouseExited(event -> triPrime.setOpacity(0));
         return triPrime;
     }
 
