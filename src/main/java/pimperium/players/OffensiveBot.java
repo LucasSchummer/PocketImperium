@@ -1,7 +1,11 @@
-package pimperium.models;
+/*
+package pimperium.players;
 
 import java.util.*;
 import javafx.util.Pair;
+import pimperium.elements.Hexagon;
+import pimperium.elements.Ship;
+import pimperium.models.Game;
 
 public class OffensiveBot extends Bot {
 
@@ -40,9 +44,11 @@ public class OffensiveBot extends Bot {
         }
     }
 
-    /**
+    */
+/**
      * Priorise les cibles en fonction de leur vulnérabilité et importance stratégique.
-     */
+     *//*
+
     private List<Pair<List<Ship>, Hexagon>> prioritizeExtermination(List<Pair<List<Ship>, Hexagon>> possibleMoves) {
         // Exemple d'évaluation basée sur le nombre de navires ennemis et le contrôle sectoriel
         possibleMoves.sort((move1, move2) -> {
@@ -53,9 +59,11 @@ public class OffensiveBot extends Bot {
         return possibleMoves;
     }
 
-    /**
+    */
+/**
      * Évalue un hexagone en fonction de critères définis.
-     */
+     *//*
+
     private int evaluateHexagon(Hexagon hex) {
         int score = 0;
         Player controller = hex.getSystem().getController();
@@ -90,9 +98,11 @@ public class OffensiveBot extends Bot {
         this.expand.execute();
     }
 
-    /**
+    */
+/**
      * Calcule la distance au joueur ennemi le plus proche.
-     */
+     *//*
+
     private int distanceToNearestEnemy(Ship ship) {
         int minDistance = Integer.MAX_VALUE;
         Hexagon[][] map = game.getMap();
@@ -110,9 +120,11 @@ public class OffensiveBot extends Bot {
         return minDistance;
     }
 
-    /**
+    */
+/**
      * Calcule la distance entre deux hexagones.
-     */
+     *//*
+
     private int calculateDistance(Hexagon a, Hexagon b) {
         // Implémenter une méthode de calcul de distance adaptée à la grille hexagonale
         // Exemple simplifié :
@@ -146,9 +158,11 @@ public class OffensiveBot extends Bot {
         }
     }
 
-    /**
+    */
+/**
      * Priorise les mouvements d'exploration en fonction de la découverte de nouveaux territoires.
-     */
+     *//*
+
     private List<Pair<List<Ship>, List<Hexagon>>> prioritizeExploration(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
         // Exemple d'évaluation basée sur la découverte de secteurs non explorés
         possibleMoves.sort((move1, move2) -> {
@@ -159,9 +173,11 @@ public class OffensiveBot extends Bot {
         return possibleMoves;
     }
 
-    /**
+    */
+/**
      * Évalue un mouvement d'exploration.
-     */
+     *//*
+
     private int evaluateExploration(List<Hexagon> targets) {
         int score = 0;
         for (Hexagon hex : targets) {
@@ -174,4 +190,4 @@ public class OffensiveBot extends Bot {
         }
         return score;
     }
-}
+}*/

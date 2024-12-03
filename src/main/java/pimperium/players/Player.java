@@ -43,7 +43,6 @@ public abstract class Player {
 
     public void createShip(Hexagon target) {
     	Ship ship = new Ship(target, this);
-        if (target.getSystem() != null) target.getSystem().setController(this);
         this.ships.add(ship);
     }
 

@@ -46,7 +46,6 @@ public class Game implements Runnable{
 
 	private Thread t;
 
-
 	public Game() {
 		//Initialization in the constructor
 		this.round = 0; 
@@ -66,7 +65,6 @@ public class Game implements Runnable{
 	}
 
 	public void startGame() {
-		this.setup();
 
 		this.t = new Thread(this, "Game");
 		this.t.start();
@@ -422,15 +420,7 @@ public class Game implements Runnable{
 	// Return the controller of the TriPrime (if existing)
 	public Player getTriPrimeController() {
 		// Retrieve the Tri-Prime sector
-		Sector triPrimeSector = this.sectors[4]; // TriPrime Sector
-		if (triPrimeSector != null) {
-			// First and uniq system of the Sector is the TriPrime
-			HSystem triPrimeSystem = triPrimeSector.getSystems().get(0); 
-			if (triPrimeSystem.getController() != null) {
-				return triPrimeSystem.getController();
-			}
-		}
-		return null;
+		return this.sectors[4].getSystems().getFirst().getHex().getOccupant();
 	}
 		
 	// Calculate the score of each player
@@ -460,7 +450,7 @@ public class Game implements Runnable{
 			int score = 0;
 			for (Sector sector : scoredSectors) {
 				for (HSystem system : sector.getSystems()) {
-					if (system.getController() == player) {
+					if (system.getHex().getOccupant() == player) {
 						score += system.getLevel();
 					}
 				}
@@ -469,7 +459,6 @@ public class Game implements Runnable{
 			System.out.println("The score of " + player.getPseudo() + " is " + score);
 		}
 	}
-
 
 	// Calculate the final score of each player
 	public void doFinalScore() {
@@ -480,7 +469,7 @@ public class Game implements Runnable{
 			int finalScore = player.getScore(); // Add the points already scored during the game
 			for (Sector sector : this.sectors) {
 				for (HSystem system : sector.getSystems()) {
-					if (system.getController() == player) {
+					if (system.getHex().getOccupant() == player) {
 						int systemValue = system.getLevel() * 2; // Double the value of the system
 						finalScore += systemValue;
 					}
@@ -540,19 +529,20 @@ public class Game implements Runnable{
 	}
 
 	// Assert that the exterminate move from the player is valid
-	public boolean checkExterminateValidity(List<Ship> ships, List<Hexagon> targets) {
-		// Verify that the ships target different hexagons and that the targets are adjacent
-		if (ships.size() != targets.size()) {
-			return false;
-		}
-		for (Hexagon hex : targets) {
-			if (hex.getShips().isEmpty()) {
-				return false; // No enemy to exterminate in this hexagon
-			}
-		}
-		Set<Hexagon> uniqueTargets = new HashSet<>(targets);
-		return uniqueTargets.size() == targets.size();
+	public boolean checkExterminateValidity(List<Pair<List<Ship>, Hexagon>> moves) {
 
+		// Check that no system is attacked twice
+		Set<Hexagon> targets = new HashSet<Hexagon>();
+		for (Pair<List<Ship>, Hexagon> move : moves) {
+			targets.add(move.getValue());
+		}
+		boolean notTwice = targets.size() == moves.size();
+
+		// Check that all the moves are valid
+		List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(moves.getFirst().getKey().getFirst().getOwner());
+		boolean allPossible = possibleMoves.containsAll(moves);
+
+		return notTwice && allPossible;
 
 	}
 
@@ -612,69 +602,10 @@ public class Game implements Runnable{
 		return sb.toString();
 	}
 
-/*	// Display the board (graphic interface)
-	public void displayBoard() {
-		JFrame frame = new JFrame("Plateau de jeu");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(650, 800);
-	
-		JPanel panel = new JPanel() {
-			Image backgroundImage = new ImageIcon(getClass().getResource("/assets/background2.png")).getImage();
-			
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-	
-				// Dessiner l'image de fond
-				g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-	
-				// Dessiner les hexagones
-				g.setColor(Color.BLUE);
-				drawHexagons(g);
-			}
-		};
-
-		frame.add(panel);
-		frame.setVisible(true);
-	}
-
-	// Draws all the hexagons on the board
-	private void drawHexagons(Graphics g) {
-		int panelWidth = 650;
-		int panelHeight = 800;
-		int hexWidth = 90; 
-		int hexHeight = 75;
-		int totalHexWidth = 5 * hexWidth + hexWidth / 2;
-		int totalHexHeight = MAP_ROWS * hexHeight;
-		int offsetX = (panelWidth - totalHexWidth) / 2;
-		int offsetY = (panelHeight - totalHexHeight) / 2;
-
-		for (int i = 0; i < MAP_ROWS; i++) {
-			int lineWidth = 5 + (i % 2 == 0 ? 1 : 0);
-			for (int j = 0; j < lineWidth; j++) {
-				Hexagon hex = hexs[i][j];
-				int x = offsetX + j * hexWidth + (i % 2) * (hexWidth / 2);
-				int y = offsetY + i * hexHeight;
-				drawHexagon(g, x, y);
-			}
-		}
-	}
-
-	// Detail to draw one hexagon
-	private void drawHexagon(Graphics g, int x, int y) {
-		Polygon hex = new Polygon();
-		int radius = 45; 
-		for (int i = 0; i < 6; i++) {
-			int angleDeg = 60 * i + 30;
-			double angleRad = Math.toRadians(angleDeg);
-			int xPoint = x + (int)(radius * Math.cos(angleRad));
-			int yPoint = y + (int)(radius * Math.sin(angleRad));
-			hex.addPoint(xPoint, yPoint);
-		}
-		g.drawPolygon(hex);
-	} */
-
 	public void run() {
+
+		this.setup();
+
 		boolean gameEnded = false;
 		while (this.round < 9 && !gameEnded) {
 			this.playRound();
@@ -695,15 +626,6 @@ public class Game implements Runnable{
 
 	//Main method
 	public static void main(String[] args) {
-
-		Game game = new Game();
-		
-		/*
-		game.setup();
-    	//game.displayBoard();
-		game.playRound();
-		*/
-		game.startGame();
 
 	}
 

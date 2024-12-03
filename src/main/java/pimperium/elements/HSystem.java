@@ -20,12 +20,8 @@ public class HSystem {
 		this.hex = hex;
 	}
 
-	public Player getController() {
-		return this.controller;
-	}
-
-	public void setController(Player controller) {
-		this.controller = controller;
+	public Hexagon getHex() {
+		return this.hex;
 	}
 
 	public static void main(String[] args) {

@@ -131,11 +131,10 @@ public class RandomBot extends Bot {
         // Execute each move
         for (Pair<List<Ship>, Hexagon> move : moves) {
             //Set the ships and execute the command
-            this.explore.setShips(move.getKey());
-            this.explore.setTargets(new ArrayList<>(Collections.nCopies(move.getKey().size(), move.getValue())));
-            this.explore.execute();
+            this.exterminate.setShips(move.getKey());
+            this.exterminate.setTarget(move.getValue());
+            this.exterminate.execute();
         }
-
 
     }
 

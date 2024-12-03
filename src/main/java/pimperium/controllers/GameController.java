@@ -54,9 +54,6 @@ public class GameController extends Application {
         return this.polygonHexMap;
     }
 
-    // Add event handlers to handle user interactions
-    // e.g., responding to button clicks or key presses
-
     public static void main(String[] args) {
         launch();
     }

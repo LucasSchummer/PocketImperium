@@ -26,7 +26,7 @@ public class Sector {
 	public boolean isOccupied() {
 		boolean occupied = false;
 		for (HSystem system : this.systems) {
-			if (system.getController() != null) {
+			if (system.getHex().getOccupant() != null) {
 				occupied = true;
 				break;
 			}

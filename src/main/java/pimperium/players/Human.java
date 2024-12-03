@@ -44,7 +44,7 @@ public class Human extends Player {
 				}
 
 				// Check that the hex is not already occupied by anyone and not empty
-				if (hex.getSystem().getController() != null && hex.getSystem().getController() != this) {
+				if (hex.getOccupant() != null && hex.getOccupant() != this) {
 					System.out.println("Ce système est déjà contrôlé par un autre joueur. Veuillez choisir un autre hexagone.");
 					continue; // Ask for input again
 				}
@@ -53,7 +53,6 @@ public class Human extends Player {
 					System.out.println("Cet hexagone contient déjà des vaisseaux. Veuillez choisir un autre hexagone.");
 					continue; // Ask for input again
 				}
-
 
 				// Check that the hex is in a unoccupied sector
 				if (game.findSector(hex).isOccupied()) {
@@ -270,35 +269,94 @@ public class Human extends Player {
 
 		System.out.println(this.getPseudo() + " is exterminating");
 
-		boolean validity = false;
+		List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
 
-		List<Ship> exterminateShips = new ArrayList<Ship>();
-		List<Hexagon> targetHexagons = new ArrayList<Hexagon>();
 
-		while (!validity) {
-			exterminateShips = new ArrayList<Ship>();
-			targetHexagons = new ArrayList<Hexagon>();
-			for (int i=0; i<efficiency; i++) {
+		boolean validMoves = false;
 
-				System.out.println("Enter the index of the ship you want to send to fight : " );
-				int indexShip = this.game.scanner.nextInt();
-				exterminateShips.add(this.ships.get(indexShip));
-				System.out.println("Enter the position of the hex you want to attack : " );
-				int i_hex = this.game.scanner.nextInt();
-				int j_hex = this.game.scanner.nextInt();
+		while (!validMoves) {
 
-				Hexagon hex = this.game.getMap()[i_hex][j_hex];
-				targetHexagons.add(hex);
+			boolean newMove = true;
+			moves = new ArrayList<>();
+			while (moves.size() < efficiency && newMove) {
+
+				boolean validInput = false;
+				int i, j;
+
+				// Loop until valid input is received
+				while (!validInput) {
+					try {
+						System.out.println(this.getPseudo() + ", entrez la position du système que vous voulez attaquer (i j) : ");
+						i = this.game.scanner.nextInt();
+						j = this.game.scanner.nextInt();
+
+						Hexagon target = this.game.getMap()[i][j];
+
+						if (target == null) {
+							throw(new Exception());
+						}
+
+
+						System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
+						int numFlottes = this.game.scanner.nextInt();
+
+						List<Ship> fleet = new ArrayList<Ship>();
+
+						for (int k = 0; k < numFlottes; k++) {
+							System.out.println(this.getPseudo() + ", entrez la position de la flotte que vous voulez utiliser (i j) : ");
+							i = this.game.scanner.nextInt();
+							j = this.game.scanner.nextInt();
+
+							fleet.addAll(this.game.getMap()[i][j].getShips());
+						}
+
+						// Add the move to the moves list
+						moves.add(new Pair<>(fleet, target));
+
+						validInput = true; // Exit the loop
+					} catch (Exception e) {
+						System.out.println("Entrée invalide. Veuillez entrer deux entiers séparés par un espace.");
+						this.game.scanner.nextLine(); // Clear the invalid input
+					}
+
+				}
+
+				if (moves.size() < efficiency) {
+					// Ask the user if he wants to move another fleet
+					validInput = false;
+					while (!validInput) {
+						System.out.print("Voulez-vous attaquer un autre système ? (0/1) : ");
+						try {
+							int input = this.game.scanner.nextInt();
+							if (input != 0 && input != 1) {
+								throw(new Exception());
+							}
+							newMove = input == 1;
+							validInput = true;
+						} catch (Exception e) {
+							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+						}
+
+					}
+				}
 
 			}
 
-			validity = game.checkExterminateValidity(exterminateShips, targetHexagons);
+			validMoves = game.checkExterminateValidity(moves);
+
+			if (!validMoves) {
+				System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
+			}
 		}
 
-		//Set the ships and execute the command
-		this.exterminate.setShips(exterminateShips);
-		this.exterminate.setTargets(targetHexagons);
-		this.exterminate.execute();
+
+		// Execute each move
+		for (Pair<List<Ship>, Hexagon> move : moves) {
+			//Set the ships and execute the command
+			this.exterminate.setShips(move.getKey());
+			this.exterminate.setTarget(move.getValue());
+			this.exterminate.execute();
+		}
 
 	}
 
