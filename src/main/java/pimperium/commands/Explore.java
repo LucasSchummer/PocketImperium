@@ -29,6 +29,11 @@ public class Explore implements Command {
         // Logic for exploring (scouting or revealing information in the hex)
         //System.out.println(player.getPseudo() + " is exploring hex " + targetHexagons);
 
+        // Check that the lists have the same size
+        if (shipsInvolved.size() != targetHexagons.size()) {
+            throw new IllegalArgumentException("The number of ships and targets must be identical.");
+        }
+
          // Move each ship to its destination
          for (int i=0; i<this.shipsInvolved.size(); i++) {
         	 this.shipsInvolved.get(i).move(this.targetHexagons.get(i));

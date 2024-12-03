@@ -369,17 +369,15 @@ public class Game implements Runnable{
 		this.players[this.players.length-1] = temp;
 	}
 
+
 	public void playRound() {
-
 		if (this.round > 0) this.switchStartPlayer();
-
 		for (Player player : this.players) {
 			player.chooseOrderCommands();
 		}
 		
 		//Set play order and efficiencies for the round
 		this.getPlayOrder();
-		
 		this.round_step = 0;
 		
 		for (int i = 0; i < 3; i++) {
@@ -389,9 +387,7 @@ public class Game implements Runnable{
 
 		this.sustainShips();
 		this.doScore();
-		
 		this.round++;
-
 	}
 	
 	public void playRoundStep() {
@@ -412,8 +408,9 @@ public class Game implements Runnable{
 					List<Ship> ships = hex.getShips();
 					if (ships.size() > maxShips) {
 						int shipsToRemove = ships.size() - maxShips;
-						for (int k = 0; k < shipsToRemove; k++) {
-							Ship ship = ships.get(k);
+						// Create a copy of the list of ships to destroy, then delete them by iterating over this copy
+						List<Ship> shipsToDestroy = new ArrayList<>(ships.subList(0, shipsToRemove));
+						for (Ship ship : shipsToDestroy) {
 							ship.destroy(); // Return the ship to the reserve
 						}
 					}
@@ -706,7 +703,6 @@ public class Game implements Runnable{
     	//game.displayBoard();
 		game.playRound();
 		*/
-
 		game.startGame();
 
 	}

@@ -89,9 +89,13 @@ public class RandomBot extends Bot {
             }
         }
 
-        // Execute each move
+        // After selecting the moves
         for (Pair<List<Ship>, List<Hexagon>> move : moves) {
-            //Set the ships and execute the command
+            // Ensure the lists are the same size
+            if (move.getKey().size() != move.getValue().size()) {
+                continue; // Skip this move for now
+            }
+
             this.explore.setShips(move.getKey());
             this.explore.setTargets(move.getValue());
             this.explore.execute();
