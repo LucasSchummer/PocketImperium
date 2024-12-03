@@ -32,16 +32,16 @@ public class Exterminate implements Command {
         while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
 
             attackingFleet.getFirst().destroy();
-            attackingFleet.remove(0);
+            attackingFleet.removeLast();
 
             defendingFleet.getFirst().destroy();
-            defendingFleet.remove(0);
+            defendingFleet.removeLast();
 
         }
 
         // If the attacker won, move all his remainings ships to the target
         if (!attackingFleet.isEmpty()) {
-            System.out.println(attackingFleet.getFirst().getOwner() + " defeated his opponent at " + target);
+            System.out.println(attackingFleet.getFirst().getOwner().getPseudo() + " defeated his opponent at " + target);
             for (Ship ship : attackingFleet) {
                 ship.move(this.target);
             }

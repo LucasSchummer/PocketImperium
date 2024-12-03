@@ -116,6 +116,7 @@ public class RandomBot extends Bot {
         Random random = new Random();
 
         // TODO Check somewhere that the player CAN do 'efficiency' exterminates
+        // Otherwise crashes the game
 
         // Adding randomly selected ships and targets to the list of ships/targets to explore
         while (moves.size() < efficiency) {
@@ -130,6 +131,8 @@ public class RandomBot extends Bot {
 
         // Execute each move
         for (Pair<List<Ship>, Hexagon> move : moves) {
+            System.out.println("Fleet size : " + move.getKey().size());
+            System.out.println("Target : " + move.getValue());
             //Set the ships and execute the command
             this.exterminate.setShips(move.getKey());
             this.exterminate.setTarget(move.getValue());

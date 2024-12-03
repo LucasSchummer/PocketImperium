@@ -137,6 +137,8 @@ public class Possibilities {
                 if (hex.getOccupant() == player) origins.add(hex);
             }
 
+            if (origins.isEmpty()) continue;
+
             // Get the number of ships on each origin hex
             int[] fleetSizes = new int[origins.size()];
             for (int i = 0; i < origins.size(); i++) {
@@ -148,6 +150,7 @@ public class Possibilities {
             int numOrigins = origins.size();
 
             int[] distribution = new int[numOrigins];
+            distribution[0] = 1; // Start with at least one ship allocated
             while (true) {
                 distributions.add(distribution.clone());
 
@@ -165,7 +168,7 @@ public class Possibilities {
             for (int[] dist : distributions) {
                 List<Ship> fleet = new ArrayList<>();
                 for (int i = 0; i < dist.length; i++) {
-                    fleet.addAll(origins.get(i).getShips().subList(0, dist[i]));
+                    fleet.addAll(new ArrayList<>(origins.get(i).getShips().subList(0, dist[i])));
                 }
                 possibleMoves.add(new Pair<>(fleet, target));
             }
