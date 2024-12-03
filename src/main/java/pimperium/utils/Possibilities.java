@@ -150,7 +150,7 @@ public class Possibilities {
             int numOrigins = origins.size();
 
             int[] distribution = new int[numOrigins];
-            distribution[0] = 1; // Start with at least one ship allocated
+            //distribution[0] = 1; // Start with at least one ship allocated
             while (true) {
                 distributions.add(distribution.clone());
 
@@ -170,7 +170,10 @@ public class Possibilities {
                 for (int i = 0; i < dist.length; i++) {
                     fleet.addAll(new ArrayList<>(origins.get(i).getShips().subList(0, dist[i])));
                 }
-                possibleMoves.add(new Pair<>(fleet, target));
+                // Make sure the fleet is not empty (possible considering how we generate the distributions)
+                if (!fleet.isEmpty()) {
+                    possibleMoves.add(new Pair<>(fleet, target));
+                }
             }
 
         }

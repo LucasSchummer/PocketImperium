@@ -249,6 +249,7 @@ public class Game implements Runnable{
 	//Create the players according to their type
 	public void createPlayers() {
 		this.players = new Player[NB_PLAYERS];
+		List<String> chosenPseudos = new ArrayList<>();
 
 		for (int i = 0; i < NB_PLAYERS; i++) {
 			System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
@@ -257,6 +258,7 @@ public class Game implements Runnable{
 			if (type.equals("oui") || type.equals("o")) {
 				System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
 				String pseudo = scanner.nextLine().trim();
+				chosenPseudos.add(pseudo);
 				Human human = new Human(this);
 				human.setPseudo(pseudo);
 				this.players[i] = human;
@@ -270,7 +272,14 @@ public class Game implements Runnable{
 					"Kylo Ren", "Finn", "Poe Dameron"
 				);
 				Random random = new Random();
+				boolean validName = false;
 				String botPseudo = botNames.get(random.nextInt(botNames.size()));
+				// Make sure that 2 bots don't have the same pseudo
+				while (!validName) {
+					botPseudo = botNames.get(random.nextInt(botNames.size()));
+					validName = !chosenPseudos.contains(botPseudo);
+				}
+
 				Bot bot = new RandomBot(this);
 				bot.setPseudo(botPseudo);
 				this.players[i] = bot;

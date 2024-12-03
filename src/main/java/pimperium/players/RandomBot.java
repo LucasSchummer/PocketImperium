@@ -108,9 +108,9 @@ public class RandomBot extends Bot {
         System.out.println(this.getPseudo() + " is exterminating");
 
         List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
-        System.out.println("Possible moves : " + possibleMoves.size());
+        //System.out.println("Possible moves : " + possibleMoves.size());
         
-        // I Verifies that the player can do exterminates
+        // Verifies that the player can do exterminates
         if (possibleMoves.isEmpty()) {
             System.out.println("No extermination moves possible.");
             return;
@@ -137,8 +137,11 @@ public class RandomBot extends Bot {
 
         // Execute each move
         for (Pair<List<Ship>, Hexagon> move : moves) {
-            System.out.println("Fleet size : " + move.getKey().size());
-            System.out.println("Target : " + move.getValue());
+/*            System.out.println("Ships attacking : " + move.getKey().size());
+            for (Ship ship : move.getKey()) {
+                System.out.println(ship);
+            }
+            System.out.println("Target : " + move.getValue());*/
             //Set the ships and execute the command
             this.exterminate.setShips(move.getKey());
             this.exterminate.setTarget(move.getValue());

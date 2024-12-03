@@ -1,5 +1,6 @@
 package pimperium.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pimperium.elements.Hexagon;
@@ -26,22 +27,30 @@ public class Exterminate implements Command {
     @Override
     public void execute() {
 
-        List<Ship> attackingFleet = this.shipsInvolved;
-        List<Ship> defendingFleet = this.target.getShips();
+        List<Ship> attackingFleet = new ArrayList<>(this.shipsInvolved);
+        List<Ship> defendingFleet = new ArrayList<>(this.target.getShips());
+
+        if (this.target.getOccupant() != null) {
+            System.out.println(
+                    attackingFleet.getFirst().getOwner().getPseudo() + " is fighting "
+                    + this.target.getOccupant().getPseudo()
+                    + " at " + this.target
+            );
+        }
 
         while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
 
-            attackingFleet.getFirst().destroy();
+            attackingFleet.getLast().destroy();
             attackingFleet.removeLast();
 
-            defendingFleet.getFirst().destroy();
+            defendingFleet.getLast().destroy();
             defendingFleet.removeLast();
 
         }
 
         // If the attacker won, move all his remainings ships to the target
         if (!attackingFleet.isEmpty()) {
-            System.out.println(attackingFleet.getFirst().getOwner().getPseudo() + " defeated his opponent at " + target);
+            System.out.println(attackingFleet.getFirst().getOwner().getPseudo() + " took control of " + target);
             for (Ship ship : attackingFleet) {
                 ship.move(this.target);
             }

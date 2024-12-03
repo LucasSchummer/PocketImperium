@@ -35,7 +35,7 @@ public class Ship {
     public void destroy() {
         player.removeShip(this);
         position.removeShip(this);
-        System.out.println("Ship destroyed");
+        System.out.println(this + " destroyed");
     }
     
     public String toString() {
