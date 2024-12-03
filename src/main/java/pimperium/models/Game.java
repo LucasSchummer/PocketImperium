@@ -1,4 +1,5 @@
 package pimperium.models;
+
 //import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +9,21 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
+
 import javafx.util.Pair;
+
+import pimperium.elements.CentralSector;
+import pimperium.elements.HSystem;
+import pimperium.elements.Hexagon;
+import pimperium.elements.NormalSector;
+import pimperium.elements.Sector;
+import pimperium.elements.Ship;
+import pimperium.elements.SideSector;
+import pimperium.players.Bot;
+import pimperium.players.Human;
+import pimperium.players.Player;
+import pimperium.players.RandomBot;
+import pimperium.utils.Possibilities;
 
 
 public class Game implements Runnable{
@@ -51,8 +66,6 @@ public class Game implements Runnable{
 	}
 
 	public void startGame() {
-		// TODO Count the score of the players and check victory/defeat on each round_step
-		//(in case a player lost all of his ships)
 		this.setup();
 
 		this.t = new Thread(this, "Game");

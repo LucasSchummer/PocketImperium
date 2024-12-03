@@ -1,7 +1,13 @@
-package pimperium.models;
-import javafx.util.Pair;
+package pimperium.players;
 
 import java.util.*;
+
+import javafx.util.Pair;
+
+import pimperium.elements.Hexagon;
+import pimperium.elements.Sector;
+import pimperium.elements.Ship;
+import pimperium.models.Game;
 
 
 public class Human extends Player {

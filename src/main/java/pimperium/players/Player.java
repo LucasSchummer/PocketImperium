@@ -1,14 +1,18 @@
-package pimperium.models;
+package pimperium.players;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 import pimperium.commands.Expand;
 import pimperium.commands.Explore;
 import pimperium.commands.Exterminate;
+import pimperium.elements.Hexagon;
+import pimperium.elements.Sector;
+import pimperium.elements.Ship;
+import pimperium.models.Game;
 
-import java.util.LinkedHashSet;
 
 public abstract class Player {
     protected List<Ship> ships;

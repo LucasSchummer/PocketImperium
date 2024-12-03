@@ -1,7 +1,11 @@
-package pimperium.models;
+package pimperium.elements;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+
+import pimperium.players.Player;
+
 import java.util.HashSet;
 
 public class Hexagon {

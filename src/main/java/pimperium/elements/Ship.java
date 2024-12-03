@@ -1,4 +1,6 @@
-package pimperium.models;
+package pimperium.elements;
+
+import pimperium.players.Player;
 
 public class Ship {
 

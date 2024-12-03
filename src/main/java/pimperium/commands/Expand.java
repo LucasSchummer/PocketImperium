@@ -3,8 +3,8 @@ package pimperium.commands;
 import java.util.List;
 import java.util.Set;
 
-import pimperium.models.Player;
-import pimperium.models.Ship;
+import pimperium.elements.Ship;
+import pimperium.players.Player;
 
 
 public class Expand implements Command {

@@ -1,11 +1,17 @@
-package pimperium.models;
+package pimperium.utils;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Collections;
+
 import javafx.util.Pair;
+
+import pimperium.elements.Hexagon;
+import pimperium.elements.Ship;
+import pimperium.models.Game;
+import pimperium.players.Player;
 
 public class Possibilities {
 

@@ -1,4 +1,4 @@
-package pimperium.models;
+package pimperium.elements;
 
 public class CentralSector extends Sector{
 	

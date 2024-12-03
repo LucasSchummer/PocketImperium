@@ -1,9 +1,14 @@
-package pimperium.models;
+package pimperium.players;
 
 import java.util.Random;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+
+import pimperium.elements.Hexagon;
+import pimperium.models.Game;
+import pimperium.utils.Possibilities;
+
 
 
 public abstract class Bot extends Player{

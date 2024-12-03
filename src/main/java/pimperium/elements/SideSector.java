@@ -1,4 +1,4 @@
-package pimperium.models;
+package pimperium.elements;
 
 import java.util.ArrayList;
 
