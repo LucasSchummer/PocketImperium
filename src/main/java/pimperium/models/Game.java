@@ -1,5 +1,6 @@
 package pimperium.models;
 
+import java.io.Serializable;
 //import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,7 @@ import pimperium.players.RandomBot;
 import pimperium.utils.Possibilities;
 
 
-public class Game implements Runnable{
+public class Game implements Runnable, Serializable {
 	
 	public static final int MAP_ROWS = 9;
 	public static final int MAP_COLS = 6;
@@ -44,9 +45,9 @@ public class Game implements Runnable{
 	private boolean gameEnded;
 
 
-	public Scanner scanner = new Scanner(System.in);
-
-	private Thread t;
+	// Non-serializable variables
+	public transient Scanner scanner = new Scanner(System.in);
+	private transient Thread t;
 
 	public Game() {
 		//Initialization in the constructor
