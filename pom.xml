@@ -46,7 +46,7 @@
           <execution>
             <id>default-cli</id>
             <configuration>
-              <mainClass>pimperium.views.Interface</mainClass>
+              <mainClass>pimperium.controllers.GameController</mainClass>
             </configuration>
           </execution>
         </executions>

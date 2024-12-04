@@ -41,6 +41,8 @@ public class Game implements Runnable{
 	private Player[][] orderPlayers;
 	private Integer[][] efficiencies;
 	private Possibilities possibilities;
+	private boolean gameEnded;
+
 
 	public Scanner scanner = new Scanner(System.in);
 
@@ -52,6 +54,7 @@ public class Game implements Runnable{
 		this.hexs = new Hexagon[MAP_ROWS][MAP_COLS];
 		this.sectors = new Sector[9];
 		this.possibilities = Possibilities.getInstance(this);
+		this.gameEnded = false;
 	}
 
 	public void setup() {
@@ -65,10 +68,18 @@ public class Game implements Runnable{
 	}
 
 	public void startGame() {
-
 		this.t = new Thread(this, "Game");
 		this.t.start();
+	}
 
+	public void stopGame() {
+		this.gameEnded = true;
+		if (t != null) {
+			t.interrupt();
+		}
+		if (scanner != null) {
+			scanner.close();
+		}
 	}
 	
 	public void generateMap() {
@@ -492,6 +503,8 @@ public class Game implements Runnable{
 		Player winner = this.getWinner();
 
 		System.out.println("The winner is " + winner.getPseudo() + " with " + winner.getScore() + " points!");
+
+		this.stopGame();
 	}
 
 	// Get the winner of the game
@@ -615,15 +628,13 @@ public class Game implements Runnable{
 
 		this.setup();
 
-		boolean gameEnded = false;
-		while (this.round < 9 && !gameEnded) {
+		while (this.round < 9) {
 			this.playRound();
 	
 			// Verifies if a player lost all his ships
 			for (Player player : this.players) {
 				if (player.countShips() == 0) {
-					System.out.println(player.getPseudo() + " a perdu toutes ses flottes.");
-					gameEnded = true;
+					System.out.println(player.getPseudo() + " lost all his ships.");
 					break;
 				}
 			}
@@ -635,7 +646,7 @@ public class Game implements Runnable{
 
 	//Main method
 	public static void main(String[] args) {
-
+		System.out.println("Lancez le jeu depuis GameController.js");
 	}
 
 }
