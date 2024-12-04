@@ -1,5 +1,11 @@
 package pimperium.views;
 
+import javafx.geometry.Pos;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import pimperium.controllers.GameController;
 
 import java.util.List;
@@ -13,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
+import pimperium.elements.Hexagon;
 
 
 public class Interface {
@@ -56,10 +63,21 @@ public class Interface {
 
     }
 
-    private void addHexagons() {
+    public void addHexagons() {
 
         this.hexPane = new Pane();
         this.hexPane.setPickOnBounds(false);
+
+        // Create triPrime's StackPane and add it to the hexagons pane
+        Polygon triPrime = createTriPrime();
+        StackPane triPrimeStack = new StackPane(triPrime);
+        triPrimeStack.setLayoutX(264.5 - triPrime.getLayoutBounds().getWidth() / 2); // Adjust position
+        triPrimeStack.setLayoutY(377.0 - triPrime.getLayoutBounds().getHeight() / 2);
+
+        this.hexPane.getChildren().add(triPrimeStack);
+        this.controller.getPolygonHexMap().put(triPrime, this.controller.getGame().getMap()[3][2]);
+        this.controller.getHexPolygonMap().put(this.controller.getGame().getMap()[3][2], triPrime);
+
 
         // Set the coordinates where we don't want to draw a hex, as TriPime is there
         List<Pair<Integer, Integer>> coordsNoHex = new ArrayList<>();
@@ -68,17 +86,28 @@ public class Interface {
         coordsNoHex.add(new Pair<>(4,3));
         coordsNoHex.add(new Pair<>(5,2));
 
+        // Create each hexagon with its own pane and add it to the hexs pane
         for (int i = 0; i < 9; i++) {
             int lineWidth = 5 + (i%2==0? 1:0);
             int basePosX = 44 + (lineWidth==6? 0:44);
             for (int j = 0; j < lineWidth; j++) {
                 if (!coordsNoHex.contains(new Pair<>(i,j))) {
-                    int centerX = basePosX + 88 * j + (lineWidth==6? 2*(int)(j/2):0);
-                    int centerY = 75 + 76 * i;
-                    int radius = 48;
-                    Polygon polygon = createHexagon(centerX, centerY, radius);
-                    polygon.setOnMouseClicked(event -> this.controller.handleHexagonClick(polygon));
-                    this.hexPane.getChildren().add(polygon);
+                    int centerX = basePosX + 88 * j +  (int)(j/2);
+                    int centerY = 75 + 75 * i + (int)(i/2);
+                    int radius = 49;
+
+                    // Create hexagon shape
+                    Polygon polygon = createHexagon(0, 0, radius); // Centered within StackPane
+
+                    // Create StackPane to wrap the hexagon
+                    StackPane hexStack = new StackPane();
+                    hexStack.setPrefSize(2 * radius, 2 * radius); // Size to fit the hexagon
+                    hexStack.setLayoutX(centerX - radius); // Position StackPane's top-left corner
+                    hexStack.setLayoutY(centerY - radius);
+                    hexStack.getChildren().add(polygon);
+
+                    this.hexPane.getChildren().add(hexStack);
+
                     // Link the polygon to the Game Hex in two maps
                     this.controller.getPolygonHexMap().put(polygon, this.controller.getGame().getMap()[i][j]);
                     this.controller.getHexPolygonMap().put(this.controller.getGame().getMap()[i][j], polygon);
@@ -86,15 +115,9 @@ public class Interface {
             }
         }
 
-        Polygon triPrime = createTriPrime();
-        triPrime.setOnMouseClicked(event -> this.controller.handleHexagonClick(triPrime));
-        this.hexPane.getChildren().add(triPrime);
-        this.controller.getPolygonHexMap().put(triPrime, this.controller.getGame().getMap()[3][2]);
-        this.controller.getHexPolygonMap().put(this.controller.getGame().getMap()[3][2], triPrime);
-
     }
 
-    private Polygon createHexagon(double centerX, double centerY, double radius) {
+    public Polygon createHexagon(double centerX, double centerY, double radius) {
         Polygon hexagon = new Polygon();
         for (int i = 0; i < 6; i++) {
             double angle = Math.toRadians(60 * i - 30);
@@ -109,10 +132,11 @@ public class Interface {
         // Add oppacity events
         hexagon.setOnMouseEntered(event -> hexagon.setOpacity(0.1));
         hexagon.setOnMouseExited(event -> hexagon.setOpacity(0));
+        hexagon.setOnMouseClicked(event -> this.controller.handleHexagonClick(hexagon));
         return hexagon;
     }
 
-    private Polygon createTriPrime() {
+    public Polygon createTriPrime() {
         Polygon triPrime = new Polygon();
 
         triPrime.getPoints().addAll(264.5, 254.0);
@@ -121,9 +145,9 @@ public class Interface {
         triPrime.getPoints().addAll(349.5, 354.0);
         triPrime.getPoints().addAll(349.5, 403.0);
         triPrime.getPoints().addAll(306.5, 429.0);
-        triPrime.getPoints().addAll(306.5, 475.0);
-        triPrime.getPoints().addAll(264.5, 500.0);
-        triPrime.getPoints().addAll(222.5, 475.0);
+        triPrime.getPoints().addAll(306.5, 478.0);
+        triPrime.getPoints().addAll(264.5, 503.0);
+        triPrime.getPoints().addAll(222.5, 478.0);
         triPrime.getPoints().addAll(222.5, 429.0);
         triPrime.getPoints().addAll(179.5, 403.0);
         triPrime.getPoints().addAll(179.5, 354.0);
@@ -137,11 +161,29 @@ public class Interface {
         // Add oppacity events
         triPrime.setOnMouseEntered(event -> triPrime.setOpacity(0.1));
         triPrime.setOnMouseExited(event -> triPrime.setOpacity(0));
+        triPrime.setOnMouseClicked(event -> this.controller.handleHexagonClick(triPrime));
+
         return triPrime;
     }
 
-    private void handleHexagonClick() {
-        System.out.println("Hexagon clicked");
+    public void updateHexagon(Hexagon hex) {
+
+        // Get the pane that the polygon belongs to
+        Pane pane = (Pane) this.controller.getHexPolygonMap().get(hex).getParent();
+
+        // Clear any existing display on the hex
+        pane.getChildren().removeIf(node ->  !(node instanceof Polygon));
+
+        // Add new content (e.g., number of ships)
+        if (!hex.getShips().isEmpty()) {
+            Text shipCount = new Text(hex.getOccupant().getPseudo() + " : " + String.valueOf(hex.getShips().size()));
+            shipCount.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 13));
+            shipCount.setFill(Color.WHITE);
+            shipCount.setWrappingWidth(80);
+            shipCount.setMouseTransparent(true);
+            pane.getChildren().add(shipCount);
+        }
+
     }
 
     public Pane getRoot() {

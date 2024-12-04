@@ -1,12 +1,15 @@
 package pimperium.controllers;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
+import java.beans.PropertyChangeEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class GameController extends Application {
     public void start(Stage primaryStage) {
 
         game = new Game();
+        game.addPropertyChangeListener(this::onGameChange);
         game.startGame();
 
         hexPolygonMap = new HashMap<>();
@@ -47,6 +51,17 @@ public class GameController extends Application {
         System.out.println(this.polygonHexMap.get(polygon) + " clicked");
     }
 
+    public void onGameChange(PropertyChangeEvent event) {
+        switch (event.getPropertyName()) {
+            case "hexUpdated":
+                for (Hexagon hex : this.hexPolygonMap.keySet()) {
+                    Platform.runLater(() -> this.view.updateHexagon(hex));
+                }
+                break;
+            default:
+        }
+    }
+
     public Game getGame() {
         return this.game;
     }
@@ -58,7 +73,6 @@ public class GameController extends Application {
     public Map<Polygon, Hexagon> getPolygonHexMap() {
         return this.polygonHexMap;
     }
-
 
     // Tried with saving (working) but not with loading, so can't say if it's done correctly
     // Saves the game in the root of the project
@@ -78,7 +92,6 @@ public class GameController extends Application {
         in.close();
         fileIn.close();
     }
-
 
     public static void main(String[] args) {
         launch();

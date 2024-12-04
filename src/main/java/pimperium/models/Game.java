@@ -1,5 +1,7 @@
 package pimperium.models;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 //import java.util.Random;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.HashSet;
 
 import javafx.util.Pair;
 
+import pimperium.controllers.GameController;
 import pimperium.elements.CentralSector;
 import pimperium.elements.HSystem;
 import pimperium.elements.Hexagon;
@@ -33,6 +36,8 @@ public class Game implements Runnable, Serializable {
 	public static final int MAP_COLS = 6;
 	public static final int NB_PLAYERS = 3;
 
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
 	private int round;
 	private int round_step;
 	private Hexagon[][] hexs;
@@ -43,7 +48,6 @@ public class Game implements Runnable, Serializable {
 	private Integer[][] efficiencies;
 	private Possibilities possibilities;
 	private boolean gameEnded;
-
 
 	// Non-serializable variables
 	public transient Scanner scanner = new Scanner(System.in);
@@ -316,9 +320,11 @@ public class Game implements Runnable, Serializable {
 	public void setupFleets() {
 		for (Player player: this.players) {
 			player.setupInitialFleet();
+			this.pcs.firePropertyChange("hexUpdated", null, null);
 		}
 		for (int i = 0; i < this.players.length; i++) {
 			this.players[this.players.length-1-i].setupInitialFleet();
+			this.pcs.firePropertyChange("hexUpdated", null, null);
 		}
 	}
 
@@ -388,7 +394,6 @@ public class Game implements Runnable, Serializable {
 		this.players[this.players.length-1] = temp;
 	}
 
-
 	public void playRound() {
 		if (this.round > 0) this.switchStartPlayer();
 		for (Player player : this.players) {
@@ -402,9 +407,11 @@ public class Game implements Runnable, Serializable {
 		for (int i = 0; i < 3; i++) {
 			this.playRoundStep();
 			this.round_step++;
+			this.pcs.firePropertyChange("hexUpdated", null, null);
 		}
 
 		this.sustainShips();
+		this.pcs.firePropertyChange("hexUpdated", null, null);
 		this.doScore();
 		this.round++;
 	}
@@ -413,7 +420,6 @@ public class Game implements Runnable, Serializable {
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
 		}
-		
 	}
 
 	// Remove excess ships on every hexagon
@@ -643,6 +649,10 @@ public class Game implements Runnable, Serializable {
 	
 		// Final scoring
 		this.doFinalScore();
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		pcs.addPropertyChangeListener(pcl);
 	}
 
 	//Main method
