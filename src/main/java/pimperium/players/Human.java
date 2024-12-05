@@ -17,6 +17,7 @@ public class Human extends Player {
 		super(game);
 	}
 
+	/*
 	//Choose a lvl-1 system to place 2 ships
 	public void setupInitialFleet() {
 
@@ -73,7 +74,58 @@ public class Human extends Player {
 			}
 		}
 
-	}
+	} */
+
+	// Chooses a lvl-1 system to place 2 ships
+	public void setupInitialFleet() {
+        System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre flotte.");
+
+        synchronized (game.getController()) {
+            try {
+                while (game.getController().getSelectedHexagon() == null) {
+                    game.getController().wait();
+                }
+                Hexagon hex = game.getController().getSelectedHexagon();
+                game.getController().resetSelectedHexagon();
+
+                // Vérifier que l'hexagone est valide pour le placement initial
+                if (hex == null || hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
+					System.out.println("Hexagone invalide pour placer la flotte. Veuillez choisir un autre hexagone.");
+					setupInitialFleet(); // Ask for input again
+					return;
+				}
+
+				// Check that the hex is not already occupied by anyone and not empty
+				if (hex.getOccupant() != null && hex.getOccupant() != this) {
+					System.out.println("Ce système est déjà contrôlé par un autre joueur. Veuillez choisir un autre hexagone.");
+					setupInitialFleet(); // Ask for input again
+					return;
+				}
+
+				if (!hex.getShips().isEmpty()) {
+					System.out.println("Cet hexagone contient déjà des vaisseaux. Veuillez choisir un autre hexagone.");
+					setupInitialFleet(); // Ask for input again
+					return;
+				}
+
+				// Check that the hex is in a unoccupied sector
+				if (game.findSector(hex).isOccupied()) {
+					System.out.println("Cet hexagone se situe dans un secteur déjà controlé par un joueur. Veuillez choisir un autre hexagone.");
+					setupInitialFleet(); // Ask for input again
+					return;
+				}
+
+                // Placer les navires sur l'hexagone sélectionné
+                this.createShip(hex);
+                this.createShip(hex);
+
+                System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 	public void chooseOrderCommands() {
 
@@ -149,7 +201,7 @@ public class Human extends Player {
 
 		List<Ship> expandShips = new ArrayList<Ship>();
 		while (!validity) {
-			expandShips = new ArrayList<Ship>();
+			expandShips.clear();
 			for (int i=0; i<efficiency; i++) {
 
 				System.out.println("Enter the index of the ship you want to expand : " );
@@ -172,6 +224,7 @@ public class Human extends Player {
 
 	}
 
+		
 	public void doExplore(int efficiency) {
 
 		//TODO Complexify user-input (Move only a part of the ships of the fleet/drop ships on the way/
@@ -277,7 +330,7 @@ public class Human extends Player {
 		while (!validMoves) {
 
 			boolean newMove = true;
-			moves = new ArrayList<>();
+			moves.clear();
 			while (moves.size() < efficiency && newMove) {
 
 				boolean validInput = false;
@@ -293,7 +346,7 @@ public class Human extends Player {
 						Hexagon target = this.game.getMap()[i][j];
 
 						if (target == null) {
-							throw(new Exception());
+							throw(new Exception("Système invalide."));
 						}
 
 
@@ -304,10 +357,15 @@ public class Human extends Player {
 
 						for (int k = 0; k < numFlottes; k++) {
 							System.out.println(this.getPseudo() + ", entrez la position de la flotte que vous voulez utiliser (i j) : ");
-							i = this.game.scanner.nextInt();
-							j = this.game.scanner.nextInt();
+							int fleetI = this.game.scanner.nextInt();
+							int fleetJ = this.game.scanner.nextInt();
 
-							fleet.addAll(this.game.getMap()[i][j].getShips());
+							Hexagon fleetHex = this.game.getMap()[fleetI][fleetJ];
+							if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
+								throw new Exception("Flotte invalide.");
+							}
+	
+							fleet.addAll(fleetHex.getShips());
 						}
 
 						// Add the move to the moves list
@@ -325,19 +383,22 @@ public class Human extends Player {
 					// Ask the user if he wants to move another fleet
 					validInput = false;
 					while (!validInput) {
-						System.out.print("Voulez-vous attaquer un autre système ? (0/1) : ");
 						try {
+							System.out.print("Voulez-vous attaquer un autre système ? (0/1) : ");
 							int input = this.game.scanner.nextInt();
 							if (input != 0 && input != 1) {
 								throw(new Exception());
 							}
-							newMove = input == 1;
+							newMove = (input == 1);
 							validInput = true;
 						} catch (Exception e) {
 							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+							this.game.scanner.nextLine();
 						}
 
 					}
+				} else {
+					newMove = false;
 				}
 
 			}

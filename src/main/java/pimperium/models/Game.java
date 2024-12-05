@@ -52,6 +52,7 @@ public class Game implements Runnable, Serializable {
 	// Non-serializable variables
 	public transient Scanner scanner = new Scanner(System.in);
 	private transient Thread t;
+	private transient GameController controller;
 
 	public Game() {
 		//Initialization in the constructor
@@ -61,6 +62,14 @@ public class Game implements Runnable, Serializable {
 		this.possibilities = Possibilities.getInstance(this);
 		this.gameEnded = false;
 	}
+
+	public void setController(GameController controller) {
+        this.controller = controller;
+    }
+
+    public GameController getController() {
+        return this.controller;
+    }
 
 	public void setup() {
 		this.generateMap();
@@ -268,40 +277,45 @@ public class Game implements Runnable, Serializable {
 		List<String> chosenPseudos = new ArrayList<>();
 
 		for (int i = 0; i < NB_PLAYERS; i++) {
-			System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
-			String type = scanner.nextLine().trim().toLowerCase();
+			boolean validInput = false;
+			while (!validInput) {
+				System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
+				String type = scanner.nextLine().trim().toLowerCase();
 
-			if (type.equals("oui") || type.equals("o")) {
-				System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
-				String pseudo = scanner.nextLine().trim();
-				chosenPseudos.add(pseudo);
-				Human human = new Human(this);
-				human.setPseudo(pseudo);
-				this.players[i] = human;
-			} else {
-				// TODO : Change bot type
-				List<String> botNames = Arrays.asList(
-					"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
-					"Darth Vader", "Leia Organa", "Yoda", 
-					"Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
-					"Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
-					"Kylo Ren", "Finn", "Poe Dameron"
-				);
-				Random random = new Random();
-				boolean validName = false;
-				String botPseudo = botNames.get(random.nextInt(botNames.size()));
-				// Make sure that 2 bots don't have the same pseudo
-				while (!validName) {
-					botPseudo = botNames.get(random.nextInt(botNames.size()));
-					validName = !chosenPseudos.contains(botPseudo);
+				if (type.equals("oui") || type.equals("o")) {
+					System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
+					String pseudo = scanner.nextLine().trim();
+					chosenPseudos.add(pseudo);
+					Human human = new Human(this);
+					human.setPseudo(pseudo);
+					this.players[i] = human;
+					validInput = true;
+				} else if (type.equals("non") || type.equals("n")) {
+					List<String> botNames = Arrays.asList(
+						"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
+						"Darth Vader", "Leia Organa", "Yoda", 
+						"Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
+						"Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
+						"Kylo Ren", "Finn", "Poe Dameron"
+					);
+					Random random = new Random();
+					boolean validName = false;
+					String botPseudo = botNames.get(random.nextInt(botNames.size()));
+					// Make sure that 2 bots don't have the same pseudo
+					while (!validName) {
+						botPseudo = botNames.get(random.nextInt(botNames.size()));
+						validName = !chosenPseudos.contains(botPseudo);
+					}
+
+					Bot bot = new RandomBot(this);
+					bot.setPseudo(botPseudo);
+					this.players[i] = bot;
+					validInput = true;
+				} else {
+					System.out.println("Entrée invalide. Veuillez répondre par 'oui' ou 'non'.");
 				}
-
-				Bot bot = new RandomBot(this);
-				bot.setPseudo(botPseudo);
-				this.players[i] = bot;
 			}
 		}
-
 	}
 
 	public Sector findSector(Hexagon hex) {

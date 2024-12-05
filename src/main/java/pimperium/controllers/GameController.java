@@ -28,9 +28,12 @@ public class GameController extends Application {
     Map<Hexagon, Polygon> hexPolygonMap;
     Map<Polygon, Hexagon> polygonHexMap;
 
+    private Hexagon selectedHexagon;
+
     public void start(Stage primaryStage) {
 
         game = new Game();
+        game.setController(this);
         game.addPropertyChangeListener(this::onGameChange);
         game.startGame();
 
@@ -44,11 +47,20 @@ public class GameController extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium");
         primaryStage.show();
+        }
 
+    public synchronized void handleHexagonClick(Polygon polygon) {
+        selectedHexagon = polygonHexMap.get(polygon);
+        System.out.println(selectedHexagon + " clicked");
+        notify(); // Notify waiting threads
     }
 
-    public void handleHexagonClick(Polygon polygon) {
-        System.out.println(this.polygonHexMap.get(polygon) + " clicked");
+    public synchronized Hexagon getSelectedHexagon() {
+        return selectedHexagon;
+    }
+
+    public synchronized void resetSelectedHexagon() {
+        selectedHexagon = null;
     }
 
     public void onGameChange(PropertyChangeEvent event) {
