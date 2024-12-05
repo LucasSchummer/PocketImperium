@@ -193,7 +193,7 @@ public class Human extends Player {
 		return chosenSector;
 	}
 
-	public void doExpand(int efficiency) {
+/*	public void doExpand(int efficiency) {
 
 		System.out.println(this.getPseudo() + " is expanding");
 
@@ -222,7 +222,61 @@ public class Human extends Player {
 		this.expand.setShips(expandShips);
 		this.expand.execute();
 
+	}*/
+
+	public void doExpand(int efficiency) {
+
+		System.out.println(this.getPseudo() + " is expanding with effiency " + efficiency);
+
+		List<Hexagon> expandHexs = new ArrayList<>();
+
+		boolean validMove = false;
+
+		while (!validMove) {
+
+			expandHexs = new ArrayList<>();
+
+			for (int i = 0; i < efficiency; i++) {
+
+				System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre flotte.");
+
+				synchronized (game.getController()) {
+					try {
+						while (game.getController().getSelectedHexagon() == null) {
+							game.getController().wait();
+						}
+						Hexagon hex = game.getController().getSelectedHexagon();
+						game.getController().resetSelectedHexagon();
+
+						expandHexs.add(hex);
+
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+			validMove = this.game.checkExpandValidity(expandHexs, this);
+
+			if (!validMove) {
+				System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
+			}
+
+		}
+
+		//Set the ships and execute the command
+		List<Ship> ships = new ArrayList<>();
+		for (Hexagon hex : new HashSet<Hexagon>(expandHexs)) {
+			int hexOccurences = Collections.frequency(expandHexs, hex);
+			for (int i = 0; i < hexOccurences; i++) {
+				ships.add(hex.getShips().get(i));
+			}
+		}
+		this.expand.setShips(ships);
+		this.expand.execute();
+
 	}
+
 
 		
 	public void doExplore(int efficiency) {

@@ -540,7 +540,7 @@ public class Game implements Runnable, Serializable {
 		return winner;
 	}
 
-	// Assert that the expand move from the player is valid
+/*	// Assert that the expand move from the player is valid
 	public boolean checkExpandValidity(List<Ship> ships) {
 		// Check that no ship is expanded twice
 		Set<Ship> uniqueShips = new HashSet<>(ships);
@@ -551,6 +551,39 @@ public class Game implements Runnable, Serializable {
 		boolean allPossible = possShips.containsAll(ships);
 
 		return notTwice && allPossible;
+	}*/
+
+	public boolean checkExpandValidity(List<Hexagon> hexs, Player player) {
+
+		// Checks that the user controls all the selected hexagons
+		boolean controlsHexs = true;
+		for (Hexagon hex : hexs) {
+			if (hex.getOccupant() != player) controlsHexs = false;
+		}
+
+		boolean enoughShips = true;
+		List<Ship> ships = new ArrayList<>();
+		try {
+			for (Hexagon hex : new HashSet<Hexagon>(hexs)) {
+				int hexOccurences = Collections.frequency(hexs, hex);
+				for (int i = 0; i < hexOccurences; i++) {
+					ships.add(hex.getShips().get(i));
+				}
+			}
+		} catch (Exception e) {
+			enoughShips = false;
+		}
+
+/*		System.out.println("controls hexs : " + controlsHexs);
+		System.out.println("enough ships : " + enoughShips);*/
+
+
+/*		// Get all the possible ships to expand on
+		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
+		boolean allPossible = possShips.containsAll(ships);*/
+
+		return controlsHexs && enoughShips;
+
 	}
 	
 	// Assert that the explore move from the player is valid
