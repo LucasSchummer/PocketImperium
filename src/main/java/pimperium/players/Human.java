@@ -189,11 +189,13 @@ public class Human extends Player {
 				scanner.nextLine(); // Clear the invalid input
 			}
 		}
-		System.out.println(this.getPseudo() + " has chosen sector " + (sectorId-1) + " to score.");
+		System.out.println(this.getPseudo() + " has chosen sector " + sectorId + " to score.");
 		return chosenSector;
 	}
 
-/*	public void doExpand(int efficiency) {
+/*	
+	// Without the clickable hexagons
+	public void doExpand(int efficiency) {
 
 		System.out.println(this.getPseudo() + " is expanding");
 
@@ -224,9 +226,10 @@ public class Human extends Player {
 
 	}*/
 
+	// With the clickable hexagons
 	public void doExpand(int efficiency) {
 
-		System.out.println(this.getPseudo() + " is expanding with effiency " + efficiency);
+		System.out.println(this.getPseudo() + " is expanding with efficiency " + efficiency);
 
 		List<Hexagon> expandHexs = new ArrayList<>();
 
@@ -234,51 +237,43 @@ public class Human extends Player {
 
 		while (!validMove) {
 
-			expandHexs = new ArrayList<>();
+			expandHexs.clear();
 
 			for (int i = 0; i < efficiency; i++) {
 
 				System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre flotte.");
 
-				synchronized (game.getController()) {
-					try {
-						while (game.getController().getSelectedHexagon() == null) {
-							game.getController().wait();
-						}
-						Hexagon hex = game.getController().getSelectedHexagon();
-						game.getController().resetSelectedHexagon();
-
-						expandHexs.add(hex);
-
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+				try {
+					// Wait for the player to select the hexagon
+					Hexagon hex = game.getController().waitForHexagonSelection();
+					expandHexs.add(hex);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-
 			}
+
 			validMove = this.game.checkExpandValidity(expandHexs, this);
 
 			if (!validMove) {
 				System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
 			}
-
 		}
 
-		//Set the ships and execute the command
+		// Set the ships and execute the command
 		List<Ship> ships = new ArrayList<>();
-		for (Hexagon hex : new HashSet<Hexagon>(expandHexs)) {
-			int hexOccurences = Collections.frequency(expandHexs, hex);
-			for (int i = 0; i < hexOccurences; i++) {
+		for (Hexagon hex : new HashSet<>(expandHexs)) {
+			int hexOccurrences = Collections.frequency(expandHexs, hex);
+			for (int i = 0; i < hexOccurrences; i++) {
 				ships.add(hex.getShips().get(i));
 			}
 		}
 		this.expand.setShips(ships);
 		this.expand.execute();
-
 	}
 
 
-		
+/*	
+	// Without the clickable hexagons
 	public void doExplore(int efficiency) {
 
 		//TODO Complexify user-input (Move only a part of the ships of the fleet/drop ships on the way/
@@ -371,7 +366,97 @@ public class Human extends Player {
 		}
 
 	}
+*/
+	
+	// With the clickable hexagons
+	public void doExplore(int efficiency) {
 
+		//TODO Complexify user-input (Move only a part of the ships of the fleet/drop ships on the way/
+		// add ships to the fleet on the way)
+
+		List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
+		boolean validMoves = false;
+	
+		while (!validMoves) {
+			boolean newMove = true;
+			moves.clear();
+
+			boolean validInput = false;
+	
+			while (moves.size() < efficiency && newMove) {
+				System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous souhaitez déplacer.");
+	
+				// Wait for the player to select the origin hexagon
+				Hexagon originHex = null;
+				try {
+					originHex = game.getController().waitForHexagonSelection();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+	
+				// Verify that the hex contains the player's ships
+				if (originHex == null || originHex.getShips().isEmpty() || originHex.getOccupant() != this) {
+					System.out.println("Cet hexagone ne contient pas vos vaisseaux. Veuillez réessayer.");
+					continue;
+				}
+	
+				List<Ship> fleet = new ArrayList<>(originHex.getShips());
+	
+				System.out.println(this.getPseudo() + ", cliquez sur l'hexagone de destination.");
+	
+				// Wait for the player to select the destination hexagon
+				Hexagon target = null;
+				try {
+					target = game.getController().waitForHexagonSelection();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+	
+				if (target == null) {
+					System.out.println("Destination invalide. Veuillez réessayer.");
+					continue;
+				}
+	
+				moves.add(new Pair<>(fleet, new ArrayList<>(Collections.nCopies(fleet.size(), target))));
+
+				if (moves.size() < efficiency) {
+					// Ask the user if he wants to move another fleet
+					validInput = false;
+					while (!validInput) {
+						System.out.print("Voulez-vous déplacer une autre flotte ? (0/1) : ");
+						try {
+							int input = this.game.scanner.nextInt();
+							if (input != 0 && input != 1) {
+								throw(new Exception());
+							}
+							newMove = input == 1;
+							validInput = true;
+						} catch (Exception e) {
+							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+						}
+
+					}
+				}
+			}
+	
+			validMoves = game.checkExploreValidity(moves);
+	
+			if (!validMoves) {
+				System.out.println("Les coups proposés ne sont pas valides. Veuillez réessayer.");
+			}
+		}
+	
+		// Execute each move
+		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
+			this.explore.setShips(move.getKey());
+			this.explore.setTargets(move.getValue());
+			this.explore.execute();
+		}
+	}
+
+
+/*
+	// Without the clickable hexagons
 	public void doExterminate(int efficiency) {
 
 		System.out.println(this.getPseudo() + " is exterminating");
@@ -474,9 +559,123 @@ public class Human extends Player {
 		}
 
 	}
+*/
+
+
+
+// With the clickable hexagons
+public void doExterminate(int efficiency) {
+
+    System.out.println(this.getPseudo() + " is exterminating");
+
+    List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
+
+    boolean validMoves = false;
+
+    while (!validMoves) {
+
+        boolean newMove = true;
+        moves.clear();
+        while (moves.size() < efficiency && newMove) {
+
+            boolean validInput = false;
+            int numFlottes = 0;
+            Hexagon target = null;
+
+            // Loop until valid input is received
+            while (!validInput) {
+                try {
+                    System.out.println(this.getPseudo() + ", cliquez sur le système que vous voulez attaquer.");
+
+                    // Wait for the player to select the target hexagon
+                    synchronized (game.getController()) {
+                        while (game.getController().getSelectedHexagon() == null) {
+                            game.getController().wait();
+                        }
+                        target = game.getController().getSelectedHexagon();
+                        game.getController().resetSelectedHexagon();
+                    }
+
+                    if (target == null || target.getSystem() == null || target.getOccupant() == this) {
+                        throw new Exception("Système invalide.");
+                    }
+
+                    System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
+                    numFlottes = this.game.scanner.nextInt();
+
+                    List<Ship> fleet = new ArrayList<Ship>();
+
+                    for (int k = 0; k < numFlottes; k++) {
+                        System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
+
+                        // Wait for the player to select the fleet hexagon
+                        synchronized (game.getController()) {
+                            while (game.getController().getSelectedHexagon() == null) {
+                                game.getController().wait();
+                            }
+                            Hexagon fleetHex = game.getController().getSelectedHexagon();
+                            game.getController().resetSelectedHexagon();
+
+                            if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
+                                throw new Exception("Flotte invalide.");
+                            }
+
+                            fleet.addAll(fleetHex.getShips());
+                        }
+                    }
+
+                    // Add the move to the moves list
+                    moves.add(new Pair<>(fleet, target));
+
+                    validInput = true; // Exit the loop
+                } catch (Exception e) {
+                    System.out.println("Entrée invalide. " + e.getMessage());
+                    this.game.scanner.nextLine(); // Clear the invalid input
+                }
+            }
+
+            if (moves.size() < efficiency) {
+                // Ask the user if he wants to attack another system
+                validInput = false;
+                while (!validInput) {
+                    try {
+                        System.out.print("Voulez-vous attaquer un autre système ? (0/1) : ");
+                        int input = this.game.scanner.nextInt();
+                        if (input != 0 && input != 1) {
+                            throw new Exception();
+                        }
+                        newMove = (input == 1);
+                        validInput = true;
+                    } catch (Exception e) {
+                        System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+                        this.game.scanner.nextLine();
+                    }
+                }
+            } else {
+                newMove = false;
+            }
+        }
+
+        validMoves = game.checkExterminateValidity(moves);
+
+        if (!validMoves) {
+            System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
+        }
+    }
+
+
+    // Execute each move
+    for (Pair<List<Ship>, Hexagon> move : moves) {
+        // Set the ships and execute the command
+        this.exterminate.setShips(move.getKey());
+        this.exterminate.setTarget(move.getValue());
+        this.exterminate.execute();
+    }
+}
+
 
 	public static void main(String[] args) {
-
+		System.out.println("Lancez le jeu depuis GameController.js");
 	}
 
 }

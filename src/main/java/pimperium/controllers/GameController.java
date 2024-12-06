@@ -63,6 +63,15 @@ public class GameController extends Application {
         selectedHexagon = null;
     }
 
+    public synchronized Hexagon waitForHexagonSelection() throws InterruptedException {
+        while (selectedHexagon == null) {
+            wait();
+        }
+        Hexagon hex = selectedHexagon;
+        selectedHexagon = null; // Reset for next selection
+        return hex;
+    }
+
     public void onGameChange(PropertyChangeEvent event) {
         switch (event.getPropertyName()) {
             case "hexUpdated":

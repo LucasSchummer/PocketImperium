@@ -39,7 +39,7 @@ public class RandomBot extends Bot {
                 validChoice = true;
             }
         }
-        System.out.println(this.getPseudo() + " has chosen the sector " + (sectorId-1) + " to score.");
+        System.out.println(this.getPseudo() + " has chosen the sector " + sectorId + " to score.");
         return chosenSector;
     }
 
