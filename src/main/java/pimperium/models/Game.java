@@ -330,6 +330,14 @@ public class Game implements Runnable, Serializable {
 		return sector;
 	}
 
+	public int findSectorId(Sector sector) {
+		int id = 0;
+		for (int i = 0; i < this.sectors.length; i++) {
+			if (this.sectors[i] == sector) id = i;
+		}
+		return id;
+	}
+
 	//Ask all the players to place their initial fleet
 	public void setupFleets() {
 		for (Player player: this.players) {
@@ -409,6 +417,7 @@ public class Game implements Runnable, Serializable {
 	}
 
 	public void playRound() {
+
 		if (this.round > 0) this.switchStartPlayer();
 		for (Player player : this.players) {
 			player.chooseOrderCommands();
@@ -421,7 +430,6 @@ public class Game implements Runnable, Serializable {
 		for (int i = 0; i < 3; i++) {
 			this.playRoundStep();
 			this.round_step++;
-			this.pcs.firePropertyChange("hexUpdated", null, null);
 		}
 
 		this.sustainShips();
@@ -433,11 +441,13 @@ public class Game implements Runnable, Serializable {
 	public void playRoundStep() {
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
+			this.pcs.firePropertyChange("hexUpdated", null, null);
 		}
 	}
 
 	// Remove excess ships on every hexagon
 	public void sustainShips() {
+		System.out.println("Sustaining ships...");
 		for (int i = 0; i < MAP_ROWS; i++) {
 			for (int j = 0; j < MAP_COLS; j++) {
 				Hexagon hex = hexs[i][j];

@@ -3,9 +3,7 @@ package pimperium.controllers;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
@@ -19,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pimperium.elements.Hexagon;
+import pimperium.elements.Sector;
 import pimperium.models.Game;
 import pimperium.views.Interface;
 
@@ -27,8 +26,10 @@ public class GameController extends Application {
     private Interface view;
     Map<Hexagon, Polygon> hexPolygonMap;
     Map<Polygon, Hexagon> polygonHexMap;
+    Map<ImageView, Sector> imageViewSectorMap;
 
     private Hexagon selectedHexagon;
+    private Sector selectedSector;
 
     public void start(Stage primaryStage) {
 
@@ -39,6 +40,7 @@ public class GameController extends Application {
 
         hexPolygonMap = new HashMap<>();
         polygonHexMap = new HashMap<>();
+        imageViewSectorMap = new HashMap<>();
 
         view = new Interface(this);
 
@@ -52,6 +54,12 @@ public class GameController extends Application {
     public synchronized void handleHexagonClick(Polygon polygon) {
         selectedHexagon = polygonHexMap.get(polygon);
         System.out.println(selectedHexagon + " clicked");
+        notify(); // Notify waiting threads
+    }
+
+    public synchronized void handleSectorClick(ImageView imageView) {
+        selectedSector = imageViewSectorMap.get(imageView);
+        System.out.println(selectedSector + " clicked");
         notify(); // Notify waiting threads
     }
 
@@ -70,6 +78,19 @@ public class GameController extends Application {
         Hexagon hex = selectedHexagon;
         selectedHexagon = null; // Reset for next selection
         return hex;
+    }
+
+    public synchronized Sector waitForSectorSelection() throws InterruptedException {
+        Platform.runLater(() -> this.view.changeSectorsTransparency(false));
+        Platform.runLater(() -> this.view.changeHexsTransparency(true));
+        while (selectedSector == null) {
+            wait();
+        }
+        Sector sector = selectedSector;
+        selectedSector = null;
+        Platform.runLater(() -> this.view.changeHexsTransparency(false));
+        Platform.runLater(() -> this.view.changeSectorsTransparency(true));
+        return sector;
     }
 
     public void onGameChange(PropertyChangeEvent event) {
@@ -93,6 +114,10 @@ public class GameController extends Application {
 
     public Map<Polygon, Hexagon> getPolygonHexMap() {
         return this.polygonHexMap;
+    }
+
+    public Map<ImageView, Sector> getImageViewSectorMap() {
+        return this.imageViewSectorMap;
     }
 
     // Tried with saving (working) but not with loading, so can't say if it's done correctly

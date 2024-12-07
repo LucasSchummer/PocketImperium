@@ -153,8 +153,43 @@ public class Human extends Player {
 
 	}
 
-	@Override
 	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+
+		boolean validChoice = false;
+		Sector sector = null;
+
+		System.out.println(this.getPseudo() + " is choosing a sector to score");
+
+		while (!validChoice) {
+			try {
+				// Wait for the player to select the hexagon
+				sector = game.getController().waitForSectorSelection();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			if (sector == null) {
+				System.out.println("Invalid sector. Please try again.");
+			} else if (sector.isTriPrime()) {
+				System.out.println("You cannot choose the Tri-Prime sector. Please choose another one.");
+			} else if (!sector.isOccupied()) {
+				System.out.println("You cannot choose an unoccupied sector. Please choose another one.");
+			} else if (scoredSectors.contains(sector)) {
+				System.out.println("This sector has already been chosen. Please choose another one.");
+			} else {
+				validChoice = true;
+			}
+
+		}
+
+		int sectorId = this.game.findSectorId(sector);
+		System.out.println(this.getPseudo() + " has chosen sector " + sectorId + " to score.");
+		return sector;
+
+	}
+
+	@Override
+/*	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 		Scanner scanner = this.game.scanner;
 		Sector chosenSector = null;
 		boolean validChoice = false;
@@ -191,7 +226,7 @@ public class Human extends Player {
 		}
 		System.out.println(this.getPseudo() + " has chosen sector " + sectorId + " to score.");
 		return chosenSector;
-	}
+	}*/
 
 /*	
 	// Without the clickable hexagons

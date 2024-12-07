@@ -1,7 +1,9 @@
 package pimperium.views;
 
 import javafx.geometry.Pos;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -56,8 +58,25 @@ public class Interface {
             }
 
             imageViews[(int) i / 3][i % 3] = imageView;
-            gridPane.add(imageView, i % 3, (int) i / 3); // Add imageView to gridPane
+
+            // Create a white rectangle overlay
+            Rectangle overlay = new Rectangle(imageView.getFitWidth(), imageView.getFitHeight());
+            overlay.setFill(Color.WHITE);
+            overlay.setOpacity(0); // Initially transparent
+
+            StackPane stackPane = new StackPane(imageView, overlay);
+
+            // Add hover effect for brightness adjustment
+            stackPane.setOnMouseEntered(event -> overlay.setOpacity(0.1)); // Brighten on hover
+            stackPane.setOnMouseExited(event -> overlay.setOpacity(0));    // Reset brightness
+
+            stackPane.setOnMouseClicked(event -> this.controller.handleSectorClick(imageView));
+            this.controller.getImageViewSectorMap().put(imageView, this.controller.getGame().getSectors()[i]);
+
+            gridPane.add(stackPane, i % 3, (int) i / 3); // Add imageView to gridPane
         }
+
+        this.changeSectorsTransparency(true);
 
         this.addHexagons();
 
@@ -184,6 +203,14 @@ public class Interface {
             pane.getChildren().add(shipCount);
         }
 
+    }
+
+    public void changeSectorsTransparency(boolean transparent) {
+        this.gridPane.setMouseTransparent(transparent);
+    }
+
+    public void changeHexsTransparency(boolean transparent) {
+        this.hexPane.setMouseTransparent(transparent);
     }
 
     public Pane getRoot() {
