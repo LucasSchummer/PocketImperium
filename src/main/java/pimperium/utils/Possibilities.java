@@ -130,14 +130,19 @@ public class Possibilities {
             }
         }
 
+        //Debugger.displayTargets(targets, player);
+
         for (Hexagon target : targets) {
             List<Hexagon> origins = new ArrayList<Hexagon>();
             // Find all the hexs the player can attack from
             for (Hexagon hex : target.getNeighbours()) {
-                if (hex.getOccupant() == player) origins.add(hex);
+                if (hex.getOccupant() == player) {
+                    origins.add(hex);
+                }
             }
 
             if (origins.isEmpty()) continue;
+
 
             // Get the number of ships on each origin hex
             int[] fleetSizes = new int[origins.size()];
@@ -150,18 +155,25 @@ public class Possibilities {
             int numOrigins = origins.size();
 
             int[] distribution = new int[numOrigins];
-            //distribution[0] = 1; // Start with at least one ship allocated
-            while (true) {
-                distributions.add(distribution.clone());
 
+            boolean done = false;
+            while (!done) {
+                distributions.add(distribution.clone()); // Add a copy of the current distribution
                 // Increment the distribution vector
                 int i = 0;
-                while (i < numOrigins && distribution[i] == fleetSizes[i]) {
-                    distribution[i] = 0;
-                    i++;
+                while (i < numOrigins) {
+                    distribution[i]++;
+                    if (distribution[i] <= fleetSizes[i]) {
+                        break; // Valid increment; exit inner loop
+                    } else {
+                        distribution[i] = 0; // Reset current position
+                        i++; // Carry over to the next position
+                    }
                 }
-                if (i == numOrigins) break; // We've exhausted all combinations
-                distribution[i]++;
+
+                if (i == numOrigins) {
+                    done = true; // We've exhausted all combinations
+                }
             }
 
             // Convert ship distributions to moves

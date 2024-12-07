@@ -8,6 +8,7 @@ import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
+import pimperium.utils.Debugger;
 
 public class RandomBot extends Bot {
 
@@ -108,7 +109,9 @@ public class RandomBot extends Bot {
         System.out.println(this.getPseudo() + " is exterminating");
 
         List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
-        //System.out.println("Possible moves : " + possibleMoves.size());
+
+        //Debugger.displayAllExterminateMoves(possibleMoves, this);
+
         
         // Verifies that the player can do exterminates
         if (possibleMoves.isEmpty()) {
@@ -137,11 +140,6 @@ public class RandomBot extends Bot {
 
         // Execute each move
         for (Pair<List<Ship>, Hexagon> move : moves) {
-/*            System.out.println("Ships attacking : " + move.getKey().size());
-            for (Ship ship : move.getKey()) {
-                System.out.println(ship);
-            }
-            System.out.println("Target : " + move.getValue());*/
             //Set the ships and execute the command
             this.exterminate.setShips(move.getKey());
             this.exterminate.setTarget(move.getValue());

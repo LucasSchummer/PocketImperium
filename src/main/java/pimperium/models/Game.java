@@ -27,6 +27,7 @@ import pimperium.players.Bot;
 import pimperium.players.Human;
 import pimperium.players.Player;
 import pimperium.players.RandomBot;
+import pimperium.utils.Debugger;
 import pimperium.utils.Possibilities;
 
 
