@@ -61,12 +61,14 @@ public class GameController extends Application {
     public void showPlayerSetup() {
         PlayerSetupView setupView = new PlayerSetupView(this);
         Scene scene = new Scene(setupView.getRoot(), 600, 400);
+        scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
     }
     
     public void setupPlayerNames(int humanPlayerCount) {
         PlayerNamesView namesView = new PlayerNamesView(this, humanPlayerCount);
         Scene scene = new Scene(namesView.getRoot(), 600, 400);
+        scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
     }
 
@@ -139,6 +141,7 @@ public class GameController extends Application {
     public void showMainMenu() {
         MenuView menuView = new MenuView(this);
         Scene scene = new Scene(menuView.getRoot(), 600, 400);
+        scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium - Main Menu");
         primaryStage.show();

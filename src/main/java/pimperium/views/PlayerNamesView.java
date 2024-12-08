@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -17,6 +18,7 @@ public class PlayerNamesView {
     private GameController controller;
     private VBox root;
     private List<TextField> nameFields;
+    private List<Label> nameLabels;
     private int humanPlayerCount;
 
     // Constructor to initialize the view with the game controller and number of human players
@@ -30,7 +32,7 @@ public class PlayerNamesView {
     private void createView() {
         // Set background image
         BackgroundImage backgroundImage = new BackgroundImage(
-                new Image("file:assets/background.png", 600, 400, false, true),
+                new Image("file:assets/background.jpg", 600, 400, false, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
 
@@ -39,12 +41,13 @@ public class PlayerNamesView {
         root.setAlignment(Pos.CENTER);
         root.setBackground(new Background(backgroundImage));
 
-        // Create and style the title text
-        Text title = new Text("Pocket Imperium");
-        title.setFont(Font.font("Verdana", 40));
-        title.setStyle("-fx-fill: white; -fx-effect: dropshadow(one-pass-box, black, 5, 0, 2, 2);");
+        // Load the title image from the assets folder
+        ImageView titleImage = new ImageView(new Image("file:assets/title.png"));
+        titleImage.setFitWidth(300); // Set the desired width
+        titleImage.setPreserveRatio(true); // Preserve the aspect ratio
 
         nameFields = new ArrayList<>();
+        nameLabels = new ArrayList<>();
 
         // VBox to hold the player name fields
         VBox fieldsBox = new VBox(15);
@@ -54,6 +57,7 @@ public class PlayerNamesView {
         for (int i = 1; i <= humanPlayerCount; i++) {
             Label nameLabel = new Label("Pseudo du joueur " + i + " :");
             nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+            nameLabels.add(nameLabel);
             TextField nameField = new TextField();
             nameField.setMaxWidth(200);
             nameField.setStyle("-fx-background-color: rgba(255, 255, 255, 0.7); -fx-text-fill: black;");
@@ -63,15 +67,21 @@ public class PlayerNamesView {
 
         // Create and style the start button
         Button startButton = new Button("Lancer la Partie");
-        startButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);"
-                + "-fx-text-fill: white;"
-                + "-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-background-radius: 10;");
         startButton.setOnAction(event -> controller.startGameWithPlayers(getPlayerNames()));
 
+
+        for (TextField nameField : nameFields) {
+            nameField.prefWidthProperty().bind(root.widthProperty().multiply(0.4));
+        }
+        startButton.prefWidthProperty().bind(root.widthProperty().multiply(0.3));
+
+        for (Label nameLabel : nameLabels) {
+            nameLabel.getStyleClass().add("label");
+        }
+        startButton.getStyleClass().add("button");
+
         // Add all components to the root VBox
-        root.getChildren().addAll(title, fieldsBox, startButton);
+        root.getChildren().addAll(titleImage, fieldsBox, startButton);
         root.setPadding(new Insets(50));
         root.setSpacing(30);
     }

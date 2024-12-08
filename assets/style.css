@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'Orbitron';
+    src: url('fonts/Orbitron-Regular.ttf');
+}
+
+.root {
+    font-family: 'Orbitron';
+    -fx-font-family: 'Orbitron';
+}
+
+.button {
+    font-weight: bold;
+    cursor: hand;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.label {
+    font-size: 16px;
+    -fx-font-size: 16px;
+}
