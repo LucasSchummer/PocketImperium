@@ -72,11 +72,15 @@ public class Game implements Runnable, Serializable {
         return this.controller;
     }
 
+	public void setPlayers(Player[] players) {
+		this.players = players;
+	}
+
 	public void setup() {
 		this.generateMap();
 		this.createHexNeighbours();
 		this.createTriPrime();
-		this.createPlayers();
+		//this.createPlayers();
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
 		this.setupFleets();
