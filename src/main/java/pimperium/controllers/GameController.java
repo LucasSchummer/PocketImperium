@@ -165,6 +165,7 @@ public class GameController extends Application {
     }
 
     public synchronized Hexagon waitForHexagonSelection() throws InterruptedException {
+        selectedHexagon = null;
         while (selectedHexagon == null) {
             wait();
         }
@@ -174,6 +175,7 @@ public class GameController extends Application {
     }
 
     public synchronized Sector waitForSectorSelection() throws InterruptedException {
+        selectedSector = null;
         Platform.runLater(() -> this.view.changeSectorsTransparency(false));
         Platform.runLater(() -> this.view.changeHexsTransparency(true));
         while (selectedSector == null) {

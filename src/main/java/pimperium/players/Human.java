@@ -82,11 +82,8 @@ public class Human extends Player {
 
         synchronized (game.getController()) {
             try {
-                while (game.getController().getSelectedHexagon() == null) {
-                    game.getController().wait();
-                }
-                Hexagon hex = game.getController().getSelectedHexagon();
-                game.getController().resetSelectedHexagon();
+
+				Hexagon hex = this.game.getController().waitForHexagonSelection();
 
                 // Vérifier que l'hexagone est valide pour le placement initial
                 if (hex == null || hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
@@ -629,14 +626,7 @@ public void doExterminate(int efficiency) {
                 try {
                     System.out.println(this.getPseudo() + ", cliquez sur le système que vous voulez attaquer.");
 
-                    // Wait for the player to select the target hexagon
-                    synchronized (game.getController()) {
-                        while (game.getController().getSelectedHexagon() == null) {
-                            game.getController().wait();
-                        }
-                        target = game.getController().getSelectedHexagon();
-                        game.getController().resetSelectedHexagon();
-                    }
+					target = game.getController().waitForHexagonSelection();
 
                     if (target == null || target.getSystem() == null || target.getOccupant() == this) {
                         throw new Exception("Système invalide.");
@@ -650,20 +640,14 @@ public void doExterminate(int efficiency) {
                     for (int k = 0; k < numFlottes; k++) {
                         System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
 
-                        // Wait for the player to select the fleet hexagon
-                        synchronized (game.getController()) {
-                            while (game.getController().getSelectedHexagon() == null) {
-                                game.getController().wait();
-                            }
-                            Hexagon fleetHex = game.getController().getSelectedHexagon();
-                            game.getController().resetSelectedHexagon();
+						Hexagon fleetHex = game.getController().waitForHexagonSelection();
 
-                            if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
-                                throw new Exception("Flotte invalide.");
-                            }
+						if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
+							throw new Exception("Flotte invalide.");
+						}
 
-                            fleet.addAll(fleetHex.getShips());
-                        }
+						fleet.addAll(fleetHex.getShips());
+
                     }
 
                     // Add the move to the moves list
