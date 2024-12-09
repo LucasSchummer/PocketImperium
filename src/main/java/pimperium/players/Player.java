@@ -1,9 +1,6 @@
 package pimperium.players;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 import pimperium.commands.Expand;
 import pimperium.commands.Explore;
@@ -23,6 +20,7 @@ public abstract class Player {
     protected Expand expand;
     protected Explore explore;
     protected Exterminate exterminate;
+    protected float color;
 
     public Player(Game game) {
         this.ships = new ArrayList<Ship>();
@@ -31,6 +29,8 @@ public abstract class Player {
         this.expand = new Expand(this);
         this.explore = new Explore(this);
         this.exterminate = new Exterminate(this);
+        Random random = new Random();
+        this.color = 2 * random.nextFloat() - 1;
     }
     
     //Return and set the order of commands as a list of int
@@ -58,7 +58,6 @@ public abstract class Player {
         return this.ships;
     }
 
-
     // Getter and setter for the pseudo
     public String getPseudo() {
         return this.pseudo;
@@ -72,12 +71,17 @@ public abstract class Player {
     public int getScore() {
         return this.score;
     }
+
     public void setScore(int score) {
         this.score = score;
     }
 
     public void addScore(int score) {
         this.score += score;
+    }
+
+    public float getColor() {
+        return this.color;
     }
 
     public abstract void setupInitialFleet();

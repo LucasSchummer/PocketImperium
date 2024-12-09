@@ -193,16 +193,73 @@ public class Interface {
         // Clear any existing display on the hex
         pane.getChildren().removeIf(node ->  !(node instanceof Polygon));
 
-        // Add new content (e.g., number of ships)
+        // Draw the ships on the hex
         if (!hex.getShips().isEmpty()) {
-            Text shipCount = new Text(hex.getOccupant().getPseudo() + " : " + String.valueOf(hex.getShips().size()));
+/*            Text shipCount = new Text(hex.getOccupant().getPseudo() + " : " + String.valueOf(hex.getShips().size()));
             shipCount.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 13));
             shipCount.setFill(Color.WHITE);
             shipCount.setWrappingWidth(80);
-            shipCount.setMouseTransparent(true);
-            pane.getChildren().add(shipCount);
+            shipCount.setMouseTransparent(true);*/
+
+            pane.getChildren().add(drawShips(hex.getShips().size(), hex.getOccupant().getColor()));
         }
 
+    }
+
+    public Pane drawShips(int numShips, float color) {
+
+        Image shipImage = new Image("file:assets/spaceship.png");
+        Pane shipPane = new Pane();
+
+        if (numShips > 1) {
+            int radius = 20;
+            // Add ships in a circular layout
+            for (int i = 0; i < numShips; i++) {
+                double angle = 2 * Math.PI / numShips * i; // Angle for each ship
+                double x = 50 + radius * Math.cos(angle); // X-coordinate
+                double y = 50 + radius * Math.sin(angle); // Y-coordinate
+
+                // Create an ImageView for the ship
+                ImageView ship = new ImageView(shipImage);
+
+                // Apply color filter for Player
+                ColorAdjust colorAdjust = new ColorAdjust();
+                colorAdjust.setHue(color); // Alternate colors for demo
+                ship.setEffect(colorAdjust);
+
+                ship.setRotate(90 + 360*angle/2/Math.PI);
+
+                int width = 20;
+                ship.setFitWidth(width); // Set ship width
+                ship.setFitHeight(width); // Set ship height
+                ship.setX(x - width/2); // Center the image at the calculated position
+                ship.setY(y - width/2);
+
+                // Add the ship to the pane
+                shipPane.getChildren().add(ship);
+            }
+        } else {
+
+            // Create an ImageView for the ship
+            ImageView ship = new ImageView(shipImage);
+
+            // Apply color filter for Player
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setHue(color); // Alternate colors for demo
+            ship.setEffect(colorAdjust);
+
+            int width = 20;
+            ship.setFitWidth(width); // Set ship width
+            ship.setFitHeight(width); // Set ship height
+            ship.setX(50 - width/2); // Center the image at the calculated position
+            ship.setY(50 - width/2);
+
+            // Add the ship to the pane
+            shipPane.getChildren().add(ship);
+        }
+
+        shipPane.setMouseTransparent(true);
+        return shipPane;
     }
 
     public void changeSectorsTransparency(boolean transparent) {
