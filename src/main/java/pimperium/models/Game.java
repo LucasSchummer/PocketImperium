@@ -32,7 +32,8 @@ import pimperium.utils.Possibilities;
 
 
 public class Game implements Runnable, Serializable {
-	
+
+	private static final long serialVersionUID = 1L;
 	public static final int MAP_ROWS = 9;
 	public static final int MAP_COLS = 6;
 	public static final int NB_PLAYERS = 3;
@@ -47,7 +48,7 @@ public class Game implements Runnable, Serializable {
 	//The players ordered for the round (line i is the order for the ith action)
 	private Player[][] orderPlayers;
 	private Integer[][] efficiencies;
-	private Possibilities possibilities;
+	private  Possibilities possibilities;
 	private boolean gameEnded;
 
 	// Non-serializable variables
@@ -441,6 +442,7 @@ public class Game implements Runnable, Serializable {
 		this.pcs.firePropertyChange("hexUpdated", null, null);
 		this.doScore();
 		this.round++;
+		this.pcs.firePropertyChange("roundOver", null, null);
 	}
 	
 	public void playRoundStep() {
@@ -695,7 +697,17 @@ public class Game implements Runnable, Serializable {
 
 	public void run() {
 
-		this.setup();
+		// Setup the game if it has just been created
+		if (this.round == 0) {
+			this.setup();
+		}
+		// In case we are loading an existing game, instantiate the scanner and possibilities (which is transient)
+		else {
+			this.scanner = new Scanner(System.in);
+			for (Player p : this.players) {
+				if (p instanceof Bot) ((Bot) p).setPossibilities();
+			}
+		}
 
 		while (this.round < 9) {
 			this.playRound();

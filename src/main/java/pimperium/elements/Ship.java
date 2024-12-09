@@ -2,7 +2,11 @@ package pimperium.elements;
 
 import pimperium.players.Player;
 
-public class Ship {
+import java.io.Serializable;
+
+public class Ship implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Hexagon position;
     private Player player;

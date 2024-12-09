@@ -1,9 +1,12 @@
 package pimperium.elements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Sector {
-	
+public class Sector implements Serializable {
+
+	protected static final long serialVersionUID = 1L;
+
 	protected ArrayList<HSystem> systems;
 	protected String path;
 	

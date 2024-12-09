@@ -1,5 +1,6 @@
 package pimperium.commands;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -7,7 +8,9 @@ import pimperium.elements.Ship;
 import pimperium.players.Player;
 
 
-public class Expand implements Command {
+public class Expand implements Command, Serializable {
+
+    private static final long serialVersionUID = 1L;
     private Player player;
     private List<Ship> shipsInvolved;
 

@@ -1,5 +1,6 @@
 package pimperium.elements;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -8,8 +9,10 @@ import pimperium.players.Player;
 
 import java.util.HashSet;
 
-public class Hexagon {
-	
+public class Hexagon implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	private int pos_x;
 	private int pos_y;
 	private boolean isTriPrime = false;

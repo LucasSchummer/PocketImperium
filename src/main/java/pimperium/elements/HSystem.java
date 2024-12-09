@@ -2,8 +2,12 @@ package pimperium.elements;
 
 import pimperium.players.Player;
 
-public class HSystem {
-	
+import java.io.Serializable;
+
+public class HSystem implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	private int level;
 	private Hexagon hex;
 	private Player controller;

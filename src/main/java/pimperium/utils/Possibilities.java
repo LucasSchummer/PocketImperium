@@ -1,5 +1,6 @@
 package pimperium.utils;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,8 +14,9 @@ import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.players.Player;
 
-public class Possibilities {
+public class Possibilities implements Serializable{
 
+    protected static final long serialVersionUID = 1L;
     private static Possibilities instance;
     private static Game game;
 

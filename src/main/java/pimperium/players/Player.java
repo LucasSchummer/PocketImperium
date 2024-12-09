@@ -1,5 +1,6 @@
 package pimperium.players;
 
+import java.io.Serializable;
 import java.util.*;
 
 import pimperium.commands.Expand;
@@ -11,7 +12,10 @@ import pimperium.elements.Ship;
 import pimperium.models.Game;
 
 
-public abstract class Player {
+public abstract class Player implements Serializable {
+
+    protected static final long serialVersionUID = 1L;
+
     protected List<Ship> ships;
     protected String pseudo;
     protected int score;

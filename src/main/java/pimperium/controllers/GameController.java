@@ -33,12 +33,12 @@ import pimperium.views.PlayerNamesView;
 import pimperium.views.PlayerSetupView;
 
 public class GameController extends Application {
-    private Stage primaryStage;
+    private transient Stage primaryStage;
     private Game game;
-    private Interface view;
-    Map<Hexagon, Polygon> hexPolygonMap;
-    Map<Polygon, Hexagon> polygonHexMap;
-    Map<ImageView, Sector> imageViewSectorMap;
+    private transient Interface view;
+    private transient Map<Hexagon, Polygon> hexPolygonMap;
+    private transient Map<Polygon, Hexagon> polygonHexMap;
+    private transient Map<ImageView, Sector> imageViewSectorMap;
 
     private Hexagon selectedHexagon;
     private Sector selectedSector;
@@ -198,6 +198,13 @@ public class GameController extends Application {
                     Platform.runLater(() -> this.view.updateHexagon(hex));
                 }
                 break;
+            case "roundOver":
+                try {
+                    this.saveGame("savegame.dat");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
             default:
         }
     }
@@ -226,6 +233,7 @@ public class GameController extends Application {
         out.writeObject(game); 
         out.close();
         fileOut.close();
+        System.out.println("Game saved");
     }
 
     // Load the game from the root of the project
@@ -255,6 +263,10 @@ public class GameController extends Application {
                 primaryStage.setTitle("Pocket Imperium");
                 primaryStage.show();
             });
+
+            for (Hexagon hex : this.hexPolygonMap.keySet()) {
+                Platform.runLater(() -> this.view.updateHexagon(hex));
+            }
 
             // Start the game thread
             game.startGame();

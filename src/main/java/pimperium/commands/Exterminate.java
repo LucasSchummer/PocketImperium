@@ -1,5 +1,6 @@
 package pimperium.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,9 @@ import pimperium.elements.Hexagon;
 import pimperium.elements.Ship;
 import pimperium.players.Player;
 
-public class Exterminate implements Command {
+public class Exterminate implements Command, Serializable {
+
+    private static final long serialVersionUID = 1L;
     private Player player;
     private Hexagon target;
     private List<Ship> shipsInvolved;

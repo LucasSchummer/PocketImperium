@@ -1,5 +1,6 @@
 package pimperium.players;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,10 @@ public abstract class Bot extends Player{
 
         // Convert random ArrayList to array
         this.orderCommands = numbers.stream().mapToInt(i -> i).toArray();
+    }
+
+    public void setPossibilities() {
+        this.possibilities = Possibilities.getInstance(this.game);
     }
 
 }
