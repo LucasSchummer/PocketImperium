@@ -22,7 +22,7 @@ public class RandomBot extends Bot {
         Sector chosenSector = null;
         boolean validChoice = false;
         int sectorId = -1;
-        System.out.println(this.getPseudo() + " chooses the sector to score");
+        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
 
         while (!validChoice) {
             sectorId = random.nextInt(1, sectors.length+1);
@@ -40,13 +40,13 @@ public class RandomBot extends Bot {
                 validChoice = true;
             }
         }
-        System.out.println(this.getPseudo() + " has chosen the sector " + sectorId + " to score.");
+        System.out.println(this.getPseudo() + " a choisi le secteur " + sectorId + " à scorer.");
         return chosenSector;
     }
 
     public void doExpand(int efficiency) {
 
-        System.out.println(this.getPseudo() + " is expanding");
+        System.out.println(this.getPseudo() + " s'étend");
 
         // Get the ships on which it is possible to expand
         List<Ship> possShips = possibilities.expand(this);
@@ -70,7 +70,7 @@ public class RandomBot extends Bot {
 
     public void doExplore(int efficiency) {
 
-        System.out.println(this.getPseudo() + " is exploring");
+        System.out.println(this.getPseudo() + " explore");
 
         List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(this);
 
@@ -106,7 +106,7 @@ public class RandomBot extends Bot {
 
     public void doExterminate(int efficiency) {
 
-        System.out.println(this.getPseudo() + " is exterminating");
+        System.out.println(this.getPseudo() + " extermine");
 
         List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
 
@@ -115,7 +115,7 @@ public class RandomBot extends Bot {
         
         // Verifies that the player can do exterminates
         if (possibleMoves.isEmpty()) {
-            System.out.println("No extermination moves possible.");
+            System.out.println("Aucun mouvement d'extermination possible.");
             return;
         }
         

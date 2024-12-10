@@ -157,7 +157,6 @@ public class GameController extends Application {
 
     public synchronized void handleSectorClick(ImageView imageView) {
         selectedSector = imageViewSectorMap.get(imageView);
-        System.out.println(selectedSector + " clicked");
         notify(); // Notify waiting threads
     }
 
@@ -264,9 +263,9 @@ public class GameController extends Application {
         System.out.println("Game saved");
     }
 
-    // Load the game from the root of the project
+    // Load the game from the SavedGames directory
     public void loadGame() {
-        String filename = "savegame.dat";
+        String filename = "SavedGames/savedGame.dat";
         try {
             FileInputStream fileIn = new FileInputStream(filename);
             ObjectInputStream in = new ObjectInputStream(fileIn);

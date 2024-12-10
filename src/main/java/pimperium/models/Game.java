@@ -429,7 +429,7 @@ public class Game implements Runnable, Serializable {
 		for (Player player : players) {
 			player.resetOrderCommands();
 		}
-		
+
 		for (Player player : this.players) {
 			player.chooseOrderCommands();
 		}
@@ -459,7 +459,7 @@ public class Game implements Runnable, Serializable {
 
 	// Remove excess ships on every hexagon
 	public void sustainShips() {
-		System.out.println("Sustaining ships...");
+		System.out.println("Suppression des vaisseaux en trop...");
 		for (int i = 0; i < MAP_ROWS; i++) {
 			for (int j = 0; j < MAP_COLS; j++) {
 				Hexagon hex = hexs[i][j];
@@ -482,10 +482,16 @@ public class Game implements Runnable, Serializable {
 
 	// Return the controller of the TriPrime (if existing)
 	public Player getTriPrimeController() {
-		// Retrieve the Tri-Prime sector
-		return this.sectors[4].getSystems().getFirst().getHex().getOccupant();
+		// Get the TriPrime hexagon
+		Hexagon triPrimeHex = this.hexs[4][2]; 
+		if (triPrimeHex != null && triPrimeHex.isTriPrime()) {
+			// Return the occupant of TriPrime
+			return triPrimeHex.getOccupant();
+		}
+		return null; // If no occupant
 	}
-		
+
+
 	// Calculate the score of each player
 	public void doScore() {
 		Set<Sector> scoredSectors = new HashSet<>();
@@ -502,6 +508,8 @@ public class Game implements Runnable, Serializable {
 		Player triPrimeController = getTriPrimeController();
 		if (triPrimeController != null) {
 			// The player controlling Tri-Prime chooses an additional sector
+			System.out.println(triPrimeController.getPseudo() + " controle le Tri-Prime");
+			System.out.println("Il peut choisir un secteur supplémentaire");
 			Sector additionalSector = triPrimeController.chooseSectorToScore(scoredSectors, this.sectors);
 			if (additionalSector != null) {
 				scoredSectors.add(additionalSector);
@@ -519,13 +527,13 @@ public class Game implements Runnable, Serializable {
 				}
 			}
 			player.addScore(score);
-			System.out.println("The score of " + player.getPseudo() + " is " + score);
+			System.out.println("Le score de " + player.getPseudo() + " est " + score);
 		}
 	}
 
 	// Calculate the final score of each player
 	public void doFinalScore() {
-		System.out.println("Calculating final score...");
+		System.out.println("Calcul du score final...");
 		
 		// All sectors are scored again with doubled values
 		for (Player player : this.players) {
@@ -538,14 +546,14 @@ public class Game implements Runnable, Serializable {
 					}
 					}
 			}
-			System.out.println("Final score of " + player.getPseudo() + ": " + finalScore);
+			System.out.println("Score final de " + player.getPseudo() + ": " + finalScore);
 			player.setScore(finalScore);
 		}
 		
 		// Determine the winner
 		Player winner = this.getWinner();
 
-		System.out.println("The winner is " + winner.getPseudo() + " with " + winner.getScore() + " points!");
+		System.out.println("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!");
 
 		this.stopGame();
 	}

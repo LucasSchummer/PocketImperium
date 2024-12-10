@@ -167,45 +167,45 @@ public class Human extends Player {
 				}
 			}
 		}
-    }
+	}
 
-	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+		@Override
+		public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 
-		boolean validChoice = false;
-		Sector sector = null;
+			boolean validChoice = false;
+			Sector sector = null;
 
-		System.out.println(this.getPseudo() + " is choosing a sector to score");
+			System.out.println(this.getPseudo() + " choisit un secteur à scorer");
 
-		while (!validChoice) {
-			try {
-				// Wait for the player to select the hexagon
-				sector = game.getController().waitForSectorSelection();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			while (!validChoice) {
+				try {
+					// Wait for the player to select the hexagon
+					sector = game.getController().waitForSectorSelection();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				if (sector == null) {
+					System.out.println("Secteur invalide. Veuillez réessayer.");
+				} else if (sector.isTriPrime()) {
+					System.out.println("Vous ne pouvez pas choisir le secteur Tri-Prime. Veuillez choisir un autre secteur.");
+				} else if (scoredSectors.contains(sector)) {
+					System.out.println("Ce secteur a déjà été choisi. Veuillez choisir un autre secteur.");
+				} else {
+					validChoice = true;
+				}
+
 			}
 
-			if (sector == null) {
-				System.out.println("Invalid sector. Please try again.");
-			} else if (sector.isTriPrime()) {
-				System.out.println("You cannot choose the Tri-Prime sector. Please choose another one.");
-			} else if (!sector.isOccupied()) {
-				System.out.println("You cannot choose an unoccupied sector. Please choose another one.");
-			} else if (scoredSectors.contains(sector)) {
-				System.out.println("This sector has already been chosen. Please choose another one.");
-			} else {
-				validChoice = true;
-			}
+			int sectorId = this.game.findSectorId(sector);
+			System.out.println(this.getPseudo() + " a choisi le secteur " + sectorId + " à scorer.");
+			return sector;
 
 		}
 
-		int sectorId = this.game.findSectorId(sector);
-		System.out.println(this.getPseudo() + " has chosen sector " + sectorId + " to score.");
-		return sector;
-
-	}
-
+	/*
 	@Override
-/*	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 		Scanner scanner = this.game.scanner;
 		Sector chosenSector = null;
 		boolean validChoice = false;
@@ -280,7 +280,7 @@ public class Human extends Player {
 	// With the clickable hexagons
 	public void doExpand(int efficiency) {
 
-		System.out.println(this.getPseudo() + " is expanding with efficiency " + efficiency);
+		System.out.println(this.getPseudo() + " rajoute un vaisseau avec une efficacité de " + efficiency);
 
 		List<Hexagon> expandHexs = new ArrayList<>();
 
@@ -292,7 +292,7 @@ public class Human extends Player {
 
 			for (int i = 0; i < efficiency; i++) {
 
-				System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre flotte.");
+				System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre vaisseau.");
 
 				try {
 					// Wait for the player to select the hexagon
@@ -321,7 +321,6 @@ public class Human extends Player {
 		this.expand.setShips(ships);
 		this.expand.execute();
 	}
-
 
 /*	
 	// Without the clickable hexagons
@@ -422,7 +421,7 @@ public class Human extends Player {
 	// With the clickable hexagons
 	public void doExplore(int efficiency) {
 
-		System.out.println(this.getPseudo() + " is exploring");
+		System.out.println(this.getPseudo() + " explore le plateau avec une efficacité de " + efficiency);
 
 		List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
 		boolean validMoves = false;
@@ -624,7 +623,7 @@ public class Human extends Player {
 // With the clickable hexagons
 public void doExterminate(int efficiency) {
 
-    System.out.println(this.getPseudo() + " is exterminating");
+    System.out.println(this.getPseudo() + " extermine des sysytèmes avec une efficacité de " + efficiency);
 
     List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
 
