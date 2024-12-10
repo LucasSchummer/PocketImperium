@@ -425,6 +425,11 @@ public class Game implements Runnable, Serializable {
 	public void playRound() {
 
 		if (this.round > 0) this.switchStartPlayer();
+
+		for (Player player : players) {
+			player.resetOrderCommands();
+		}
+		
 		for (Player player : this.players) {
 			player.chooseOrderCommands();
 		}

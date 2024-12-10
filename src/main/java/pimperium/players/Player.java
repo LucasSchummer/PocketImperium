@@ -110,6 +110,14 @@ public abstract class Player implements Serializable {
         }
     }
 
+    public void setOrderCommands(int[] orderCommands) {
+        this.orderCommands = orderCommands;
+    }
+
+    public void resetOrderCommands() {
+        this.orderCommands = null;
+    }
+
     public abstract Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors);
 
     public abstract void doExpand(int efficiency);

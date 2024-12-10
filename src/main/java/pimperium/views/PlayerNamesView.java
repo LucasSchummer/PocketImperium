@@ -30,16 +30,16 @@ public class PlayerNamesView {
 
     // Method to create the view layout and components
     private void createView() {
-        // Set background image
-        BackgroundImage backgroundImage = new BackgroundImage(
-                new Image("file:assets/background.jpg", 600, 400, false, true),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        // Load the background image from the assets folder
+        Image backgroundImage = new Image("file:assets/background.jpg");
 
-        // Initialize root VBox with spacing and alignment
-        root = new VBox(10);
+        // Create a BackgroundImage with properties to fit the screen
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
+ 
+        root = new VBox(20);
         root.setAlignment(Pos.CENTER);
-        root.setBackground(new Background(backgroundImage));
+        root.setBackground(new Background(background));
 
         // Load the title image from the assets folder
         ImageView titleImage = new ImageView(new Image("file:assets/title.png"));

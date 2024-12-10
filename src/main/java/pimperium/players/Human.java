@@ -124,6 +124,7 @@ public class Human extends Player {
         }
     }
 
+	/*
 	public void chooseOrderCommands() {
 
 		int[] order = new int[3];
@@ -148,7 +149,25 @@ public class Human extends Player {
 
 		this.orderCommands = order;
 
-	}
+	} */
+
+	public void chooseOrderCommands() {
+        System.out.println(this.getPseudo() + ", veuillez choisir l'ordre des commandes.");
+
+		// Display the command selection interface
+		game.getController().getView().showCommandSelection(this);
+
+		// Wait for the player to select the commands
+		synchronized (game.getController()) {
+			while (this.orderCommands == null) {
+				try {
+					game.getController().wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+    }
 
 	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 

@@ -16,9 +16,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
@@ -127,7 +129,7 @@ public class GameController extends Application {
     
             // Display the game interface
             Platform.runLater(() -> {
-                Scene scene = new Scene(view.getRoot(), 529, 754);
+                Scene scene = new Scene(view.getRoot(), 800, 750);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Pocket Imperium");
                 primaryStage.show();
@@ -209,8 +211,35 @@ public class GameController extends Application {
         }
     }
 
+    public synchronized void handleCommandSelection(Human player, List<String> selectedCommands) {
+        // Commands to indexes
+        Map<String, Integer> commandMap = new HashMap<>();
+        commandMap.put("Expand", 0);
+        commandMap.put("Explore", 1);
+        commandMap.put("Exterminate", 2);
+
+        int[] order = new int[3];
+        Set<Integer> alreadyChosen = new HashSet<>();
+
+        for (int i = 0; i < selectedCommands.size(); i++) {
+            int cmdIndex = commandMap.get(selectedCommands.get(i));
+            if (alreadyChosen.contains(cmdIndex)) {
+                return;
+            }
+            order[i] = cmdIndex;
+            alreadyChosen.add(cmdIndex);
+        }
+
+        player.setOrderCommands(order);
+        notify();
+    }
+
     public Game getGame() {
         return this.game;
+    }
+
+    public Interface getView() {
+        return this.view;
     }
 
     public Map<Hexagon, Polygon> getHexPolygonMap() {
@@ -225,7 +254,6 @@ public class GameController extends Application {
         return this.imageViewSectorMap;
     }
 
-    // Tried with saving (working) but not with loading, so can't say if it's done correctly
     // Saves the game in the root of the project
     public void saveGame(String filename) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(filename);
@@ -258,7 +286,7 @@ public class GameController extends Application {
 
             // Display the game interface
             Platform.runLater(() -> {
-                Scene scene = new Scene(view.getRoot(), 529, 754);
+                Scene scene = new Scene(view.getRoot(), 800, 750);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Pocket Imperium");
                 primaryStage.show();
@@ -270,8 +298,11 @@ public class GameController extends Application {
 
             // Start the game thread
             game.startGame();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Saved game file not found or could not be loaded.");
+        } catch (IOException e) {
+            System.out.println("Saved game could not be loaded.");
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println("Saved game file not found.");
         }
     }
 

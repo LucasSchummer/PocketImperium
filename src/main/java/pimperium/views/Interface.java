@@ -1,8 +1,14 @@
 package pimperium.views;
 
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -11,17 +17,30 @@ import javafx.scene.text.Text;
 import pimperium.controllers.GameController;
 
 import java.util.List;
+import java.util.Set;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
 import pimperium.elements.Hexagon;
+import pimperium.players.Human;
 
 
 public class Interface {
@@ -30,7 +49,10 @@ public class Interface {
     private GridPane gridPane;
     private Pane hexPane;
     private ImageView[][] imageViews;
-
+    private VBox sidePanel;
+    private VBox topSection;
+    private VBox bottomSection;
+    
     public Interface(GameController controller) {
         this.controller = controller;
 
@@ -43,6 +65,45 @@ public class Interface {
         gridPane.setHgap(2); // Horizontal gap between columns
         gridPane.setVgap(2); // Vertical gap between rows
         gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
+
+        // Load the background image from the assets folder
+        Image backgroundImage = new Image("file:assets/background.jpg");
+
+        // Create a BackgroundImage with properties to fit the screen
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
+
+        sidePanel = new VBox(20);
+        sidePanel.setPadding(new Insets(10));
+        sidePanel.setAlignment(Pos.TOP_CENTER);
+        sidePanel.setPrefWidth(275);
+
+        topSection = new VBox();
+        topSection.setSpacing(10);
+        topSection.setPrefHeight(374);
+
+        bottomSection = new VBox();
+        bottomSection.setSpacing(10);
+        bottomSection.setPrefHeight(374);
+
+        Rectangle separator2 = new Rectangle();
+        separator2.setFill(Color.WHITE);
+        separator2.widthProperty().bind(sidePanel.widthProperty());
+        separator2.setHeight(2);
+
+        sidePanel.getChildren().addAll(topSection, separator2, bottomSection);
+
+        Text title1 = new Text("Informations");
+        title1.setFill(Color.WHITE);
+        title1.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        topSection.getChildren().add(title1);
+
+        Text title2 = new Text("Commandes");
+        title2.setFill(Color.WHITE);
+        title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        bottomSection.getChildren().add(title2);
+
+
 
         for (int i = 0; i < this.controller.getGame().getSectors().length; i++) {
             Image image = new Image("file:assets/" + this.controller.getGame().getSectors()[i].getPath());
@@ -79,6 +140,21 @@ public class Interface {
         this.changeSectorsTransparency(true);
 
         this.addHexagons();
+        
+        StackPane gamePane = new StackPane();
+        gamePane.getChildren().addAll(gridPane, hexPane);
+
+        Rectangle separator = new Rectangle();
+        separator.setFill(Color.WHITE);
+        separator.heightProperty().bind(sidePanel.heightProperty());
+        separator.setWidth(2);
+        
+        HBox mainLayout = new HBox();
+        mainLayout.getChildren().addAll(gamePane, separator, sidePanel);
+        mainLayout.setBackground(new Background(background));
+
+        
+        this.root = mainLayout;
 
     }
 
@@ -148,7 +224,7 @@ public class Interface {
         hexagon.setStroke(Color.TRANSPARENT); // No visible border
         hexagon.setOpacity(0); // Transparent fill
 
-        // Add oppacity events
+        // Add opacity events
         hexagon.setOnMouseEntered(event -> hexagon.setOpacity(0.1));
         hexagon.setOnMouseExited(event -> hexagon.setOpacity(0));
         hexagon.setOnMouseClicked(event -> this.controller.handleHexagonClick(hexagon));
@@ -204,6 +280,69 @@ public class Interface {
             pane.getChildren().add(drawShips(hex.getShips().size(), hex.getOccupant().getColor()));
         }
 
+    }
+
+
+    // Method to display command selection
+    public void showCommandSelection(Human player) {
+        Platform.runLater(() -> {
+            // Clear the side panel
+            bottomSection.getChildren().clear();
+
+            // Title
+            Text commandsTitle = new Text("Choisissez vos commandes");
+            commandsTitle.setFill(Color.WHITE);
+            commandsTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 16));
+            bottomSection.getChildren().add(commandsTitle);
+
+            // List of available commands
+            List<String> availableCommands = new ArrayList<>(Arrays.asList("Expand", "Explore", "Exterminate"));
+            List<String> selectedCommands = new ArrayList<>();
+
+            // Create a list to store ComboBoxes
+            List<ComboBox<String>> comboBoxes = new ArrayList<>();
+            for (int i = 1; i <= 3; i++) {
+                Text instruction = new Text("Commande " + i + " :");
+                instruction.setFill(Color.WHITE);
+                instruction.setFont(Font.font("Orbitron", 12));
+                bottomSection.getChildren().add(instruction);
+
+                ComboBox<String> comboBox = new ComboBox<>();
+                comboBox.getItems().addAll(availableCommands);
+                comboBox.setPrefWidth(150);
+                comboBoxes.add(comboBox);
+                bottomSection.getChildren().add(comboBox);
+
+                // Add some space between each command
+                bottomSection.setSpacing(10);
+            }
+            
+            Button validateButton = new Button("Valider");
+            validateButton.getStyleClass().add("button");
+            validateButton.setPrefWidth(150);
+            bottomSection.getChildren().add(validateButton);
+
+            validateButton.setOnAction(event -> {
+                selectedCommands.clear();
+                Set<String> selectedSet = new HashSet<>();
+                for (ComboBox<String> comboBox : comboBoxes) {
+                    String command = comboBox.getValue();
+                    if (command == null || selectedSet.contains(command)) {
+                        // Display an error message if a command is not selected or duplicated
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Erreur");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Veuillez sélectionner des commandes distinctes pour chaque emplacement.");
+                        alert.showAndWait();
+                        return;
+                    }
+                    selectedCommands.add(command);
+                    selectedSet.add(command);
+                }
+                // Notify the controller that the commands are chosen
+                controller.handleCommandSelection(player, selectedCommands);
+            });
+        });
     }
 
     public Pane drawShips(int numShips, float color) {
@@ -270,14 +409,15 @@ public class Interface {
         this.hexPane.setMouseTransparent(transparent);
     }
 
+    private Pane root;
+
     public Pane getRoot() {
-        Pane root = new Pane();
-        root.getChildren().addAll(gridPane, hexPane); // Add GridPane and overlay
         return root;
     }
 
     public ImageView[][] getImageViews() {
         return imageViews;
     }
+
 
 }
