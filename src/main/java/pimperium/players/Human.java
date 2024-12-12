@@ -647,7 +647,8 @@ public void doExterminate(int efficiency) {
 					target = game.getController().waitForHexagonSelection();
 
                     if (target == null || target.getSystem() == null || target.getOccupant() == this) {
-                        throw new Exception("Système invalide.");
+                        System.out.println("Système invalide.");
+						continue;
                     }
 
                     System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
@@ -661,7 +662,8 @@ public void doExterminate(int efficiency) {
 						Hexagon fleetHex = game.getController().waitForHexagonSelection();
 
 						if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
-							throw new Exception("Flotte invalide.");
+							System.out.println("Flotte invalide.");
+							continue;
 						}
 
 						fleet.addAll(fleetHex.getShips());
@@ -673,7 +675,7 @@ public void doExterminate(int efficiency) {
 
                     validInput = true; // Exit the loop
                 } catch (Exception e) {
-                    System.out.println("Entrée invalide. " + e.getMessage());
+                    System.out.println("Entrée invalide");
                     this.game.scanner.nextLine(); // Clear the invalid input
                 }
             }
