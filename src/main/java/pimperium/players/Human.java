@@ -326,7 +326,7 @@ public class Human extends Player {
 	// Without the clickable hexagons
 	public void doExplore(int efficiency) {
 
-		//TODO Complexify user-input (Move only a part of the ships of the fleet/drop ships on the way/
+
 		// add ships to the fleet on the way)
 
 		System.out.println(this.getPseudo() + " is exploring");
@@ -625,7 +625,7 @@ public void doExterminate(int efficiency) {
 
     System.out.println(this.getPseudo() + " extermine des sysytèmes avec une efficacité de " + efficiency);
 
-    List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
+    List<Pair<Set<Ship>, Hexagon>> moves = new ArrayList<>();
 
     boolean validMoves = false;
 
@@ -654,7 +654,7 @@ public void doExterminate(int efficiency) {
                     System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
                     numFlottes = this.game.scanner.nextInt();
 
-                    List<Ship> fleet = new ArrayList<Ship>();
+                    Set<Ship> fleet = new HashSet<Ship>();
 
                     for (int k = 0; k < numFlottes; k++) {
                         System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
@@ -702,7 +702,7 @@ public void doExterminate(int efficiency) {
             }
         }
 
-        validMoves = game.checkExterminateValidity(moves);
+        validMoves = game.checkExterminateValidity(moves, this);
 
         if (!validMoves) {
             System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
@@ -711,7 +711,7 @@ public void doExterminate(int efficiency) {
 
 
     // Execute each move
-    for (Pair<List<Ship>, Hexagon> move : moves) {
+    for (Pair<Set<Ship>, Hexagon> move : moves) {
         // Set the ships and execute the command
         this.exterminate.setShips(move.getKey());
         this.exterminate.setTarget(move.getValue());

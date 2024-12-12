@@ -3,6 +3,7 @@ package pimperium.commands;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import pimperium.elements.Hexagon;
 import pimperium.elements.Ship;
@@ -13,13 +14,13 @@ public class Exterminate implements Command, Serializable {
     private static final long serialVersionUID = 1L;
     private Player player;
     private Hexagon target;
-    private List<Ship> shipsInvolved;
+    private Set<Ship> shipsInvolved;
 
     public Exterminate(Player player) {
         this.player = player;
     }
     
-    public void setShips(List<Ship> shipsInvolved) {
+    public void setShips(Set<Ship> shipsInvolved) {
     	this.shipsInvolved = shipsInvolved;
     }
     

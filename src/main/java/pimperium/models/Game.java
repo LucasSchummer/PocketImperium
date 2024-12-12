@@ -635,18 +635,26 @@ public class Game implements Runnable, Serializable {
 	}
 
 	// Assert that the exterminate move from the player is valid
-	public boolean checkExterminateValidity(List<Pair<List<Ship>, Hexagon>> moves) {
+	public boolean checkExterminateValidity(List<Pair<Set<Ship>, Hexagon>> moves, Player player) {
 
 		// Check that no system is attacked twice
 		Set<Hexagon> targets = new HashSet<Hexagon>();
-		for (Pair<List<Ship>, Hexagon> move : moves) {
+		for (Pair<Set<Ship>, Hexagon> move : moves) {
 			targets.add(move.getValue());
 		}
 		boolean notTwice = targets.size() == moves.size();
 
 		// Check that all the moves are valid
-		List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(moves.getFirst().getKey().getFirst().getOwner());
+		List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(player);
 		boolean allPossible = possibleMoves.containsAll(moves);
+
+		Debugger.displayAllExterminateMoves(possibleMoves, player);
+
+		for (Pair<Set<Ship>, Hexagon> move : moves) {
+			System.out.println("Moved checked :");
+			Debugger.displayExterminateMove(move);
+		}
+
 
 		return notTwice && allPossible;
 

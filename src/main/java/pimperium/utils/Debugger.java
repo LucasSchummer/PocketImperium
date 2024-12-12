@@ -6,6 +6,7 @@ import pimperium.elements.Ship;
 import pimperium.players.Player;
 
 import java.util.List;
+import java.util.Set;
 
 public class Debugger {
 
@@ -27,16 +28,16 @@ public class Debugger {
         }
     }
 
-    public static void displayAllExterminateMoves(List<Pair<List<Ship>, Hexagon>> moves, Player player) {
+    public static void displayAllExterminateMoves(List<Pair<Set<Ship>, Hexagon>> moves, Player player) {
 
         System.out.println("Total number of moves : " + moves.size());
-        for (Pair<List<Ship>, Hexagon> move : moves) {
+        for (Pair<Set<Ship>, Hexagon> move : moves) {
             displayExterminateMove(move);
             System.out.println();
         }
     }
 
-    public static void displayExterminateMove(Pair<List<Ship>, Hexagon> move) {
+    public static void displayExterminateMove(Pair<Set<Ship>, Hexagon> move) {
         System.out.println("System attacked : " + move.getValue());
         System.out.println("Attacking ships : ");
         for (Ship ship : move.getKey()) {

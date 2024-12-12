@@ -108,7 +108,7 @@ public class RandomBot extends Bot {
 
         System.out.println(this.getPseudo() + " extermine");
 
-        List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
+        List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
 
         //Debugger.displayAllExterminateMoves(possibleMoves, this);
 
@@ -119,7 +119,7 @@ public class RandomBot extends Bot {
             return;
         }
         
-        List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
+        List<Pair<Set<Ship>, Hexagon>> moves = new ArrayList<>();
         Set<Hexagon> targets = new HashSet<Hexagon>();
 
         Random random = new Random();
@@ -130,7 +130,7 @@ public class RandomBot extends Bot {
         // Adding randomly selected ships and targets to the list of ships/targets to explore
         while (moves.size() < maxEfficiency) {
             int index = random.nextInt(possibleMoves.size());
-            Pair<List<Ship>, Hexagon> move = possibleMoves.get(index);
+            Pair<Set<Ship>, Hexagon> move = possibleMoves.get(index);
             // Check that the randomly chosen move doesn't target a hex that has has already been targeted
             if (!targets.contains(move.getValue())) {
                 moves.add(move);
@@ -139,7 +139,7 @@ public class RandomBot extends Bot {
         }
 
         // Execute each move
-        for (Pair<List<Ship>, Hexagon> move : moves) {
+        for (Pair<Set<Ship>, Hexagon> move : moves) {
             //Set the ships and execute the command
             this.exterminate.setShips(move.getKey());
             this.exterminate.setTarget(move.getValue());

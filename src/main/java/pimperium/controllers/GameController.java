@@ -201,7 +201,7 @@ public class GameController extends Application {
                 break;
             case "roundOver":
                 try {
-                    this.saveGame("savegame.dat");
+                    this.saveGame("SavedGames/SavedGame.dat");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -299,6 +299,7 @@ public class GameController extends Application {
             game.startGame();
         } catch (IOException e) {
             System.out.println("Saved game could not be loaded.");
+            System.out.println(e.getMessage());
         }
         catch (ClassNotFoundException e) {
             System.out.println("Saved game file not found.");

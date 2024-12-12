@@ -119,9 +119,9 @@ public class Possibilities implements Serializable{
 
     }
 
-    public List<Pair<List<Ship>, Hexagon>> exterminate(Player player) {
+    public List<Pair<Set<Ship>, Hexagon>> exterminate(Player player) {
 
-        List<Pair<List<Ship>, Hexagon>> possibleMoves = new ArrayList<>();
+        List<Pair<Set<Ship>, Hexagon>> possibleMoves = new ArrayList<>();
 
         List<Hexagon> targets = new ArrayList<Hexagon>();
         for (Hexagon[] row : game.getMap()) {
@@ -180,7 +180,7 @@ public class Possibilities implements Serializable{
 
             // Convert ship distributions to moves
             for (int[] dist : distributions) {
-                List<Ship> fleet = new ArrayList<>();
+                Set<Ship> fleet = new HashSet<>();
                 for (int i = 0; i < dist.length; i++) {
                     fleet.addAll(new ArrayList<>(origins.get(i).getShips().subList(0, dist[i])));
                 }
