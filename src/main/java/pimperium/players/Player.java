@@ -118,6 +118,14 @@ public abstract class Player implements Serializable {
         this.orderCommands = null;
     }
 
+    public void resetShips() {
+        for (Ship ship : this.ships) {
+            ship.setHasExpanded(false);
+            ship.setHasExplored(false);
+            ship.setHasExterminated(false);
+        }
+    }
+
     public abstract Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors);
 
     public abstract void doExpand(int efficiency);

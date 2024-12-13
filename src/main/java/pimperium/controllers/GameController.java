@@ -151,7 +151,7 @@ public class GameController extends Application {
 
     public synchronized void handleHexagonClick(Polygon polygon) {
         selectedHexagon = polygonHexMap.get(polygon);
-        System.out.println(selectedHexagon + " clicked");
+        //System.out.println(selectedHexagon + " clicked");
         notify(); // Notify waiting threads
     }
 

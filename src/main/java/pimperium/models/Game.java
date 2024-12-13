@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 
@@ -405,11 +406,11 @@ public class Game implements Runnable, Serializable {
 			}
 		}
 
-		this.efficiencies = new Integer[][] {
+/*		this.efficiencies = new Integer[][] {
 				{1,1,1},
 				{1,1,1},
 				{1,1,1}
-		};
+		};*/
 
 	}
 
@@ -428,6 +429,7 @@ public class Game implements Runnable, Serializable {
 
 		for (Player player : players) {
 			player.resetOrderCommands();
+			player.resetShips();
 		}
 
 		for (Player player : this.players) {
@@ -453,8 +455,12 @@ public class Game implements Runnable, Serializable {
 	public void playRoundStep() {
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
-			this.pcs.firePropertyChange("hexUpdated", null, null);
+			triggerInterfaceUpdate();
 		}
+	}
+
+	public void triggerInterfaceUpdate() {
+		this.pcs.firePropertyChange("hexUpdated", null, null);
 	}
 
 	// Remove excess ships on every hexagon
@@ -583,15 +589,24 @@ public class Game implements Runnable, Serializable {
 		return notTwice && allPossible;
 	}*/
 
-	public boolean checkExpandValidity(List<Hexagon> hexs, Player player) {
+	public boolean checkExpandValidity(Hexagon hex, Player player) {
 
 		// Checks that the user controls all the selected hexagons
-		boolean controlsHexs = true;
+/*		boolean controlsHexs = true;
 		for (Hexagon hex : hexs) {
 			if (hex.getOccupant() != player) controlsHexs = false;
-		}
+		}*/
 
-		boolean enoughShips = true;
+		boolean controlsHex = hex.getOccupant() == player;
+
+		// Get all the ships expandable on the desired location
+		List<Ship> possibleShips = possibilities.expand(player).stream()
+				.filter(ship -> ship.getPosition() == hex) // Condition: keep ships that have not expanded yet
+				.toList();
+
+		boolean enoughShips = !possibleShips.isEmpty();
+
+/*		boolean enoughShips = true;
 		List<Ship> ships = new ArrayList<>();
 		try {
 			for (Hexagon hex : new HashSet<Hexagon>(hexs)) {
@@ -602,7 +617,7 @@ public class Game implements Runnable, Serializable {
 			}
 		} catch (Exception e) {
 			enoughShips = false;
-		}
+		}*/
 
 /*		System.out.println("controls hexs : " + controlsHexs);
 		System.out.println("enough ships : " + enoughShips);*/
@@ -612,51 +627,57 @@ public class Game implements Runnable, Serializable {
 		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
 		boolean allPossible = possShips.containsAll(ships);*/
 
-		return controlsHexs && enoughShips;
+		return controlsHex && enoughShips;
 
 	}
 	
 	// Assert that the explore move from the player is valid
-	public boolean checkExploreValidity(List<Pair<List<Ship>, List<Hexagon>>> moves) {
+	public boolean checkExploreValidity(Pair<List<Ship>, List<Hexagon>> move) {
 
 		// Check that no ship is moved twice
-		Set<Hexagon> origins = new HashSet<Hexagon>();
+/*		Set<Hexagon> origins = new HashSet<Hexagon>();
 		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
 			origins.add(move.getKey().getFirst().getPosition());
-		}
+		}*/
 
-		boolean notTwice = origins.size() == moves.size();
+/*		List<Ship> goodShips = move.getKey().stream()
+				.filter(ship -> !ship.hasExplored()) // Condition: keep ships that have not explored yet
+				.toList();
+
+		boolean notTwice = move.getKey().size() == goodShips.size();*/
+
+		//boolean notTwice = origins.size() == moves.size();
 
 		// Check that all the moves are possible
-		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(moves.getFirst().getKey().getFirst().getOwner());
-		boolean allPossible = possibleMoves.containsAll(moves);
+		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(move.getKey().getFirst().getOwner());
+		boolean possible = possibleMoves.contains(move);
 
-		return notTwice && allPossible;
+		return possible;
 	}
 
 	// Assert that the exterminate move from the player is valid
-	public boolean checkExterminateValidity(List<Pair<Set<Ship>, Hexagon>> moves, Player player) {
+	public boolean checkExterminateValidity(Pair<Set<Ship>, Hexagon> move, Player player) {
 
-		// Check that no system is attacked twice
+/*		// Check that no system is attacked twice
 		Set<Hexagon> targets = new HashSet<Hexagon>();
 		for (Pair<Set<Ship>, Hexagon> move : moves) {
 			targets.add(move.getValue());
 		}
-		boolean notTwice = targets.size() == moves.size();
+		boolean notTwice = targets.size() == moves.size();*/
 
 		// Check that all the moves are valid
 		List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(player);
-		boolean allPossible = possibleMoves.containsAll(moves);
+		boolean Possible = possibleMoves.contains(move);
 
-		Debugger.displayAllExterminateMoves(possibleMoves, player);
+		//Debugger.displayAllExterminateMoves(possibleMoves, player);
 
-		for (Pair<Set<Ship>, Hexagon> move : moves) {
+/*		for (Pair<Set<Ship>, Hexagon> move : moves) {
 			System.out.println("Moved checked :");
 			Debugger.displayExterminateMove(move);
-		}
+		}*/
 
 
-		return notTwice && allPossible;
+		return Possible;
 
 	}
 

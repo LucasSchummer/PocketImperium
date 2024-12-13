@@ -39,6 +39,7 @@ public class Explore implements Command, Serializable {
          // Move each ship to its destination
          for (int i=0; i<this.shipsInvolved.size(); i++) {
         	 this.shipsInvolved.get(i).move(this.targetHexagons.get(i));
+             this.shipsInvolved.get(i).setHasExplored(true);
          }
          
     }

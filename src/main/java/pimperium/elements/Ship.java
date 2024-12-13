@@ -11,6 +11,10 @@ public class Ship implements Serializable {
     private Hexagon position;
     private Player player;
 
+    private boolean hasExpanded = false;
+    private boolean hasExplored = false;
+    private boolean hasExterminated = false;
+
     // Constructor
     public Ship(Hexagon position, Player player) {
         this.position = position;
@@ -40,6 +44,30 @@ public class Ship implements Serializable {
         player.removeShip(this);
         position.removeShip(this);
         System.out.println(this + " destroyed");
+    }
+
+    public boolean hasExpanded() {
+        return this.hasExpanded;
+    }
+
+    public boolean hasExplored() {
+        return this.hasExplored;
+    }
+
+    public boolean hasExterminated() {
+        return this.hasExterminated;
+    }
+
+    public void setHasExpanded(boolean hasExpanded) {
+        this.hasExpanded = hasExpanded;
+    }
+
+    public void setHasExplored(boolean hasExplored) {
+        this.hasExplored = hasExplored;
+    }
+
+    public void setHasExterminated(boolean hasExterminated) {
+        this.hasExterminated = hasExterminated;
     }
     
     public String toString() {

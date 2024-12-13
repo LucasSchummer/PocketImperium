@@ -48,7 +48,9 @@ public class Possibilities implements Serializable{
         for (Hexagon[] row : game.getMap()) {
             for (Hexagon hex : row) {
                 if (hex != null && hex.getOccupant() == player ) {
-                    ships.addAll(hex.getShips());
+                    ships.addAll(hex.getShips().stream()
+                            .filter(ship -> !ship.hasExpanded()) // Condition: keep ships that have not expanded yet
+                            .toList());
                 }
             }
         }
@@ -61,7 +63,10 @@ public class Possibilities implements Serializable{
         List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = new ArrayList<>();
 
         Set<Hexagon> controlledHexs = new HashSet<Hexagon>();
-        for (Ship ship : player.getShips()) {
+        List<Ship> usableShips = player.getShips().stream()
+                .filter(ship -> !ship.hasExplored())
+                .toList();
+        for (Ship ship : usableShips) {
             controlledHexs.add(ship.getPosition());
         }
 
@@ -70,8 +75,11 @@ public class Possibilities implements Serializable{
 
             // The amont of ships moving may vary from 1 to the size of the whole fleet
             // For each of these subsets, we generate all the possible moves
-            for (int numShips = 1; numShips < origin.getShips().size()+1 ; numShips++) {
-                List<Ship> fleet = new ArrayList<>(origin.getShips().subList(0, numShips));
+            List<Ship> totalUsableFleet = origin.getShips().stream()
+                    .filter(ship -> !ship.hasExplored())
+                    .toList();
+            for (int numShips = 1; numShips < totalUsableFleet.size()+1 ; numShips++) {
+                List<Ship> fleet = new ArrayList<>(totalUsableFleet.subList(0, numShips));
 
                 // Get all the direct neighbors of the origin
                 Set<Hexagon> distance1Targets = origin.getNeighbours();
@@ -138,18 +146,25 @@ public class Possibilities implements Serializable{
             List<Hexagon> origins = new ArrayList<Hexagon>();
             // Find all the hexs the player can attack from
             for (Hexagon hex : target.getNeighbours()) {
-                if (hex.getOccupant() == player) {
+                boolean isOccupant = hex.getOccupant() == player;
+                List<Ship> usableShips = hex.getShips().stream()
+                        .filter(ship -> !ship.hasExterminated())
+                        .toList();
+                boolean hasUsableShips = !usableShips.isEmpty();
+                if (isOccupant && hasUsableShips) {
                     origins.add(hex);
                 }
             }
 
             if (origins.isEmpty()) continue;
 
-
             // Get the number of ships on each origin hex
             int[] fleetSizes = new int[origins.size()];
             for (int i = 0; i < origins.size(); i++) {
-                fleetSizes[i] = origins.get(i).getShips().size();
+                //fleetSizes[i] = origins.get(i).getShips().size();
+                fleetSizes[i] = origins.get(i).getShips().stream()
+                        .filter(ship -> !ship.hasExterminated())
+                        .toList().size();
             }
 
             // All the possible distributions of ships from the origin fleets
@@ -182,7 +197,11 @@ public class Possibilities implements Serializable{
             for (int[] dist : distributions) {
                 Set<Ship> fleet = new HashSet<>();
                 for (int i = 0; i < dist.length; i++) {
-                    fleet.addAll(new ArrayList<>(origins.get(i).getShips().subList(0, dist[i])));
+                    List<Ship> usableShips = origins.get(i).getShips().stream()
+                            .filter(ship -> !ship.hasExterminated())
+                            .toList();
+                    //fleet.addAll(new ArrayList<>(origins.get(i).getShips().subList(0, dist[i])));
+                    fleet.addAll(new ArrayList<>(usableShips.subList(0, dist[i])));
                 }
                 // Make sure the fleet is not empty (possible considering how we generate the distributions)
                 if (!fleet.isEmpty()) {

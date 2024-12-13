@@ -57,6 +57,7 @@ public class Exterminate implements Command, Serializable {
             System.out.println(attackingFleet.getFirst().getOwner().getPseudo() + " took control of " + target);
             for (Ship ship : attackingFleet) {
                 ship.move(this.target);
+                ship.setHasExterminated(true);
             }
         }
 
