@@ -3,6 +3,7 @@ package pimperium.views;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -11,6 +12,8 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import pimperium.controllers.GameController;
+import pimperium.models.Game;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class PlayerNamesView {
     private List<TextField> nameFields;
     private List<Label> nameLabels;
     private int humanPlayerCount;
+    private List<ComboBox<String>> botStrategyCombos;
 
     // Constructor to initialize the view with the game controller and number of human players
     public PlayerNamesView(GameController controller, int humanPlayerCount) {
@@ -48,6 +52,7 @@ public class PlayerNamesView {
 
         nameFields = new ArrayList<>();
         nameLabels = new ArrayList<>();
+        botStrategyCombos = new ArrayList<>();
 
         // VBox to hold the player name fields
         VBox fieldsBox = new VBox(15);
@@ -65,9 +70,23 @@ public class PlayerNamesView {
             fieldsBox.getChildren().addAll(nameLabel, nameField);
         }
 
+        // Calculate the number of bots
+        int botCount = Game.NB_PLAYERS - humanPlayerCount;
+
+        // Create selectors for bot strategies (Random by default)
+        for (int i = 1; i <= botCount; i++) {
+            Label botLabel = new Label("Stratégie du bot " + i + " :");
+            botLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+            ComboBox<String> strategyCombo = new ComboBox<>();
+            strategyCombo.getItems().addAll("Offensif", "Défensif", "Aléatoire");
+            strategyCombo.getSelectionModel().select("Aléatoire"); // Set "Aléatoire" as the default selection
+            botStrategyCombos.add(strategyCombo);
+            fieldsBox.getChildren().addAll(botLabel, strategyCombo);
+        }
+
         // Create and style the start button
         Button startButton = new Button("Lancer la Partie");
-        startButton.setOnAction(event -> controller.startGameWithPlayers(getPlayerNames()));
+        startButton.setOnAction(event -> controller.startGameWithPlayers(getPlayerNames(), getBotStrategies()));
 
 
         for (TextField nameField : nameFields) {
@@ -94,6 +113,16 @@ public class PlayerNamesView {
         }
         return names;
     }
+
+    // Method to get the strategies from the combobox
+    public List<String> getBotStrategies() {
+        List<String> strategies = new ArrayList<>();
+        for (ComboBox<String> combo : botStrategyCombos) {
+            strategies.add(combo.getValue());
+        }
+        return strategies;
+    }
+
 
     // Method to get the root VBox
     public VBox getRoot() {

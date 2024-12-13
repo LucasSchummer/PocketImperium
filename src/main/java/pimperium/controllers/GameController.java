@@ -62,19 +62,19 @@ public class GameController extends Application {
 
     public void showPlayerSetup() {
         PlayerSetupView setupView = new PlayerSetupView(this);
-        Scene scene = new Scene(setupView.getRoot(), 600, 400);
+        Scene scene = new Scene(setupView.getRoot(), 750, 500);
         scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
     }
     
     public void setupPlayerNames(int humanPlayerCount) {
         PlayerNamesView namesView = new PlayerNamesView(this, humanPlayerCount);
-        Scene scene = new Scene(namesView.getRoot(), 600, 400);
+        Scene scene = new Scene(namesView.getRoot(), 750, 500);
         scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
     }
 
-    public void startGameWithPlayers(List<String> playerNames) {
+    public void startGameWithPlayers(List<String> playerNames, List<String> botStrategies) {
         try {
             System.out.println("Starting the game with players: " + playerNames);
     
@@ -91,17 +91,36 @@ public class GameController extends Application {
                 human.setPseudo(name);
                 players.add(human);
             }
+
+            List<String> botNames = Arrays.asList(
+                "Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
+                "Darth Vader", "Leia Organa", "Yoda", 
+                "Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
+                "Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
+                "Kylo Ren", "Finn", "Poe Dameron"
+            );
     
             // Add bots to reach the total number of players
-            while (players.size() < Game.NB_PLAYERS) {
-                List<String> botNames = Arrays.asList(
-                        "Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
-                        "Darth Vader", "Leia Organa", "Yoda", 
-                        "Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
-                        "Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
-                        "Kylo Ren", "Finn", "Poe Dameron"
-                    );
+            for (int i = 0; i < botStrategies.size(); i++) {
+                String strategy = botStrategies.get(i);
+                Bot bot;
+                switch (strategy) {
+                    case "Offensif":
+                        // bot = new OffensiveBot(game);
+                        bot = new RandomBot(game);
+                        break;
+                    case "Défensif":
+                        // bot = new DefensiveBot(game);
+                        bot = new RandomBot(game);
+                        break;
+                    case "Aléatoire":
+                    default:
+                        bot = new RandomBot(game);
+                        break;
+                }
+
                 Random random = new Random();
+
                 boolean validName = false;
                 String botPseudo = botNames.get(random.nextInt(botNames.size()));
                 // Make sure that 2 bots don't have the same pseudo
@@ -111,7 +130,7 @@ public class GameController extends Application {
                 }
                 chosenPseudos.add(botPseudo);
 
-                Bot bot = new RandomBot(game);
+
                 bot.setPseudo(botPseudo);
                 players.add(bot);
             }
@@ -142,7 +161,7 @@ public class GameController extends Application {
 
     public void showMainMenu() {
         MenuView menuView = new MenuView(this);
-        Scene scene = new Scene(menuView.getRoot(), 600, 400);
+        Scene scene = new Scene(menuView.getRoot(), 750, 500);
         scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium - Main Menu");

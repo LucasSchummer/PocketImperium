@@ -106,7 +106,7 @@ public abstract class Player implements Serializable {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Unexpected value: " + index);
+                throw new IllegalArgumentException("Valeur innatendu : " + index);
         }
     }
 
