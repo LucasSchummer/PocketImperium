@@ -9,8 +9,8 @@ import pimperium.models.Game;
 
 public class OffensiveBot extends Bot {
 
-    public OffensiveBot(Game game) {
-        super(game);
+    public OffensiveBot(Game game, botColor) {
+        super(game, color);
     }
 
     @Override

@@ -9,6 +9,7 @@ import pimperium.commands.Exterminate;
 import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.elements.Ship;
+import pimperium.utils.Colors;
 import pimperium.models.Game;
 
 
@@ -24,9 +25,9 @@ public abstract class Player implements Serializable {
     protected Expand expand;
     protected Explore explore;
     protected Exterminate exterminate;
-    protected float color;
+    protected Colors color;
 
-    public Player(Game game) {
+    public Player(Game game, Colors color) {
         this.ships = new ArrayList<Ship>();
         this.pseudo = ""; 
         this.game = game;
@@ -34,7 +35,7 @@ public abstract class Player implements Serializable {
         this.explore = new Explore(this);
         this.exterminate = new Exterminate(this);
         Random random = new Random();
-        this.color = 2 * random.nextFloat() - 1;
+        this.color = color;
     }
     
     //Return and set the order of commands as a list of int
@@ -84,7 +85,7 @@ public abstract class Player implements Serializable {
         this.score += score;
     }
 
-    public float getColor() {
+    public Colors getColor() {
         return this.color;
     }
 

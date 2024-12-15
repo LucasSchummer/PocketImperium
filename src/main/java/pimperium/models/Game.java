@@ -28,6 +28,7 @@ import pimperium.players.Bot;
 import pimperium.players.Human;
 import pimperium.players.Player;
 import pimperium.players.RandomBot;
+import pimperium.utils.Colors;
 import pimperium.utils.Debugger;
 import pimperium.utils.Possibilities;
 
@@ -73,6 +74,10 @@ public class Game implements Runnable, Serializable {
     public GameController getController() {
         return this.controller;
     }
+
+	public Player[] getPlayers() {
+		return this.players;
+	}
 
 	public void setPlayers(Player[] players) {
 		this.players = players;
@@ -282,6 +287,8 @@ public class Game implements Runnable, Serializable {
 	public void createPlayers() {
 		this.players = new Player[NB_PLAYERS];
 		List<String> chosenPseudos = new ArrayList<>();
+		List<Colors> availableColors = new ArrayList<>(Arrays.asList(Colors.values()));
+		Collections.shuffle(availableColors);
 
 		for (int i = 0; i < NB_PLAYERS; i++) {
 			boolean validInput = false;
@@ -293,7 +300,8 @@ public class Game implements Runnable, Serializable {
 					System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
 					String pseudo = scanner.nextLine().trim();
 					chosenPseudos.add(pseudo);
-					Human human = new Human(this);
+					Colors playerColor = availableColors.remove(0);
+					Human human = new Human(this, playerColor);
 					human.setPseudo(pseudo);
 					this.players[i] = human;
 					validInput = true;
@@ -313,8 +321,8 @@ public class Game implements Runnable, Serializable {
 						botPseudo = botNames.get(random.nextInt(botNames.size()));
 						validName = !chosenPseudos.contains(botPseudo);
 					}
-
-					Bot bot = new RandomBot(this);
+					Colors botColor = availableColors.remove(0);
+					Bot bot = new RandomBot(this, botColor);
 					bot.setPseudo(botPseudo);
 					this.players[i] = bot;
 					validInput = true;
@@ -535,6 +543,8 @@ public class Game implements Runnable, Serializable {
 			player.addScore(score);
 			System.out.println("Le score de " + player.getPseudo() + " est " + score);
 		}
+
+		this.pcs.firePropertyChange("scoreUpdated", null, null);
 	}
 
 	// Calculate the final score of each player

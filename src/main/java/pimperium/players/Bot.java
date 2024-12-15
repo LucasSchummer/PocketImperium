@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import pimperium.elements.Hexagon;
+import pimperium.utils.Colors;
 import pimperium.models.Game;
 import pimperium.utils.Possibilities;
 
@@ -16,8 +17,8 @@ public abstract class Bot extends Player{
 
     protected Possibilities possibilities;
 
-    public Bot(Game game) {
-        super(game);
+    public Bot(Game game, Colors color) {
+        super(game, color);
         this.possibilities = Possibilities.getInstance(game);
     }
 

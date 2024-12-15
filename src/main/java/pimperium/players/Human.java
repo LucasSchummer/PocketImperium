@@ -8,13 +8,14 @@ import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
+import pimperium.utils.Colors;
 
 
 public class Human extends Player {
 
 
-	public Human(Game game) {
-		super(game);
+	public Human(Game game, Colors color) {
+		super(game, color);
 	}
 
 	/*

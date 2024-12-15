@@ -40,6 +40,9 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
 import pimperium.elements.Hexagon;
+import pimperium.players.Player;
+import pimperium.utils.Colors;
+import pimperium.players.Bot;
 import pimperium.players.Human;
 
 
@@ -51,6 +54,8 @@ public class Interface {
     private ImageView[][] imageViews;
     private VBox sidePanel;
     private VBox topSection;
+    private VBox toptopSection;
+    private VBox bottomtopSection;
     private VBox bottomSection;
     
     public Interface(GameController controller) {
@@ -80,28 +85,50 @@ public class Interface {
 
         topSection = new VBox();
         topSection.setSpacing(10);
-        topSection.setPrefHeight(374);
+        topSection.setPrefHeight(449);
 
-        bottomSection = new VBox();
-        bottomSection.setSpacing(10);
-        bottomSection.setPrefHeight(374);
+        toptopSection = new VBox();
+        toptopSection.setSpacing(10);
+        toptopSection.setPrefHeight(173);
+
+        bottomtopSection = new VBox();
+        toptopSection.setSpacing(10);
+        toptopSection.setPrefHeight(274);
+
+        VBox.setMargin(toptopSection, new Insets(0, 0, 0, 10));
+        VBox.setMargin(bottomtopSection, new Insets(0, 0, 0, 10));
 
         Rectangle separator2 = new Rectangle();
         separator2.setFill(Color.WHITE);
         separator2.widthProperty().bind(sidePanel.widthProperty());
         separator2.setHeight(2);
 
-        sidePanel.getChildren().addAll(topSection, separator2, bottomSection);
+        topSection.getChildren().addAll(toptopSection, separator2, bottomtopSection);
 
-        Text title1 = new Text("Informations");
+        bottomSection = new VBox();
+        bottomSection.setSpacing(10);
+        bottomSection.setPrefHeight(299);
+
+        Rectangle separator3 = new Rectangle();
+        separator3.setFill(Color.WHITE);
+        separator3.widthProperty().bind(sidePanel.widthProperty());
+        separator3.setHeight(2);
+
+        sidePanel.getChildren().addAll(topSection, separator3, bottomSection);
+
+        Text title1 = new Text("Partie");
+        Text title2 = new Text("Score");
         title1.setFill(Color.WHITE);
         title1.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        topSection.getChildren().add(title1);
-
-        Text title2 = new Text("Commandes");
         title2.setFill(Color.WHITE);
         title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        bottomSection.getChildren().add(title2);
+        toptopSection.getChildren().add(title1);
+        bottomtopSection.getChildren().add(title2);
+
+        Text title3 = new Text("Commandes");
+        title3.setFill(Color.WHITE);
+        title3.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        bottomSection.getChildren().add(title3);
 
 
 
@@ -349,10 +376,63 @@ public class Interface {
         });
     }
 
-    public Pane drawShips(int numShips, float color) {
+    public void updateScores(Player[] players) {
+        // Clear the current content of the score section
+        bottomtopSection.getChildren().clear();
+    
+        // Section title
+        Text title2 = new Text("Score");
+        title2.setFill(Color.WHITE);
+        title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        bottomtopSection.getChildren().add(title2);
+    
+        // Display the score for each player
+        for (Player player : players) {
+            String playerType = (player instanceof Bot) ? "(Bot) " : "";
+            String playerScore = playerType + player.getPseudo() + " : " + player.getScore();
+            Text scoreText = new Text(playerScore);
+            
+            // Set the color of the pseudo to match the player's ship color
+            Color javafxColor;
+            switch (player.getColor()) {
+                case RED:
+                    javafxColor = Color.RED;
+                    break;
+                case GREEN:
+                    javafxColor = Color.GREEN;
+                    break;
+                case BLUE:
+                    javafxColor = Color.BLUE;
+                    break;
+                case YELLOW:
+                    javafxColor = Color.YELLOW;
+                    break;
+                case PURPLE:
+                    javafxColor = Color.PURPLE;
+                    break;
+                case ORANGE:
+                    javafxColor = Color.ORANGE;
+                    break;
+                default:
+                    javafxColor = Color.WHITE;
+                    break;
+            }
+            scoreText.setFill(javafxColor);
+            scoreText.setFont(Font.font("Orbitron", 14));
+            bottomtopSection.getChildren().add(scoreText);
+        }
+    
+        // Add spacing between each score
+        bottomtopSection.setSpacing(10);
+    }
 
-        Image shipImage = new Image("file:assets/spaceship.png");
+    public Pane drawShips(int numShips, Colors colorEnum) {
+
+        Image shipImage = new Image("file:assets/spaceship3.png");
         Pane shipPane = new Pane();
+
+        
+        float hue = colorEnum.getHue();
 
         if (numShips > 1) {
             int radius = 20;
@@ -367,7 +447,7 @@ public class Interface {
 
                 // Apply color filter for Player
                 ColorAdjust colorAdjust = new ColorAdjust();
-                colorAdjust.setHue(color); // Alternate colors for demo
+                colorAdjust.setHue(hue);
                 ship.setEffect(colorAdjust);
 
                 ship.setRotate(90 + 360*angle/2/Math.PI);
@@ -388,7 +468,7 @@ public class Interface {
 
             // Apply color filter for Player
             ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setHue(color); // Alternate colors for demo
+            colorAdjust.setHue(hue);
             ship.setEffect(colorAdjust);
 
             int width = 20;
@@ -405,10 +485,12 @@ public class Interface {
         return shipPane;
     }
 
-    public Pane drawShipsTriPrime(int numShips, float color) {
+    public Pane drawShipsTriPrime(int numShips, Colors colorEnum) {
 
         Image shipImage = new Image("file:assets/spaceship.png");
         Pane shipPane = new Pane();
+
+        float hue = colorEnum.getHue();
 
         if (numShips > 1) {
             int radius = 20;
@@ -423,7 +505,7 @@ public class Interface {
 
                 // Apply color filter for Player
                 ColorAdjust colorAdjust = new ColorAdjust();
-                colorAdjust.setHue(color); // Alternate colors for demo
+                colorAdjust.setHue(hue);
                 ship.setEffect(colorAdjust);
 
                 ship.setRotate(90 + 360*angle/2/Math.PI);
@@ -444,7 +526,7 @@ public class Interface {
 
             // Apply color filter for Player
             ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setHue(color); // Alternate colors for demo
+            colorAdjust.setHue(hue);
             ship.setEffect(colorAdjust);
 
             int width = 20;

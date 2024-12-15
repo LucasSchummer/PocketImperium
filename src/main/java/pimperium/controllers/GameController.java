@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
@@ -15,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +31,7 @@ import pimperium.players.Bot;
 import pimperium.players.Human;
 import pimperium.players.Player;
 import pimperium.players.RandomBot;
+import pimperium.utils.Colors;
 import pimperium.views.Interface;
 import pimperium.views.MenuView;
 import pimperium.views.PlayerNamesView;
@@ -86,8 +89,12 @@ public class GameController extends Application {
             // Create human players
             List<Player> players = new ArrayList<>();
             List<String> chosenPseudos = new ArrayList<>(playerNames);
+            List<Colors> availableColors = new ArrayList<>(Arrays.asList(Colors.values()));
+		    Collections.shuffle(availableColors);
+
             for (String name : playerNames) {
-                Human human = new Human(game);
+                Colors playerColor = availableColors.remove(0);
+                Human human = new Human(game, playerColor);
                 human.setPseudo(name);
                 players.add(human);
             }
@@ -103,19 +110,20 @@ public class GameController extends Application {
             // Add bots to reach the total number of players
             for (int i = 0; i < botStrategies.size(); i++) {
                 String strategy = botStrategies.get(i);
+                Colors botColor = availableColors.remove(0);
                 Bot bot;
                 switch (strategy) {
                     case "Offensif":
-                        // bot = new OffensiveBot(game);
-                        bot = new RandomBot(game);
+                        // bot = new OffensiveBot(game, botColor);
+                        bot = new RandomBot(game, botColor);
                         break;
                     case "Défensif":
-                        // bot = new DefensiveBot(game);
-                        bot = new RandomBot(game);
+                        // bot = new DefensiveBot(game, botColor);
+                        bot = new RandomBot(game, botColor);
                         break;
                     case "Aléatoire":
                     default:
-                        bot = new RandomBot(game);
+                        bot = new RandomBot(game, botColor);
                         break;
                 }
 
@@ -136,6 +144,8 @@ public class GameController extends Application {
             }
 
             game.setPlayers(players.toArray(new Player[0]));
+
+            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
     
             // Start the game thread
             game.startGame();
@@ -218,6 +228,9 @@ public class GameController extends Application {
                     Platform.runLater(() -> this.view.updateHexagon(hex));
                 }
                 break;
+            case "scoreUpdated":
+                Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
+                break;
             case "roundOver":
                 try {
                     this.saveGame("SavedGames/SavedGame.dat");
@@ -279,7 +292,7 @@ public class GameController extends Application {
         out.writeObject(game); 
         out.close();
         fileOut.close();
-        System.out.println("Game saved");
+        System.out.println("Jeu sauvgardé");
     }
 
     // Load the game from the SavedGames directory
@@ -314,14 +327,16 @@ public class GameController extends Application {
                 Platform.runLater(() -> this.view.updateHexagon(hex));
             }
 
+            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
+
             // Start the game thread
             game.startGame();
         } catch (IOException e) {
-            System.out.println("Saved game could not be loaded.");
+            System.out.println("Le jeu sauvegardé n'a pas pu être chargé.");
             System.out.println(e.getMessage());
-        }
-        catch (ClassNotFoundException e) {
-            System.out.println("Saved game file not found.");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Fichier de jeu sauvegardé non trouvé.");
+            System.out.println(e.getMessage());
         }
     }
 

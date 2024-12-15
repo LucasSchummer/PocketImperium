@@ -8,12 +8,13 @@ import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
+import pimperium.utils.Colors;
 import pimperium.utils.Debugger;
 
 public class RandomBot extends Bot {
 
-    public RandomBot(Game game) {
-        super(game);
+    public RandomBot(Game game, Colors color) {
+        super(game, color);
     }
 
     @Override
