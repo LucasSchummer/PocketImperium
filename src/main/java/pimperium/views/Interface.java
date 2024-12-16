@@ -395,27 +395,27 @@ public class Interface {
             // Set the color of the pseudo to match the player's ship color
             Color javafxColor;
             switch (player.getColor()) {
-                case RED:
-                    javafxColor = Color.RED;
-                    break;
-                case GREEN:
-                    javafxColor = Color.GREEN;
-                    break;
-                case BLUE:
-                    javafxColor = Color.BLUE;
-                    break;
-                case YELLOW:
-                    javafxColor = Color.YELLOW;
-                    break;
-                case PURPLE:
-                    javafxColor = Color.PURPLE;
-                    break;
-                case ORANGE:
-                    javafxColor = Color.ORANGE;
-                    break;
-                default:
-                    javafxColor = Color.WHITE;
-                    break;
+            case RED:
+                javafxColor = Color.rgb(255, 102, 102); 
+                break;
+            case GREEN:
+                javafxColor = Color.rgb(102, 255, 102); 
+                break;
+            case BLUE:
+                javafxColor = Color.rgb(102, 102, 255); 
+                break;
+            case YELLOW:
+                javafxColor = Color.rgb(255, 255, 102); 
+                break;
+            case PURPLE:
+                javafxColor = Color.rgb(204, 102, 255); 
+                break;
+            case ORANGE:
+                javafxColor = Color.rgb(255, 178, 102); 
+                break;
+            default:
+                javafxColor = Color.WHITE;
+                break;
             }
             scoreText.setFill(javafxColor);
             scoreText.setFont(Font.font("Orbitron", 14));
