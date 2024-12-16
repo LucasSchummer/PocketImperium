@@ -76,7 +76,7 @@ public class RandomBot extends Bot {
 
     public void doExplore(int efficiency) {
 
-        System.out.println(this.getPseudo() + " explore");
+        System.out.println(this.getPseudo() + " explore with efficiency " + efficiency);
 
         for (int i = 0; i < efficiency; i++) {
 
@@ -88,7 +88,9 @@ public class RandomBot extends Bot {
                 return;
             }
 
-/*            List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
+            //Debugger.displayAllExploreMoves(possibleMoves);
+
+/*          List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
             Set<Hexagon> origins = new HashSet<Hexagon>();*/
 
             Random random = new Random();
@@ -106,6 +108,7 @@ public class RandomBot extends Bot {
 
             int index = random.nextInt(possibleMoves.size());
             Pair<List<Ship>, List<Hexagon>> move = possibleMoves.get(index);
+
 
             // Execute each move
             this.explore.setShips(move.getKey());

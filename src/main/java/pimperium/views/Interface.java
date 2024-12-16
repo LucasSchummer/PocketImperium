@@ -487,7 +487,7 @@ public class Interface {
 
     public Pane drawShipsTriPrime(int numShips, Colors colorEnum) {
 
-        Image shipImage = new Image("file:assets/spaceship.png");
+        Image shipImage = new Image("file:assets/spaceship3.png");
         Pane shipPane = new Pane();
 
         float hue = colorEnum.getHue();

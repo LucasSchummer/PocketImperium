@@ -3,6 +3,7 @@ module com.example.pimperium {
     requires javafx.fxml;
     requires transitive javafx.graphics;
     requires transitive java.desktop;
+    requires java.sql;
 
     opens pimperium.controllers to javafx.fxml;
     opens pimperium.views to javafx.fxml;

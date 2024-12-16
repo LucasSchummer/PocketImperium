@@ -9,6 +9,7 @@ import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
+import pimperium.utils.Debugger;
 
 
 public class Human extends Player {
@@ -411,6 +412,8 @@ public class Human extends Player {
 
 				if (!validMove) {
 					System.out.println("Le coup proposé n'est pas valide. Veuillez réessayer.");
+
+					Debugger.displayAllExploreMoves(this, this.game);
 				}
 
 			}
@@ -529,6 +532,8 @@ public class Human extends Player {
 
 						if (!validMove) {
 							System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
+
+							Debugger.displayAllExterminateMoves(this, this.game);
 						}
 
 	/*                  // Add the move to the moves list

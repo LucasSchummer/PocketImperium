@@ -1,6 +1,7 @@
 package pimperium.utils;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -78,6 +79,7 @@ public class Possibilities implements Serializable{
             List<Ship> totalUsableFleet = origin.getShips().stream()
                     .filter(ship -> !ship.hasExplored())
                     .toList();
+
             for (int numShips = 1; numShips < totalUsableFleet.size()+1 ; numShips++) {
                 List<Ship> fleet = new ArrayList<>(totalUsableFleet.subList(0, numShips));
 
@@ -88,31 +90,45 @@ public class Possibilities implements Serializable{
 
                 for (Hexagon target1 : distance1Targets) {
                     // Add the simplest move (the whole fleet moves to the 1-hex away destination)
-                    possibleMoves.add(new Pair<>(fleet, new ArrayList<>(Collections.nCopies(fleet.size(), target1))));
+                    possibleMoves.add(new Pair<>(new ArrayList<>(fleet), new ArrayList<>(Collections.nCopies(fleet.size(), target1))));
 
                     // Add all the distance-2 moves if the hex is not Tri-Prime
                     if (!target1.isTriPrime()) {
 
                         // Add to the fleet the ships located on the hex
-                        fleet.addAll(target1.getShips());
+                        //fleet.addAll(target1.getShips());
+                        List<Ship> extendedFleet = new ArrayList<>(fleet);
+                        extendedFleet.addAll(target1.getShips());
 
                         Set<Hexagon> distance2Targets = target1.getNeighbours();
                         // Remove from the list of possible targets the hexs controlled by another player
                         distance2Targets.removeIf(hex -> hex.getOccupant() != null && hex.getOccupant() != player);
+                        distance2Targets.removeIf(hex -> hex == origin);
 
                         // Add all the possible moves for each destination
                         for (Hexagon target2 : distance2Targets) {
-                            for (int numShipsDropped = 0; numShipsDropped < fleet.size(); numShipsDropped++) {
+                            for (int numShipsDropped = 0; numShipsDropped < extendedFleet.size(); numShipsDropped++) {
                                 // The fleet goes to destination, except for numShipsDropped that stop halfway
-                                List<Ship> subFleet2 = new ArrayList<>(fleet.subList(0, fleet.size() - numShipsDropped));
-                                List<Ship> subFleet1 = new ArrayList<>(fleet.subList(fleet.size() - numShipsDropped, fleet.size()));
+                                List<Ship> subFleet2 = new ArrayList<>(extendedFleet.subList(0, extendedFleet.size() - numShipsDropped));
+                                List<Ship> subFleet1 = new ArrayList<>(extendedFleet.subList(extendedFleet.size() - numShipsDropped, extendedFleet.size()));
                                 List<Hexagon> destination2 = new ArrayList<>(Collections.nCopies(subFleet2.size(), target2));
                                 List<Hexagon> destination1 = new ArrayList<>(Collections.nCopies(subFleet1.size(), target1));
 
                                 // Concatenate the fleets and destinations
-                                subFleet1.addAll(subFleet2);
-                                destination1.addAll(destination2);
-                                possibleMoves.add(new Pair<>( subFleet1, destination1));
+                                //subFleet1.addAll(subFleet2);
+                                //destination1.addAll(destination2);
+                                //subFleet1.addAll(new ArrayList<>(subFleet2));
+                                //destination1.addAll(new ArrayList<>(destination2));
+
+                                // Create deep copies for the concatenated lists
+                                List<Ship> fullFleet = new ArrayList<>(subFleet1); // Deep copy of subFleet1
+                                fullFleet.addAll(subFleet2); // Add subFleet2
+
+                                List<Hexagon> fullDestinations = new ArrayList<>(destination1); // Deep copy of destination1
+                                fullDestinations.addAll(destination2); // Add destination2
+
+                                possibleMoves.add(new Pair<>( fullFleet, fullDestinations));
+
                             }
                         }
                     }
@@ -121,6 +137,19 @@ public class Possibilities implements Serializable{
 
             }
 
+        }
+
+        // Just for debugging
+        for (Pair<List<Ship>, List<Hexagon>> move : possibleMoves) {
+            if (move.getKey().size() != move.getValue().size()) {
+                System.out.println("Warning !!");
+                for (Ship ship : move.getKey()) {
+                    System.out.println(ship);
+                }
+                for (Hexagon hex : move.getValue()) {
+                    System.out.println(hex);
+                }
+            }
         }
 
         return possibleMoves;
@@ -162,9 +191,9 @@ public class Possibilities implements Serializable{
             int[] fleetSizes = new int[origins.size()];
             for (int i = 0; i < origins.size(); i++) {
                 //fleetSizes[i] = origins.get(i).getShips().size();
-                fleetSizes[i] = origins.get(i).getShips().stream()
+                fleetSizes[i] = (int) origins.get(i).getShips().stream()
                         .filter(ship -> !ship.hasExterminated())
-                        .toList().size();
+                        .count();
             }
 
             // All the possible distributions of ships from the origin fleets
@@ -205,7 +234,7 @@ public class Possibilities implements Serializable{
                 }
                 // Make sure the fleet is not empty (possible considering how we generate the distributions)
                 if (!fleet.isEmpty()) {
-                    possibleMoves.add(new Pair<>(fleet, target));
+                    possibleMoves.add(new Pair<>(new HashSet<>(fleet), target));
                 }
             }
 
