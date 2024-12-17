@@ -19,6 +19,16 @@ public class Debugger {
         }
     }
 
+    public static void displayDistributions(List<int[]> distributions) {
+        for (int[] distribution : distributions) {
+            System.out.print("\n[ ");
+            for (int i : distribution) {
+                System.out.print(i + " ");
+            }
+            System.out.print("]");
+        }
+    }
+
     public static void displayAllNumberNeighbors(Hexagon[][] hexs) {
         for (Hexagon[] row : hexs) {
             for (Hexagon hex : row) {

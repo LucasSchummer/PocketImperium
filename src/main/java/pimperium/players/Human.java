@@ -507,7 +507,6 @@ public class Human extends Player {
 							continue;
 						}
 
-
 						System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
 						numFlottes = this.game.scanner.nextInt();
 
@@ -535,9 +534,6 @@ public class Human extends Player {
 
 							Debugger.displayAllExterminateMoves(this, this.game);
 						}
-
-	/*                  // Add the move to the moves list
-						moves.add(new Pair<>(fleet, target));*/
 
 						validInput = true; // Exit the loop
 					} catch (Exception e) {
@@ -580,18 +576,8 @@ public class Human extends Player {
 				newMove = false;
 			}
 
-			//validMoves = game.checkExterminateValidity(moves, this);
-
 		}
 
-
-	/*    // Execute each move
-		for (Pair<Set<Ship>, Hexagon> move : moves) {
-			// Set the ships and execute the command
-			this.exterminate.setShips(move.getKey());
-			this.exterminate.setTarget(move.getValue());
-			this.exterminate.execute();
-		}*/
 	}
 
 

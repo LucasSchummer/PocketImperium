@@ -84,7 +84,7 @@ public class Possibilities implements Serializable{
                 List<Ship> fleet = new ArrayList<>(totalUsableFleet.subList(0, numShips));
 
                 // Get all the direct neighbors of the origin
-                Set<Hexagon> distance1Targets = origin.getNeighbours();
+                Set<Hexagon> distance1Targets = new HashSet<>(origin.getNeighbours());
                 // Remove from the list of possible targets the hexs controlled by another player
                 distance1Targets.removeIf(hex -> hex.getOccupant() != null && hex.getOccupant() != player);
 
@@ -100,7 +100,8 @@ public class Possibilities implements Serializable{
                         List<Ship> extendedFleet = new ArrayList<>(fleet);
                         extendedFleet.addAll(target1.getShips());
 
-                        Set<Hexagon> distance2Targets = target1.getNeighbours();
+                        Set<Hexagon> distance2Targets = new HashSet<>(target1.getNeighbours());
+
                         // Remove from the list of possible targets the hexs controlled by another player
                         distance2Targets.removeIf(hex -> hex.getOccupant() != null && hex.getOccupant() != player);
                         distance2Targets.removeIf(hex -> hex == origin);
@@ -113,12 +114,6 @@ public class Possibilities implements Serializable{
                                 List<Ship> subFleet1 = new ArrayList<>(extendedFleet.subList(extendedFleet.size() - numShipsDropped, extendedFleet.size()));
                                 List<Hexagon> destination2 = new ArrayList<>(Collections.nCopies(subFleet2.size(), target2));
                                 List<Hexagon> destination1 = new ArrayList<>(Collections.nCopies(subFleet1.size(), target1));
-
-                                // Concatenate the fleets and destinations
-                                //subFleet1.addAll(subFleet2);
-                                //destination1.addAll(destination2);
-                                //subFleet1.addAll(new ArrayList<>(subFleet2));
-                                //destination1.addAll(new ArrayList<>(destination2));
 
                                 // Create deep copies for the concatenated lists
                                 List<Ship> fullFleet = new ArrayList<>(subFleet1); // Deep copy of subFleet1
@@ -160,7 +155,7 @@ public class Possibilities implements Serializable{
 
         List<Pair<Set<Ship>, Hexagon>> possibleMoves = new ArrayList<>();
 
-        List<Hexagon> targets = new ArrayList<Hexagon>();
+        Set<Hexagon> targets = new HashSet<Hexagon>();
         for (Hexagon[] row : game.getMap()) {
             for (Hexagon hex : row) {
                 if (hex != null && hex.getSystemLevel() >= 1 && hex.getOccupant() != player) {
@@ -168,6 +163,7 @@ public class Possibilities implements Serializable{
                 }
             }
         }
+
 
         //Debugger.displayTargets(targets, player);
 
@@ -221,6 +217,9 @@ public class Possibilities implements Serializable{
                     done = true; // We've exhausted all combinations
                 }
             }
+
+/*            System.out.println("Distributions for target " + target);
+            Debugger.displayDistributions(distributions);*/
 
             // Convert ship distributions to moves
             for (int[] dist : distributions) {

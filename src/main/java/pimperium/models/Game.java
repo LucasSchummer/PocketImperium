@@ -253,34 +253,46 @@ public class Game implements Runnable, Serializable {
 		Hexagon triPrime = new Hexagon(4, 2);
 		triPrime.setTriPrime();
 		triPrime.addSystem(new HSystem(3)); // Level 3 system
-	
+
+		Set<Hexagon> formerTriPrimes = new HashSet<>();
+		Set<Hexagon> triPrimeNeighbors = new HashSet<>();
+
 		// List of coordinates of the central hexes
 		int[][] centralHexCoords = {{3,2}, {4,2}, {4,3}, {5,2}};
-	
-		// Set to store the neighbors of Tri-Prime
-		Set<Hexagon> triPrimeNeighbors = new HashSet<>();
-	
 		for (int[] coord : centralHexCoords) {
 			int i = coord[0];
 			int j = coord[1];
-			Hexagon hex = hexs[i][j];
-	
-			// Add the neighbors of the central hex to Tri-Prime
-			for (Hexagon neighbor : hex.getNeighbours()) {
-				if (!neighbor.isTriPrime()) {
-					triPrimeNeighbors.add(neighbor);
-					// Update the neighbors of each adjacent hex
-					neighbor.getNeighbours().remove(hex);
-					neighbor.addNeighbor(triPrime);
+			formerTriPrimes.add(hexs[i][j]);
+		}
+
+		for (Hexagon[] row : hexs) {
+			for (Hexagon hex : row) {
+				if (hex != null && !formerTriPrimes.contains(hex)) {
+					// Check if any of the formerTriPrime hexes are neighbors
+					if (!Collections.disjoint(hex.getNeighbours(), formerTriPrimes)) {
+						// Add Tri-Prime as a neighbor
+						triPrimeNeighbors.add(hex);
+					}
 				}
 			}
-	
-			// Replace the central hex with Tri-Prime in the grid
+		}
+
+		for (Hexagon neighbor : triPrimeNeighbors) {
+			neighbor.printNeighbours();
+			neighbor.getNeighbours().removeAll(formerTriPrimes); // Remove old neighbors
+			neighbor.getNeighbours().add(triPrime); // Add Tri-Prime as a neighbor
+			neighbor.printNeighbours();
+		}
+
+		for (int[] coord : centralHexCoords) {
+			int i = coord[0];
+			int j = coord[1];
 			hexs[i][j] = triPrime;
 		}
-	
-		// Update the neighbors of Tri-Prime
+
 		triPrime.setNeighbours(triPrimeNeighbors);
+		triPrimeNeighbors.removeAll(formerTriPrimes);
+
 	}
 
 	//Create the players according to their type
@@ -458,6 +470,7 @@ public class Game implements Runnable, Serializable {
 		this.doScore();
 		this.round++;
 		this.pcs.firePropertyChange("roundOver", null, null);
+
 	}
 	
 	public void playRoundStep() {
