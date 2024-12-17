@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -32,9 +33,11 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
@@ -55,8 +58,9 @@ public class Interface {
     private VBox sidePanel;
     private VBox topSection;
     private VBox toptopSection;
-    private VBox bottomtopSection;
+    private VBox middleSection;
     private VBox bottomSection;
+    private VBox gameLogPanel;
     
     public Interface(GameController controller) {
         this.controller = controller;
@@ -64,7 +68,7 @@ public class Interface {
         gridPane = new GridPane();
         imageViews = new ImageView[3][3];
 
-        gridPane.setPrefWidth(525);
+        gridPane.setPrefWidth(825);
         gridPane.setPrefHeight(750);
         // Remove spacing and padding
         gridPane.setHgap(2); // Horizontal gap between columns
@@ -78,57 +82,77 @@ public class Interface {
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
 
+        gameLogPanel = new VBox();
+        gameLogPanel.setPadding(new Insets(10));
+        gameLogPanel.setAlignment(Pos.TOP_LEFT);
+        gameLogPanel.setPrefWidth(400);
+        gameLogPanel.setSpacing(5);
+
+        Text logTitle = new Text("Déroulement de la partie");
+        logTitle.setFill(Color.WHITE);
+        logTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        gameLogPanel.getChildren().add(logTitle);
+
+
         sidePanel = new VBox(20);
         sidePanel.setPadding(new Insets(10));
         sidePanel.setAlignment(Pos.TOP_CENTER);
         sidePanel.setPrefWidth(275);
+        sidePanel.setMaxWidth(275);
 
         topSection = new VBox();
         topSection.setSpacing(10);
-        topSection.setPrefHeight(449);
+        //topSection.setPrefHeight(174);
 
-        toptopSection = new VBox();
-        toptopSection.setSpacing(10);
-        toptopSection.setPrefHeight(173);
+        middleSection = new VBox();
+        middleSection.setSpacing(10);
+        //middleSection.setPrefHeight(358);
 
-        bottomtopSection = new VBox();
-        toptopSection.setSpacing(10);
-        toptopSection.setPrefHeight(274);
+        bottomSection = new VBox();
+        bottomSection.setSpacing(10);
+        //bottomSection.setPrefHeight(228);
+        Text inputTitle = new Text("Entrées");
+        inputTitle.setFill(Color.WHITE);
+        inputTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        bottomSection.getChildren().add(inputTitle);
 
-        VBox.setMargin(toptopSection, new Insets(0, 0, 0, 10));
-        VBox.setMargin(bottomtopSection, new Insets(0, 0, 0, 10));
+        TextField userInputField = new TextField();
+        userInputField.setPromptText("Entrez votre commande ici");
+        userInputField.setMaxWidth(150); // Set the maximum width
+        bottomSection.getChildren().add(userInputField);
+
+
+        Button validateButton = new Button("Valider");
+        validateButton.getStyleClass().add("button");
+        validateButton.setOnAction(event -> {
+            String input = userInputField.getText();
+            controller.handleUserInput(input);
+            userInputField.clear();
+        });
+        bottomSection.getChildren().add(validateButton);
+
 
         Rectangle separator2 = new Rectangle();
         separator2.setFill(Color.WHITE);
         separator2.widthProperty().bind(sidePanel.widthProperty());
         separator2.setHeight(2);
 
-        topSection.getChildren().addAll(toptopSection, separator2, bottomtopSection);
-
-        bottomSection = new VBox();
-        bottomSection.setSpacing(10);
-        bottomSection.setPrefHeight(299);
-
         Rectangle separator3 = new Rectangle();
         separator3.setFill(Color.WHITE);
         separator3.widthProperty().bind(sidePanel.widthProperty());
         separator3.setHeight(2);
 
-        sidePanel.getChildren().addAll(topSection, separator3, bottomSection);
+        Rectangle separator4 = new Rectangle();
+        separator4.setFill(Color.WHITE);
+        separator4.heightProperty().bind(sidePanel.heightProperty());
+        separator4.setWidth(2);
 
-        Text title1 = new Text("Partie");
-        Text title2 = new Text("Score");
-        title1.setFill(Color.WHITE);
-        title1.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        title2.setFill(Color.WHITE);
-        title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        toptopSection.getChildren().add(title1);
-        bottomtopSection.getChildren().add(title2);
+        sidePanel.getChildren().addAll(topSection, separator2, middleSection, separator3, bottomSection);
 
         Text title3 = new Text("Commandes");
         title3.setFill(Color.WHITE);
         title3.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        bottomSection.getChildren().add(title3);
+        middleSection.getChildren().add(title3);
 
 
 
@@ -176,8 +200,12 @@ public class Interface {
         separator.heightProperty().bind(sidePanel.heightProperty());
         separator.setWidth(2);
         
-        HBox mainLayout = new HBox();
-        mainLayout.getChildren().addAll(gamePane, separator, sidePanel);
+
+        
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setCenter(gamePane);
+        mainLayout.setRight(sidePanel);
+        mainLayout.setLeft(gameLogPanel);
         mainLayout.setBackground(new Background(background));
 
         
@@ -318,13 +346,13 @@ public class Interface {
     public void showCommandSelection(Human player) {
         Platform.runLater(() -> {
             // Clear the side panel
-            bottomSection.getChildren().clear();
+            middleSection.getChildren().clear();
 
             // Title
             Text commandsTitle = new Text("Choisissez vos commandes");
             commandsTitle.setFill(Color.WHITE);
             commandsTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 16));
-            bottomSection.getChildren().add(commandsTitle);
+            middleSection.getChildren().add(commandsTitle);
 
             // List of available commands
             List<String> availableCommands = new ArrayList<>(Arrays.asList("Expand", "Explore", "Exterminate"));
@@ -336,22 +364,22 @@ public class Interface {
                 Text instruction = new Text("Commande " + i + " :");
                 instruction.setFill(Color.WHITE);
                 instruction.setFont(Font.font("Orbitron", 12));
-                bottomSection.getChildren().add(instruction);
+                middleSection.getChildren().add(instruction);
 
                 ComboBox<String> comboBox = new ComboBox<>();
                 comboBox.getItems().addAll(availableCommands);
                 comboBox.setPrefWidth(150);
                 comboBoxes.add(comboBox);
-                bottomSection.getChildren().add(comboBox);
+                middleSection.getChildren().add(comboBox);
 
                 // Add some space between each command
-                bottomSection.setSpacing(10);
+                middleSection.setSpacing(10);
             }
             
             Button validateButton = new Button("Valider");
             validateButton.getStyleClass().add("button");
             validateButton.setPrefWidth(150);
-            bottomSection.getChildren().add(validateButton);
+            middleSection.getChildren().add(validateButton);
 
             validateButton.setOnAction(event -> {
                 selectedCommands.clear();
@@ -378,13 +406,13 @@ public class Interface {
 
     public void updateScores(Player[] players) {
         // Clear the current content of the score section
-        bottomtopSection.getChildren().clear();
+        topSection.getChildren().clear();
     
         // Section title
         Text title2 = new Text("Score");
         title2.setFill(Color.WHITE);
         title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        bottomtopSection.getChildren().add(title2);
+        topSection.getChildren().add(title2);
     
         // Display the score for each player
         for (Player player : players) {
@@ -419,11 +447,11 @@ public class Interface {
             }
             scoreText.setFill(javafxColor);
             scoreText.setFont(Font.font("Orbitron", 14));
-            bottomtopSection.getChildren().add(scoreText);
+            topSection.getChildren().add(scoreText);
         }
     
         // Add spacing between each score
-        bottomtopSection.setSpacing(10);
+        topSection.setSpacing(10);
     }
 
     public Pane drawShips(int numShips, Colors colorEnum) {
@@ -543,6 +571,7 @@ public class Interface {
         return shipPane;
 
     }
+
 
     public void changeSectorsTransparency(boolean transparent) {
         this.gridPane.setMouseTransparent(transparent);

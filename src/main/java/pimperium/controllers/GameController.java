@@ -48,6 +48,8 @@ public class GameController extends Application {
     private Hexagon selectedHexagon;
     private Sector selectedSector;
 
+    private String userInput;
+
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
     
@@ -158,7 +160,7 @@ public class GameController extends Application {
     
             // Display the game interface
             Platform.runLater(() -> {
-                Scene scene = new Scene(view.getRoot(), 800, 750);
+                Scene scene = new Scene(view.getRoot(), 1200, 750);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Pocket Imperium");
                 primaryStage.show();
@@ -265,6 +267,22 @@ public class GameController extends Application {
         notify();
     }
 
+    public void handleUserInput(String input) {
+        synchronized (this) {
+            this.userInput = input;
+            notify(); 
+        }
+    }
+
+    public synchronized String waitForUserInput() throws InterruptedException {
+        while (userInput == null) {
+            wait();
+        }
+        String input = userInput;
+        userInput = null;
+        return input;
+    }
+
     public Game getGame() {
         return this.game;
     }
@@ -317,7 +335,7 @@ public class GameController extends Application {
 
             // Display the game interface
             Platform.runLater(() -> {
-                Scene scene = new Scene(view.getRoot(), 800, 750);
+                Scene scene = new Scene(view.getRoot(), 1200, 750);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Pocket Imperium");
                 primaryStage.show();
