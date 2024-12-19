@@ -20,65 +20,6 @@ public class Human extends Player {
 		super(game, color);
 	}
 
-	/*
-	//Choose a lvl-1 system to place 2 ships
-	public void setupInitialFleet() {
-
-		int i = -1, j = -1;
-
-		boolean validInput = false;
-
-		// Loop until valid input is received
-		while (!validInput) {
-			try {
-				System.out.println(this.getPseudo() + ", entrez la position de l'hexagone où vous souhaitez placer votre flotte (i j) : ");
-				i = this.game.scanner.nextInt();
-				j = this.game.scanner.nextInt();
-
-				// Validate the coordinates
-				if (i < 0 || i >= Game.MAP_ROWS || j < 0 || j >= Game.MAP_COLS) {
-					System.out.println("Coordonnées invalides. Veuillez réessayer.");
-					continue; // Ask for input again
-				}
-
-				Hexagon hex = this.game.getMap()[i][j];
-				if (hex == null || hex.getSystem() == null || hex.getSystem().getLevel() != 1) {
-					System.out.println("Hexagone invalide pour placer la flotte. Veuillez choisir un autre hexagone.");
-					continue; // Ask for input again
-				}
-
-				// Check that the hex is not already occupied by anyone and not empty
-				if (hex.getOccupant() != null && hex.getOccupant() != this) {
-					System.out.println("Ce système est déjà contrôlé par un autre joueur. Veuillez choisir un autre hexagone.");
-					continue; // Ask for input again
-				}
-
-				if (!hex.getShips().isEmpty()) {
-					System.out.println("Cet hexagone contient déjà des vaisseaux. Veuillez choisir un autre hexagone.");
-					continue; // Ask for input again
-				}
-
-				// Check that the hex is in a unoccupied sector
-				if (game.findSector(hex).isOccupied()) {
-					System.out.println("Cet hexagone se situe dans un secteur déjà controlé par un joueur. Veuillez choisir un autre hexagone.");
-					continue; // Ask for input again
-				}
-
-				// Add ships to the selected hexagon
-				this.createShip(hex);
-				this.createShip(hex);
-
-				System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
-
-				validInput = true; // Exit the loop
-			} catch (Exception e) {
-				System.out.println("Entrée invalide. Veuillez entrer deux entiers séparés par un espace.");
-				this.game.scanner.nextLine(); // Clear the invalid input
-			}
-		}
-
-	} */
-
 	// Chooses a lvl-1 system to place 2 ships
 	public void setupInitialFleet() {
         System.out.println(this.getPseudo() + ", cliquez sur l'hexagone où vous souhaitez placer votre flotte.");
@@ -127,33 +68,6 @@ public class Human extends Player {
         }
     }
 
-	/*
-	public void chooseOrderCommands() {
-
-		int[] order = new int[3];
-		int input;
-		Set<Integer> alreadyChosen = new HashSet<Integer>();
-		System.out.println(this.getPseudo() +" Choisissez l'ordre des commandes (0: Expand, 1: Explore, 2: Exterminate) pour le tour : ");
-		for (int i = 0; i < 3; i++) {
-			boolean validInput = false;
-			while (!validInput) {
-				System.out.print("Commande " + (i + 1) + " : ");
-				input = this.game.scanner.nextInt();
-				if (input < 0 || input > 2 || alreadyChosen.contains(input)) {
-					System.out.println("Commande invalide. Veuillez réessayer.");
-				} else {
-					validInput = true;
-					alreadyChosen.add(input);
-					order[i] = input;
-				}
-			}
-
-		}
-
-		this.orderCommands = order;
-
-	} */
-
 	public void chooseOrderCommands() {
         System.out.println(this.getPseudo() + ", veuillez choisir l'ordre des commandes.");
 
@@ -172,8 +86,8 @@ public class Human extends Player {
 		}
 	}
 
-		@Override
-		public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+	@Override
+	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 
 			boolean validChoice = false;
 			Sector sector = null;
@@ -205,80 +119,6 @@ public class Human extends Player {
 			return sector;
 
 		}
-
-	/*
-	@Override
-	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
-		Scanner scanner = this.game.scanner;
-		Sector chosenSector = null;
-		boolean validChoice = false;
-		int sectorId = -1;
-		System.out.println(this.getPseudo() + " is choosing a sector to score");
-		
-		while (!validChoice) {
-			try {
-				System.out.println(this.getPseudo() + ", choose a sector to score [1-4 | 6-9]:");
-				sectorId = scanner.nextInt();
-				
-				if (sectorId < 1 || sectorId > sectors.length || sectorId == 5) {
-					System.out.println("Invalid sector ID. Please try again.");
-					continue;
-				}
-				
-				chosenSector = sectors[sectorId-1];
-
-				if (chosenSector == null) {
-					System.out.println("Invalid sector. Please try again.");
-				} else if (chosenSector.isTriPrime()) {
-					System.out.println("You cannot choose the Tri-Prime sector. Please choose another one.");
-				} else if (!chosenSector.isOccupied()) {
-					System.out.println("You cannot choose an unoccupied sector. Please choose another one.");
-				} else if (scoredSectors.contains(chosenSector)) {
-					System.out.println("This sector has already been chosen. Please choose another one.");
-				} else {
-					validChoice = true;
-				}
-			} catch (InputMismatchException e) {
-				System.out.println("Invalid input. Please enter a number.");
-				scanner.nextLine(); // Clear the invalid input
-			}
-		}
-		System.out.println(this.getPseudo() + " has chosen sector " + sectorId + " to score.");
-		return chosenSector;
-	}*/
-
-/*	
-	// Without the clickable hexagons
-	public void doExpand(int efficiency) {
-
-		System.out.println(this.getPseudo() + " is expanding");
-
-		boolean validity = false;
-
-		List<Ship> expandShips = new ArrayList<Ship>();
-		while (!validity) {
-			expandShips.clear();
-			for (int i=0; i<efficiency; i++) {
-
-				System.out.println("Enter the index of the ship you want to expand : " );
-				int index = this.game.scanner.nextInt();
-				if (index < 0 || index >= this.ships.size()) {
-					System.out.println("Index out of range. Please enter a valid index.");
-					i--; // Decrement i to retry this iteration
-					continue;
-				}
-				expandShips.add(this.ships.get(index));
-
-			}
-
-			validity = game.checkExpandValidity(expandShips);
-		}
-
-		//Set the ships and execute the command
-		this.expand.setShips(expandShips);
-		this.expand.execute();
-
-	}*/
 
 	// With the clickable hexagons
 	public void doExpand(int efficiency) {
@@ -341,7 +181,6 @@ public class Human extends Player {
 		this.expand.execute();*/
 	}
 
-
 	// With the clickable hexagons
 	public void doExplore(int efficiency) {
 
@@ -384,7 +223,8 @@ public class Human extends Player {
 
 						if (originHex.getShips().size() > 1) {
 							System.out.println("Combien de vaisseaux voulez-vous déplacer depuis cet hexagone ?");
-							numShips = this.game.scanner.nextInt();
+							//numShips = this.game.scanner.nextInt();
+							numShips = this.game.getController().waitForUserInput();
 						} else {
 							numShips = 1;
 						}
@@ -442,7 +282,8 @@ public class Human extends Player {
 				while (!validResponse) {
 					System.out.print("Voulez-vous déplacer une autre flotte ? (0/1) : ");
 					try {
-						int input = this.game.scanner.nextInt();
+						//int input = this.game.scanner.nextInt();
+						int input = this.game.getController().waitForUserInput();
 						if (input != 0 && input != 1) {
 							throw new Exception();
 						}
@@ -529,7 +370,8 @@ public class Human extends Player {
 						} else if (possibleOrigins.size() > 1) {
 
 							System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
-							numFlottes = this.game.scanner.nextInt();
+							//numFlottes = this.game.scanner.nextInt();
+							numFlottes = this.game.getController().waitForUserInput();
 
 							for (int k = 0; k < numFlottes; k++) {
 								System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
@@ -541,13 +383,51 @@ public class Human extends Player {
 									continue;
 								}
 
-								fleet.addAll(fleetHex.getShips());
+								List<Ship> usableShips = fleetHex.getShips().stream()
+												.filter(ship -> !ship.hasExterminated())
+												.toList();
+
+								System.out.println("Combien de vaisseaux situés sur " + fleetHex + " voulez-vous utiliser ?");
+								int numShips = 1;
+								if (usableShips.size() > 1) {
+									numShips = this.game.getController().waitForUserInput();
+								}
+
+
+								if (numShips > usableShips.size()) {
+									System.out.println("Vous ne disposez pas d'autants de vaisseaux capables d'exterminer.");
+									continue;
+								}
+
+								for (int i = 0; i < numShips; i++) {
+									fleet.add(usableShips.get(i));
+								}
+								//fleet.addAll(fleetHex.getShips());
 
 							}
 
 						} else {
 
-							fleet.addAll(possibleOrigins.getFirst().getShips());
+							//fleet.addAll(possibleOrigins.getFirst().getShips());
+
+							List<Ship> usableShips = possibleOrigins.getFirst().getShips().stream()
+									.filter(ship -> !ship.hasExterminated())
+									.toList();
+
+							System.out.println("Combien de vaisseaux situés sur " + possibleOrigins.getFirst() + " voulez-vous utiliser ?");
+							int numShips = 1;
+							if (usableShips.size() > 1) {
+								numShips = this.game.getController().waitForUserInput();
+							}
+
+							if (numShips > usableShips.size()) {
+								System.out.println("Vous ne disposez pas d'autants de vaisseaux capables d'exterminer.");
+								continue;
+							}
+
+							for (int i = 0; i < numShips; i++) {
+								fleet.add(usableShips.get(i));
+							}
 
 						}
 
@@ -589,7 +469,8 @@ public class Human extends Player {
 				while (!validInput) {
 					try {
 						System.out.print("Voulez-vous attaquer un autre système ? (0/1) : ");
-						int input = this.game.scanner.nextInt();
+						//int input = this.game.scanner.nextInt();
+						int input = this.game.getController().waitForUserInput();
 						if (input != 0 && input != 1) {
 							throw new Exception();
 						}
@@ -607,7 +488,6 @@ public class Human extends Player {
 		}
 
 	}
-
 
 	public static void main(String[] args) {
 		System.out.println("Lancez le jeu depuis GameController.js");

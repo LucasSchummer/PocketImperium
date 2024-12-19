@@ -417,10 +417,12 @@ public class Game implements Runnable, Serializable {
 						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
 						break;
 					case 2:
-						this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());
+						/*this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());*/
+						this.efficiencies[i][j] = 2;
 						break;
 					default:
-						this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());
+						/*this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());*/
+						this.efficiencies[i][j] = 3;
 						break;
 				}
 			}
@@ -517,7 +519,6 @@ public class Game implements Runnable, Serializable {
 		}
 		return null; // If no occupant
 	}
-
 
 	// Calculate the score of each player
 	public void doScore() {

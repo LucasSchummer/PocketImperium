@@ -33,7 +33,7 @@ public class Ship implements Serializable {
 
     // Move method to change the ship's position
     public void move(Hexagon newPosition) {
-        System.out.println(this + " moved to new position: " + newPosition);
+        //System.out.println(this + " moved to new position: " + newPosition);
         this.position.removeShip(this);
         this.position = newPosition;
         this.position.addShip(this);
@@ -43,7 +43,7 @@ public class Ship implements Serializable {
     public void destroy() {
         player.removeShip(this);
         position.removeShip(this);
-        System.out.println(this + " destroyed");
+        //System.out.println(this + " destroyed");
     }
 
     public boolean hasExpanded() {

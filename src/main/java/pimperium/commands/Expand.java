@@ -32,5 +32,8 @@ public class Expand implements Command, Serializable {
             this.player.createShip(this.shipsInvolved.get(i).getPosition());
             shipsInvolved.get(i).setHasExpanded(true);
         }
+
+        this.player.deleteExtraShips();
+
     }
 }

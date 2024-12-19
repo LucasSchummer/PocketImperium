@@ -3,11 +3,9 @@ package pimperium.views;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -119,6 +117,24 @@ public class Interface {
         TextField userInputField = new TextField();
         userInputField.setPromptText("Entrez votre commande ici");
         userInputField.setMaxWidth(150); // Set the maximum width
+        // Set TextFormatter to allow only integers
+        userInputField.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*")) { // Allow optional '-' for negative integers
+                return change; // Accept change
+            }
+            return null; // Reject change
+        }));
+
+        // Trigger when Enter is pressed in the TextField
+        userInputField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String input = userInputField.getText();
+                controller.handleUserInput(input);
+                userInputField.clear();
+            }
+        });
+
         bottomSection.getChildren().add(userInputField);
 
 
@@ -340,7 +356,6 @@ public class Interface {
         }
 
     }
-
 
     // Method to display command selection
     public void showCommandSelection(Human player) {

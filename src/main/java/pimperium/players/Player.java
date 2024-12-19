@@ -63,6 +63,19 @@ public abstract class Player implements Serializable {
         return this.ships;
     }
 
+    public void deleteExtraShips() {
+
+        int numExtraShips = this.countShips() - 15;
+        System.out.println("num ships of " + pseudo + " : " + countShips());
+        if (numExtraShips > 0) {
+            System.out.println(pseudo + " a déjà 15 vaisseaux sur le plateau");
+            for (int i = 0; i < numExtraShips ; i++) {
+                this.getShips().getLast().destroy();
+            }
+        }
+
+    }
+
     // Getter and setter for the pseudo
     public String getPseudo() {
         return this.pseudo;

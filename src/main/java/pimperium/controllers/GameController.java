@@ -270,15 +270,17 @@ public class GameController extends Application {
     public void handleUserInput(String input) {
         synchronized (this) {
             this.userInput = input;
+            //System.out.println(userInput);
             notify(); 
         }
     }
 
-    public synchronized String waitForUserInput() throws InterruptedException {
+    public synchronized int waitForUserInput() throws InterruptedException {
+        userInput = null;
         while (userInput == null) {
             wait();
         }
-        String input = userInput;
+        int input = Integer.parseInt(userInput);
         userInput = null;
         return input;
     }
