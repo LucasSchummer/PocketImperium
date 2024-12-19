@@ -57,6 +57,23 @@ public class Hexagon implements Serializable {
 	public void removeNeighbor(Set<Hexagon> hexs) {
 		this.neighbors.removeAll(hexs);
 	}
+
+	public List<Hexagon> getOriginsExterminate(Player player) {
+
+		List<Hexagon> origins = new ArrayList<Hexagon>();
+		// Find all the hexs the player can attack from
+		for (Hexagon hex : this.getNeighbours()) {
+			boolean isOccupant = hex.getOccupant() == player;
+			List<Ship> usableShips = hex.getShips().stream()
+					.filter(ship -> !ship.hasExterminated())
+					.toList();
+			boolean hasUsableShips = !usableShips.isEmpty();
+			if (isOccupant && hasUsableShips) {
+				origins.add(hex);
+			}
+		}
+		return origins;
+	}
 	
 	public Set<Hexagon> getNeighbours() {
 		return this.neighbors;

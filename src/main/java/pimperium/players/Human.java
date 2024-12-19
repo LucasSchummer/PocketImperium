@@ -10,6 +10,7 @@ import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
 import pimperium.utils.Debugger;
+import pimperium.utils.Possibilities;
 
 
 public class Human extends Player {
@@ -355,8 +356,10 @@ public class Human extends Player {
 		boolean validMove = false;
 
 		boolean newMove = true;
-			//moves.clear();
-		while (movesDone < efficiency && newMove) {
+
+		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = Possibilities.getInstance(game).explore(this);
+
+		while (movesDone < efficiency && newMove && !possibleMoves.isEmpty()) {
 
 			validMove = false;
 
@@ -377,9 +380,14 @@ public class Human extends Player {
 							continue;
 						}
 
-						System.out.println("Combien de vaisseaux voulez-vous déplacer depuis cet hexagone ?");
+						int numShips = 0;
 
-						int numShips = this.game.scanner.nextInt();
+						if (originHex.getShips().size() > 1) {
+							System.out.println("Combien de vaisseaux voulez-vous déplacer depuis cet hexagone ?");
+							numShips = this.game.scanner.nextInt();
+						} else {
+							numShips = 1;
+						}
 
 						if (numShips <= 0 || numShips > originHex.getShips().size()) {
 							System.out.println("Nombre de vaisseaux invalide. Veuillez réessayer.");
@@ -413,7 +421,7 @@ public class Human extends Player {
 				if (!validMove) {
 					System.out.println("Le coup proposé n'est pas valide. Veuillez réessayer.");
 
-					Debugger.displayAllExploreMoves(this, this.game);
+					//Debugger.displayAllExploreMoves(this, this.game);
 				}
 
 			}
@@ -426,7 +434,9 @@ public class Human extends Player {
 
 			this.game.triggerInterfaceUpdate();
 
-			if (movesDone < efficiency) {
+			possibleMoves = Possibilities.getInstance(game).explore(this);
+
+			if (movesDone < efficiency && !possibleMoves.isEmpty()) {
 				// Ask the user if he wants to move another fleet
 				boolean validResponse = false;
 				while (!validResponse) {
@@ -479,9 +489,10 @@ public class Human extends Player {
 		boolean validInput = false;
 		int movesDone = 0;
 
+		List<Pair<Set<Ship>, Hexagon>> possibleMoves = Possibilities.getInstance(game).exterminate(this);
 
 		//moves.clear();
-		while (movesDone < efficiency && newMove) {
+		while (movesDone < efficiency && newMove && !possibleMoves.isEmpty()) {
 
 			validMove = false;
 
@@ -507,22 +518,36 @@ public class Human extends Player {
 							continue;
 						}
 
-						System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
-						numFlottes = this.game.scanner.nextInt();
+						List<Hexagon> possibleOrigins = target.getOriginsExterminate(this);
 
 						Set<Ship> fleet = new HashSet<Ship>();
 
-						for (int k = 0; k < numFlottes; k++) {
-							System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
+						if (possibleOrigins.size() == 0) {
+							System.out.println("Aucune flotte disponible pour attaquer ce système.");
+							continue;
 
-							Hexagon fleetHex = game.getController().waitForHexagonSelection();
+						} else if (possibleOrigins.size() > 1) {
 
-							if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
-								System.out.println("Flotte invalide.");
-								continue;
+							System.out.println(this.getPseudo() + ", combien de flottes voulez-vous utiliser ? : ");
+							numFlottes = this.game.scanner.nextInt();
+
+							for (int k = 0; k < numFlottes; k++) {
+								System.out.println(this.getPseudo() + ", cliquez sur la flotte que vous voulez utiliser (hexagone).");
+
+								Hexagon fleetHex = game.getController().waitForHexagonSelection();
+
+								if (fleetHex == null || fleetHex.getShips().isEmpty() || fleetHex.getOccupant() != this) {
+									System.out.println("Flotte invalide.");
+									continue;
+								}
+
+								fleet.addAll(fleetHex.getShips());
+
 							}
 
-							fleet.addAll(fleetHex.getShips());
+						} else {
+
+							fleet.addAll(possibleOrigins.getFirst().getShips());
 
 						}
 
@@ -555,7 +580,10 @@ public class Human extends Player {
 
 			movesDone++;
 
-			if (movesDone < efficiency) {
+			// Regenerate the possible moves to make sure the player doesn't try to play again if it's impossible
+			possibleMoves = Possibilities.getInstance(game).exterminate(this);
+
+			if (movesDone < efficiency && !possibleMoves.isEmpty()) {
 				// Ask the user if he wants to attack another system
 				validInput = false;
 				while (!validInput) {
