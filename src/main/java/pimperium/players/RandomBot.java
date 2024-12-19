@@ -4,6 +4,7 @@ import java.util.*;
 
 import javafx.util.Pair;
 
+import pimperium.elements.HSystem;
 import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.elements.Ship;
@@ -17,7 +18,7 @@ public class RandomBot extends Bot {
         super(game, color);
     }
 
-    @Override
+/*    @Override
     public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
         Random random = new Random();
         Sector chosenSector = null;
@@ -42,6 +43,37 @@ public class RandomBot extends Bot {
             }
         }
         System.out.println(this.getPseudo() + " a choisi le secteur " + sectorId + " à scorer.");
+        return chosenSector;
+    }*/
+
+    @Override
+    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
+
+        Set<Sector> availableSectors = new HashSet<>();
+        Collections.addAll(availableSectors, sectors);
+        availableSectors.removeIf(Sector::isTriPrime);
+
+        Sector chosenSector = sectors[0];
+
+        int bestScore = -100;
+        int score = 0;
+
+        for (Sector sector : availableSectors) {
+            score = 0;
+            for (HSystem system : sector.getSystems()) {
+                if (system.getHex().getOccupant() != null) {
+                    score += system.getLevel() * ( system.getHex().getOccupant() == this ? 1 : -1);
+                }
+            }
+            if (score > bestScore) {
+                bestScore = score;
+                chosenSector = sector;
+            }
+        }
+
+        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
+
+        System.out.println(this.getPseudo() + " a choisi le secteur " + game.findSectorId(chosenSector) + " à scorer.");
         return chosenSector;
     }
 

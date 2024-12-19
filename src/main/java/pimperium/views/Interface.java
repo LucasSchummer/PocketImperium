@@ -572,7 +572,6 @@ public class Interface {
 
     }
 
-
     public void changeSectorsTransparency(boolean transparent) {
         this.gridPane.setMouseTransparent(transparent);
     }
@@ -590,6 +589,5 @@ public class Interface {
     public ImageView[][] getImageViews() {
         return imageViews;
     }
-
 
 }
