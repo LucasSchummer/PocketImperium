@@ -510,11 +510,32 @@ public class Interface {
         // Clear the current content of the score section
         topSection.getChildren().clear();
     
-        // Section title
+        // Round section
+        Text roundTitle = new Text("Round " + (controller.getGame().getRound() + 1) + "/9");
+        roundTitle.setFill(Color.WHITE); 
+        roundTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        topSection.getChildren().add(roundTitle);
+
+        // Add separator with HBox to remove padding
+        HBox separatorBox = new HBox();
+        separatorBox.setPadding(new Insets(0));
+        separatorBox.setAlignment(Pos.CENTER);
+        
+        Rectangle roundSeparator = new Rectangle();
+        roundSeparator.setFill(Color.WHITE);
+        roundSeparator.widthProperty().bind(sidePanel.widthProperty());
+        roundSeparator.setHeight(2);
+        
+        separatorBox.getChildren().add(roundSeparator);
+        VBox.setMargin(separatorBox, new Insets(5, -10, 5, -10)); // Negative margin to compensate for parent padding
+        topSection.getChildren().add(separatorBox);
+
+        // Section title for scores
         Text title2 = new Text("Score");
         title2.setFill(Color.WHITE);
         title2.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
         topSection.getChildren().add(title2);
+
     
         // Display the score for each player
         for (Player player : players) {

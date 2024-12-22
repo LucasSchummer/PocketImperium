@@ -88,6 +88,10 @@ public class Game implements Runnable, Serializable {
 	public void setPlayers(Player[] players) {
 		this.players = players;
 	}
+	
+	public int getRound() {
+		return this.round;
+	}
 
 	public void setup() {
 		this.generateMap();
