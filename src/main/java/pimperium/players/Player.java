@@ -69,6 +69,7 @@ public abstract class Player implements Serializable {
         System.out.println("num ships of " + pseudo + " : " + countShips());
         if (numExtraShips > 0) {
             System.out.println(pseudo + " a déjà 15 vaisseaux sur le plateau");
+            game.getController().getView().addLogMessage("A déjà 15 vaisseaux sur le plateau.", this, "normal");
             for (int i = 0; i < numExtraShips ; i++) {
                 this.getShips().getLast().destroy();
             }

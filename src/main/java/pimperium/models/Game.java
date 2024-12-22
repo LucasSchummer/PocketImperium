@@ -57,6 +57,8 @@ public class Game implements Runnable, Serializable {
 	public transient Scanner scanner = new Scanner(System.in);
 	private transient Thread t;
 	private transient GameController controller;
+	public boolean viewInitialized = false;
+
 
 	public Game() {
 		//Initialization in the constructor
@@ -74,6 +76,10 @@ public class Game implements Runnable, Serializable {
     public GameController getController() {
         return this.controller;
     }
+
+	public void setViewInitialized() {
+		viewInitialized = true;
+	}
 
 	public Player[] getPlayers() {
 		return this.players;
@@ -489,6 +495,7 @@ public class Game implements Runnable, Serializable {
 	// Remove excess ships on every hexagon
 	public void sustainShips() {
 		System.out.println("Suppression des vaisseaux en trop...");
+		this.getController().getView().addLogMessage("Suppression des vaisseaux en trop...", null, "normal");
 		for (int i = 0; i < MAP_ROWS; i++) {
 			for (int j = 0; j < MAP_COLS; j++) {
 				Hexagon hex = hexs[i][j];
@@ -538,6 +545,7 @@ public class Game implements Runnable, Serializable {
 			// The player controlling Tri-Prime chooses an additional sector
 			System.out.println(triPrimeController.getPseudo() + " controle le Tri-Prime");
 			System.out.println("Il peut choisir un secteur supplémentaire");
+			this.getController().getView().addLogMessage("Contrôle le Tri-Prime, il peut choisir un secteur supplémentaire.", triPrimeController, "normal");
 			Sector additionalSector = triPrimeController.chooseSectorToScore(scoredSectors, this.sectors);
 			if (additionalSector != null) {
 				scoredSectors.add(additionalSector);
@@ -584,6 +592,7 @@ public class Game implements Runnable, Serializable {
 		Player winner = this.getWinner();
 
 		System.out.println("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!");
+		this.getController().getView().addLogMessage("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!", null, "bold");
 
 		this.stopGame();
 	}
@@ -766,6 +775,7 @@ public class Game implements Runnable, Serializable {
 		// Setup the game if it has just been created
 		if (this.round == 0) {
 			this.setup();
+
 		}
 		// In case we are loading an existing game, instantiate the scanner and possibilities (which is transient)
 		else {
@@ -782,6 +792,7 @@ public class Game implements Runnable, Serializable {
 			for (Player player : this.players) {
 				if (player.countShips() == 0) {
 					System.out.println(player.getPseudo() + " lost all his ships.");
+					this.getController().getView().addLogMessage(player.getPseudo() + " a perdu tous ses vaisseaux.", null, "normal");
 					break;
 				}
 			}

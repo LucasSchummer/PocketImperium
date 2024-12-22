@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import pimperium.controllers.GameController;
 
 import java.util.List;
@@ -84,13 +85,24 @@ public class Interface {
         gameLogPanel.setPadding(new Insets(10));
         gameLogPanel.setAlignment(Pos.TOP_LEFT);
         gameLogPanel.setPrefWidth(400);
-        gameLogPanel.setSpacing(5);
+        gameLogPanel.setSpacing(10);
 
         Text logTitle = new Text("Déroulement de la partie");
         logTitle.setFill(Color.WHITE);
         logTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
         gameLogPanel.getChildren().add(logTitle);
 
+        ScrollPane gameLogScrollPane = new ScrollPane(gameLogPanel);
+        gameLogScrollPane.setPrefWidth(400);
+        gameLogScrollPane.setFitToWidth(true); // Adjust the content width to the ScrollPane width
+        gameLogScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show the vertical scrollbar
+        gameLogScrollPane.setBackground(new Background(background));
+        gameLogScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;"); // Set background to transparent
+            
+        // Add empty space at the bottom
+        Text emptySpace = new Text("\n");
+        emptySpace.setFont(Font.font("Orbitron", 14));
+        gameLogPanel.getChildren().add(emptySpace);
 
         sidePanel = new VBox(20);
         sidePanel.setPadding(new Insets(10));
@@ -107,7 +119,7 @@ public class Interface {
         //middleSection.setPrefHeight(358);
 
         bottomSection = new VBox();
-        bottomSection.setSpacing(10);
+        bottomSection.setSpacing(20);
         //bottomSection.setPrefHeight(228);
         Text inputTitle = new Text("Entrées");
         inputTitle.setFill(Color.WHITE);
@@ -115,7 +127,7 @@ public class Interface {
         bottomSection.getChildren().add(inputTitle);
 
         TextField userInputField = new TextField();
-        userInputField.setPromptText("Entrez votre commande ici");
+        //userInputField.setPromptText("Entrez votre commande ici");
         userInputField.setMaxWidth(150); // Set the maximum width
         // Set TextFormatter to allow only integers
         userInputField.setTextFormatter(new TextFormatter<>(change -> {
@@ -145,6 +157,8 @@ public class Interface {
             controller.handleUserInput(input);
             userInputField.clear();
         });
+        validateButton.setPrefWidth(150);
+        VBox.setMargin(validateButton, new Insets(10, 0, 20, 0)); 
         bottomSection.getChildren().add(validateButton);
 
 
@@ -221,7 +235,7 @@ public class Interface {
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(gamePane);
         mainLayout.setRight(sidePanel);
-        mainLayout.setLeft(gameLogPanel);
+        mainLayout.setLeft(gameLogScrollPane);
         mainLayout.setBackground(new Background(background));
 
         
@@ -394,6 +408,7 @@ public class Interface {
             Button validateButton = new Button("Valider");
             validateButton.getStyleClass().add("button");
             validateButton.setPrefWidth(150);
+            VBox.setMargin(validateButton, new Insets(15, 0, 20, 0));  
             middleSection.getChildren().add(validateButton);
 
             validateButton.setOnAction(event -> {
@@ -419,6 +434,78 @@ public class Interface {
         });
     }
 
+    private Color getPlayerColor(Colors colorEnum) {
+        switch (colorEnum) {
+            case RED:
+                return Color.rgb(255, 102, 102);
+            case GREEN:
+                return Color.rgb(102, 255, 102);
+            case BLUE:
+                return Color.rgb(102, 102, 255);
+            case YELLOW:
+                return Color.rgb(255, 255, 102);
+            case PURPLE:
+                return Color.rgb(204, 102, 255);
+            case ORANGE:
+                return Color.rgb(255, 178, 102);
+            default:
+                return Color.WHITE;
+        }
+    }
+
+    public void addLogMessage(String message, Player player, String fontWeight) {
+        Platform.runLater(() -> {
+            // Reduce the opacity of existing messages in groups of 3
+            for (int i = 1; i < gameLogPanel.getChildren().size(); i++) { // Ignore the title at index 0
+                javafx.scene.Node node = gameLogPanel.getChildren().get(i);
+                if (node instanceof TextFlow) {
+                    double newOpacity = Math.max(0.5, 0.9 - (i / 2) * 0.07); // Decrease opacity in steps of 0.1, with a minimum of 0.5
+                    node.setOpacity(newOpacity);
+                }
+            }
+
+            TextFlow logEntry;
+            if (player != null && fontWeight != "error") {
+                // Create text nodes with different colors for player messages
+                Text playerText = new Text(player.getPseudo() + " : ");
+                playerText.setFill(getPlayerColor(player.getColor())); 
+                
+                Text messageText = new Text(message);
+                messageText.setFill(Color.WHITE);
+
+                // Set font for both texts
+                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 14);
+                playerText.setFont(font);
+                messageText.setFont(font);
+
+                logEntry = new TextFlow(playerText, messageText);
+            } else if (fontWeight == "error") {
+                // Create single white text for game messages
+                Text gameText = new Text(message);
+                gameText.setFill(Color.RED);
+                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 14);
+                gameText.setFont(font);
+                
+                logEntry = new TextFlow(gameText);
+            } else {
+                // Create single white text for game messages
+                Text gameText = new Text(message);
+                gameText.setFill(Color.WHITE);
+                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 14);
+                gameText.setFont(font);
+                
+                logEntry = new TextFlow(gameText);
+            }
+
+            logEntry.setOpacity(1.0);
+            logEntry.setPrefWidth(375);
+            logEntry.setLineSpacing(2);
+
+            // Add the message just after the title (index 1)
+            gameLogPanel.getChildren().add(1, logEntry);
+        });
+    }   
+
     public void updateScores(Player[] players) {
         // Clear the current content of the score section
         topSection.getChildren().clear();
@@ -436,31 +523,7 @@ public class Interface {
             Text scoreText = new Text(playerScore);
             
             // Set the color of the pseudo to match the player's ship color
-            Color javafxColor;
-            switch (player.getColor()) {
-            case RED:
-                javafxColor = Color.rgb(255, 102, 102); 
-                break;
-            case GREEN:
-                javafxColor = Color.rgb(102, 255, 102); 
-                break;
-            case BLUE:
-                javafxColor = Color.rgb(102, 102, 255); 
-                break;
-            case YELLOW:
-                javafxColor = Color.rgb(255, 255, 102); 
-                break;
-            case PURPLE:
-                javafxColor = Color.rgb(204, 102, 255); 
-                break;
-            case ORANGE:
-                javafxColor = Color.rgb(255, 178, 102); 
-                break;
-            default:
-                javafxColor = Color.WHITE;
-                break;
-            }
-            scoreText.setFill(javafxColor);
+            scoreText.setFill(getPlayerColor(player.getColor()));
             scoreText.setFont(Font.font("Orbitron", 14));
             topSection.getChildren().add(scoreText);
         }

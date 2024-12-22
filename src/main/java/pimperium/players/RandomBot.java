@@ -74,12 +74,14 @@ public class RandomBot extends Bot {
         System.out.println(this.getPseudo() + " choisit le secteur à scorer");
 
         System.out.println(this.getPseudo() + " a choisi le secteur " + game.findSectorId(chosenSector) + " à scorer.");
+        game.getController().getView().addLogMessage(" A choisi le secteur " + game.findSectorId(chosenSector) + ".", this, "normal");
         return chosenSector;
     }
 
     public void doExpand(int efficiency) {
 
         System.out.println(this.getPseudo() + " s'étend");
+        game.getController().getView().addLogMessage("Expand (efficacité : " + efficiency + ")", this, "normal");
 
         for (int i = 0; i < efficiency; i++) {
 
@@ -109,6 +111,7 @@ public class RandomBot extends Bot {
     public void doExplore(int efficiency) {
 
         System.out.println(this.getPseudo() + " explore with efficiency " + efficiency);
+        game.getController().getView().addLogMessage("Explore (efficacité : " + efficiency + ")", this, "normal");
 
         for (int i = 0; i < efficiency; i++) {
 
@@ -117,6 +120,7 @@ public class RandomBot extends Bot {
             // Verifies that the player can do at least a move
             if (possibleMoves.isEmpty()) {
                 System.out.println("Aucun mouvement d'exploration possible.");
+                game.getController().getView().addLogMessage("Aucune exploration possible.", this, "normal");
                 return;
             }
 
@@ -166,6 +170,7 @@ public class RandomBot extends Bot {
     public void doExterminate(int efficiency) {
 
         System.out.println(this.getPseudo() + " extermine");
+        game.getController().getView().addLogMessage("Exterminate (efficacité : " + efficiency + ")", this, "normal");
 
         for (int i = 0; i < efficiency; i++) {
 
@@ -178,6 +183,7 @@ public class RandomBot extends Bot {
             // Verifies that the player can do at least a move
             if (possibleMoves.isEmpty()) {
                 System.out.println("Aucun mouvement d'extermination possible.");
+                game.getController().getView().addLogMessage("Aucune extermination possible", this, "normal");
                 return;
             }
 

@@ -147,16 +147,20 @@ public class GameController extends Application {
 
             game.setPlayers(players.toArray(new Player[0]));
 
-            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
-    
+            
             // Start the game thread
             game.startGame();
-    
+            
             // Initialize the game view
             hexPolygonMap = new HashMap<>();
             polygonHexMap = new HashMap<>();
             imageViewSectorMap = new HashMap<>();
             view = new Interface(this);
+
+            game.setViewInitialized();
+            
+
+            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
     
             // Display the game interface
             Platform.runLater(() -> {

@@ -34,6 +34,7 @@ public abstract class Bot extends Player{
         this.createShip(hex);
 
         System.out.println("Deux navires de " + this.getPseudo() + " ont été placés sur l'hexagone " + hex);
+        game.getController().getView().addLogMessage("Deux navires ont été placés sur l'hexagone " + hex, this, "normal");
     }
 
     public void chooseOrderCommands() {
