@@ -459,7 +459,7 @@ public class Interface {
             for (int i = 1; i < gameLogPanel.getChildren().size(); i++) { // Ignore the title at index 0
                 javafx.scene.Node node = gameLogPanel.getChildren().get(i);
                 if (node instanceof TextFlow) {
-                    double newOpacity = Math.max(0.5, 0.9 - (i / 2) * 0.07); // Decrease opacity in steps of 0.1, with a minimum of 0.5
+                    double newOpacity = Math.max(0.5, 0.9 - (i / 2) * 0.05); // Decrease opacity in steps of 0.1, with a minimum of 0.5
                     node.setOpacity(newOpacity);
                 }
             }
