@@ -48,7 +48,7 @@ public class Possibilities implements Serializable{
         List<Ship> ships = new ArrayList<>();
         for (Hexagon[] row : game.getMap()) {
             for (Hexagon hex : row) {
-                if (hex != null && hex.getOccupant() == player ) {
+                if (hex != null && hex.getOccupant() == player && hex.getSystemLevel() >= 1) {
                     ships.addAll(hex.getShips().stream()
                             .filter(ship -> !ship.hasExpanded()) // Condition: keep ships that have not expanded yet
                             .toList());

@@ -144,7 +144,14 @@ public class Human extends Player {
 		boolean validMove = false;
 		Hexagon hex = new Hexagon(0,0);
 
+		List<Ship> possShips = Possibilities.getInstance(game).expand(this);
+
 		for (int i = 0; i < efficiency; i++) {
+
+			if (possShips.isEmpty()) {
+				game.getController().getView().addLogMessage("Aucune expansion possible.", this, "normal");
+				break;
+			}
 
 			validMove = false;
 
@@ -174,6 +181,8 @@ public class Human extends Player {
 					.toList().get(0));
 			this.expand.setShips(ships);
 			this.expand.execute();
+
+			possShips = Possibilities.getInstance(game).expand(this);
 
 			this.game.triggerInterfaceUpdate();
 		}

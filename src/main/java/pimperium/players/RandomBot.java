@@ -2,6 +2,8 @@ package pimperium.players;
 
 import java.util.*;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import pimperium.elements.HSystem;
@@ -101,6 +103,14 @@ public class RandomBot extends Bot {
 
             Ship ship = possShips.get(random.nextInt(possShips.size()));
             expandShips.add(ship);
+
+            // Verifies that the player can do at least a move
+            if (possShips.isEmpty()) {
+                System.out.println("Aucune expansion possible.");
+                game.getController().getView().addLogMessage("Aucune expansion possible.", this, "normal");
+                return;
+            }
+
             //Set the ships and execute the command
             this.expand.setShips(expandShips);
             this.expand.execute();

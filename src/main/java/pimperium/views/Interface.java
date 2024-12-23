@@ -3,6 +3,7 @@ package pimperium.views;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
@@ -47,7 +48,6 @@ import pimperium.utils.Colors;
 import pimperium.players.Bot;
 import pimperium.players.Human;
 
-
 public class Interface {
 
     private GameController controller;
@@ -60,7 +60,7 @@ public class Interface {
     private VBox middleSection;
     private VBox bottomSection;
     private VBox gameLogPanel;
-    
+
     public Interface(GameController controller) {
         this.controller = controller;
 
@@ -459,8 +459,15 @@ public class Interface {
             for (int i = 1; i < gameLogPanel.getChildren().size(); i++) { // Ignore the title at index 0
                 javafx.scene.Node node = gameLogPanel.getChildren().get(i);
                 if (node instanceof TextFlow) {
-                    double newOpacity = Math.max(0.5, 0.9 - (i / 2) * 0.05); // Decrease opacity in steps of 0.1, with a minimum of 0.5
+                    double newOpacity = Math.max(0.3, 0.9 - i * 0.03); // Decrease opacity in steps of 0.1, with a minimum of 0.5
                     node.setOpacity(newOpacity);
+                    Font font = Font.font("Orbitron", FontWeight.NORMAL, 14);
+                    //Text text = (Text) ((TextFlow) node).getChildren().getFirst();
+                    for (Node text : ((TextFlow) node).getChildren()) {
+                        if (text instanceof Text) {
+                            ((Text) text).setFont(font);
+                        }
+                    }
                 }
             }
 
@@ -474,7 +481,7 @@ public class Interface {
                 messageText.setFill(Color.WHITE);
 
                 // Set font for both texts
-                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 14);
+                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 18);
                 playerText.setFont(font);
                 messageText.setFont(font);
 

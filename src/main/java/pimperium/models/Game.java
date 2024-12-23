@@ -39,6 +39,7 @@ public class Game implements Runnable, Serializable {
 	public static final int MAP_ROWS = 9;
 	public static final int MAP_COLS = 6;
 	public static final int NB_PLAYERS = 3;
+	public static final int DELAY = 2000;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -489,7 +490,7 @@ public class Game implements Runnable, Serializable {
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
 			triggerInterfaceUpdate();
-		}
+        }
 	}
 
 	public void triggerInterfaceUpdate() {
