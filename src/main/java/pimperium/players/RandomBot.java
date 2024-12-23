@@ -115,7 +115,7 @@ public class RandomBot extends Bot {
             this.expand.setShips(expandShips);
             this.expand.execute();
 
-            game.getController().getView().addLogMessage("Vaisseau(x) ajouté(s) en " + expandShips.get(0).getPosition(), this, "normal");
+            game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
         }
 
     }
@@ -163,7 +163,12 @@ public class RandomBot extends Bot {
             this.explore.setTargets(move.getValue());
             this.explore.execute();
 
-            game.getController().getView().addLogMessage("Vaisseau(x) déplacé(s) de " + move.getKey().get(0).getPosition() + " vers " + move.getValue(), this, "normal");
+            int fleetSize = move.getKey().size();
+            if (fleetSize > 1) {
+                game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux déplacés en " + move.getValue(), this, "normal");
+            } else {
+                game.getController().getView().addLogMessage("Un vaisseau déplacé en " + move.getValue(), this, "normal");
+            }
 
 /*            // After selecting the moves
             for (Pair<List<Ship>, List<Hexagon>> move : moves) {
@@ -218,8 +223,12 @@ public class RandomBot extends Bot {
             this.exterminate.setTarget(move.getValue());
             this.exterminate.execute();
 
-            List<Ship> shipList = new ArrayList<>(move.getKey());
-            game.getController().getView().addLogMessage("Vaisseau(x) en " + shipList.get(0).getPosition() + " extermine(nt) " + move.getValue(), this, "normal");
+            int fleetSize = move.getKey().size();
+            if (fleetSize > 1) {
+                game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux exterminent en " + move.getValue(), this, "normal");
+            } else {
+                game.getController().getView().addLogMessage("Un vaisseau extermine en " + move.getValue(), this, "normal");
+            }
 
 /*            // Adding randomly selected ships and targets to the list of ships/targets to explore
             while (moves.size() < maxEfficiency) {
