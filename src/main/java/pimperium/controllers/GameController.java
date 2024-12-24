@@ -387,6 +387,17 @@ public class GameController extends Application {
 
             // Start the game thread
             game.startGame();
+
+            menuPlayer.stop();
+            menuPlayer.dispose();
+            
+            if (gamePlayer == null) {
+                Media gameMedia = new Media(Paths.get("assets/music/space-ranger.mp3").toUri().toString());
+                gamePlayer = new MediaPlayer(gameMedia);
+                gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            }
+            gamePlayer.play();
+            
         } catch (IOException e) {
             System.out.println("Le jeu sauvegardé n'a pas pu être chargé.");
             System.out.println(e.getMessage());

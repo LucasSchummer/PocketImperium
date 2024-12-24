@@ -99,6 +99,7 @@ public class Interface {
         Text logTitle = new Text("Déroulement de la partie");
         logTitle.setFill(Color.WHITE);
         logTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        VBox.setMargin(logTitle, new Insets(0, 0, 15, 0)); 
         gameLogPanel.getChildren().add(logTitle);
 
         ScrollPane gameLogScrollPane = new ScrollPane(gameLogPanel);
@@ -167,7 +168,7 @@ public class Interface {
             userInputField.clear();
         });
         validateButton.setPrefWidth(150);
-        VBox.setMargin(validateButton, new Insets(10, 0, 20, 0)); 
+        VBox.setMargin(validateButton, new Insets(10, 0, 15, 0)); 
         bottomSection.getChildren().add(validateButton);
 
 
@@ -417,7 +418,7 @@ public class Interface {
             // Title
             Text commandsTitle = new Text("Choisissez vos commandes");
             commandsTitle.setFill(Color.WHITE);
-            commandsTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 16));
+            commandsTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
             middleSection.getChildren().add(commandsTitle);
 
             // List of available commands
@@ -429,7 +430,7 @@ public class Interface {
             for (int i = 1; i <= 3; i++) {
                 Text instruction = new Text("Commande " + i + " :");
                 instruction.setFill(Color.WHITE);
-                instruction.setFont(Font.font("Orbitron", 12));
+                instruction.setFont(Font.font("Orbitron", 14));
                 middleSection.getChildren().add(instruction);
 
                 ComboBox<String> comboBox = new ComboBox<>();
