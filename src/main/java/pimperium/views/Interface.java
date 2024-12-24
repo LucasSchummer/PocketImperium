@@ -41,7 +41,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
+
 import javafx.util.Pair;
+
 import pimperium.elements.Hexagon;
 import pimperium.players.Player;
 import pimperium.utils.Colors;
@@ -60,6 +62,13 @@ public class Interface {
     private VBox middleSection;
     private VBox bottomSection;
     private VBox gameLogPanel;
+    private Image speakerOnImage = new Image("file:assets/speaker_high_volume.png");
+    private Image speakerOffImage = new Image("file:assets/speaker_muted.png");
+    private ImageView speakerImageOnView = new ImageView(speakerOnImage);
+    private ImageView speakerImageOffView = new ImageView(speakerOffImage);
+
+    private Button musicControlButton;
+    private boolean isMusicPlaying = true;
 
     public Interface(GameController controller) {
         this.controller = controller;
@@ -177,6 +186,34 @@ public class Interface {
         separator4.heightProperty().bind(sidePanel.heightProperty());
         separator4.setWidth(2);
 
+        
+        // Adds the Controle music Button
+        ImageView speakerImageView = new ImageView(speakerOnImage);
+        speakerImageView.setFitWidth(20);
+        speakerImageView.setFitHeight(20);
+
+        speakerImageOnView.setFitWidth(20);
+        speakerImageOnView.setFitHeight(20);
+        speakerImageOffView.setFitWidth(20);
+        speakerImageOffView.setFitHeight(20);
+        
+        musicControlButton = new Button();
+        musicControlButton.setGraphic(speakerImageView);
+        musicControlButton.setPrefSize(60, 60);
+        musicControlButton.setStyle(
+            "-fx-background-radius: 30;"
+        + "-fx-background-color: white;"
+        + "-fx-padding: 0;"
+        );
+        musicControlButton.setOnAction(event -> toggleMusic());
+
+        musicControlButton.setPrefSize(60, 60);
+        musicControlButton.setMaxSize(60, 60);
+
+        // Add the music control button to the bottom section
+        bottomSection.getChildren().add(musicControlButton);
+        VBox.setMargin(musicControlButton, new Insets(10, 0, 20, 0)); // Add margin to the button     
+        
         sidePanel.getChildren().addAll(topSection, separator2, middleSection, separator3, bottomSection);
 
         Text title3 = new Text("Commandes");
@@ -459,7 +496,7 @@ public class Interface {
             for (int i = 1; i < gameLogPanel.getChildren().size(); i++) { // Ignore the title at index 0
                 javafx.scene.Node node = gameLogPanel.getChildren().get(i);
                 if (node instanceof TextFlow) {
-                    double newOpacity = Math.max(0.3, 0.9 - i * 0.03); // Decrease opacity in steps of 0.1, with a minimum of 0.5
+                    double newOpacity = Math.max(0.4, 0.9 - i * 0.03); // Decrease opacity in steps of 0.1, with a minimum of 0.5
                     node.setOpacity(newOpacity);
                     Font font = Font.font("Orbitron", FontWeight.NORMAL, 14);
                     //Text text = (Text) ((TextFlow) node).getChildren().getFirst();
@@ -481,7 +518,7 @@ public class Interface {
                 messageText.setFill(Color.WHITE);
 
                 // Set font for both texts
-                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 18);
+                Font font = Font.font("Orbitron", FontWeight.findByName(fontWeight.toUpperCase()), 16);
                 playerText.setFont(font);
                 messageText.setFont(font);
 
@@ -676,6 +713,28 @@ public class Interface {
         shipPane.setMouseTransparent(true);
         return shipPane;
 
+    }
+
+    private void toggleMusic() {
+        if (isMusicPlaying) {
+            controller.getGamePlayer().pause();
+            musicControlButton.setGraphic(speakerImageOffView);
+            musicControlButton.setPrefSize(60, 60);
+            musicControlButton.setStyle(
+                "-fx-background-radius: 30;"
+            + "-fx-background-color: white;"
+            + "-fx-padding: 0;"
+            );  
+        } else {
+            controller.getGamePlayer().play();
+            musicControlButton.setGraphic(speakerImageOnView);
+            musicControlButton.setStyle(
+                "-fx-background-radius: 30;"
+            + "-fx-background-color: white;"
+            + "-fx-padding: 0;"
+            );
+        }
+        isMusicPlaying = !isMusicPlaying;
     }
 
     public void changeSectorsTransparency(boolean transparent) {

@@ -1,6 +1,7 @@
 module com.example.pimperium {
     requires javafx.controls;
     requires javafx.fxml;
+    requires transitive javafx.media;
     requires transitive javafx.graphics;
     requires transitive java.desktop;
     requires java.sql;

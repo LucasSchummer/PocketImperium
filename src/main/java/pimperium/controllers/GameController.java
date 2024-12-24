@@ -8,12 +8,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+
 import java.beans.PropertyChangeEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +55,8 @@ public class GameController extends Application {
 
     private String userInput;
 
-
+    private MediaPlayer menuPlayer;
+    private MediaPlayer gamePlayer;
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -152,6 +158,16 @@ public class GameController extends Application {
             
             // Start the game thread
             game.startGame();
+
+            menuPlayer.stop();
+            menuPlayer.dispose();
+            
+            if (gamePlayer == null) {
+                Media gameMedia = new Media(Paths.get("assets/music/space-ranger.mp3").toUri().toString());
+                gamePlayer = new MediaPlayer(gameMedia);
+                gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            }
+            gamePlayer.play();
             
             // Initialize the game view
             hexPolygonMap = new HashMap<>();
@@ -184,6 +200,12 @@ public class GameController extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium - Main Menu");
         primaryStage.show();
+        if (menuPlayer == null) {
+            Media menuMedia = new Media(Paths.get("assets/music/milky-way.mp3").toUri().toString());
+            menuPlayer = new MediaPlayer(menuMedia);
+            menuPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        }
+        menuPlayer.play();
     }
 
     public synchronized void handleHexagonClick(Polygon polygon) {
@@ -297,6 +319,14 @@ public class GameController extends Application {
 
     public Interface getView() {
         return this.view;
+    }
+
+    public MediaPlayer getMenuPlayer() {
+        return menuPlayer;
+    }
+    
+    public MediaPlayer getGamePlayer() {
+        return gamePlayer;
     }
 
     public Map<Hexagon, Polygon> getHexPolygonMap() {
