@@ -26,7 +26,6 @@ public abstract class Player implements Serializable {
     protected Explore explore;
     protected Exterminate exterminate;
     protected Colors color;
-    protected boolean alive;
 
     public Player(Game game, Colors color) {
         this.ships = new ArrayList<Ship>();
@@ -37,7 +36,6 @@ public abstract class Player implements Serializable {
         this.exterminate = new Exterminate(this);
         Random random = new Random();
         this.color = color;
-        this.alive = true;
     }
     
     //Return and set the order of commands as a list of int
@@ -141,28 +139,6 @@ public abstract class Player implements Serializable {
             ship.setHasExplored(false);
             ship.setHasExterminated(false);
         }
-    }
-
-    public boolean isAlive() {
-        return this.alive;
-    }
-
-    public void checkIsAlive() {
-        if (this.countShips() == 0) {
-            this.alive = false;
-            this.score = 0;
-            game.getController().getView().addLogMessage(pseudo + " a perdu tous ses vaisseaux. Il est éliminé de la partie", this, "error");
-        }
-
-        if (Objects.equals(this.pseudo, "unlucky_guy")) {
-            this.alive = false;
-            this.score = 0;
-            while (this.countShips() > 0) {
-                this.getShips().getLast().destroy();
-            }
-            game.getController().getView().addLogMessage(pseudo + " a perdu tous ses vaisseaux. Il est éliminé de la partie", this, "error");
-        }
-
     }
 
     public abstract Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors);
