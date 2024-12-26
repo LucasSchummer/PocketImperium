@@ -101,15 +101,16 @@ public class RandomBot extends Bot {
                 }
             }*/
 
-            Ship ship = possShips.get(random.nextInt(possShips.size()));
-            expandShips.add(ship);
-
             // Verifies that the player can do at least a move
             if (possShips.isEmpty()) {
                 System.out.println("Aucune expansion possible.");
                 game.getController().getView().addLogMessage("Aucune expansion possible.", this, "normal");
                 return;
             }
+
+            Ship ship = possShips.get(random.nextInt(possShips.size()));
+            expandShips.add(ship);
+
 
             //Set the ships and execute the command
             this.expand.setShips(expandShips);

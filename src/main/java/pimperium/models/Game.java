@@ -53,6 +53,8 @@ public class Game implements Runnable, Serializable {
 	private Integer[][] efficiencies;
 	private  Possibilities possibilities;
 	private boolean gameEnded;
+	private Player winner;
+	private int alivePlayers;
 
 	// Non-serializable variables
 	public transient Scanner scanner = new Scanner(System.in);
@@ -68,6 +70,7 @@ public class Game implements Runnable, Serializable {
 		this.sectors = new Sector[9];
 		this.possibilities = Possibilities.getInstance(this);
 		this.gameEnded = false;
+		this.alivePlayers = NB_PLAYERS;
 	}
 
 	public void setController(GameController controller) {
@@ -176,6 +179,7 @@ public class Game implements Runnable, Serializable {
 			ArrayList<Integer> systemsCoords = this.sectors[i].getSystemsCoordinates();
 			for (int j=0; j<systems.size(); j++) {
 				Hexagon hex;
+				// For all sectors except TriPrime
 				if (i != 4) {
 					//On the last line, the sectors are upside down, so the indexes of hexes won't be the same
 					if (i_i<2) {
@@ -388,7 +392,7 @@ public class Game implements Runnable, Serializable {
 		}
 	}
 
-	public void getPlayOrder() {
+/*	public void getPlayOrder() {
 
 		this.orderPlayers = new Player[3][NB_PLAYERS];
 		for (int i = 0; i < 3; i++) {
@@ -428,11 +432,71 @@ public class Game implements Runnable, Serializable {
 						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
 						break;
 					case 2:
-						/*this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());*/
+						*//*this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());*//*
 						this.efficiencies[i][j] = 2;
 						break;
 					default:
-						/*this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());*/
+						*//*this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());*//*
+						this.efficiencies[i][j] = 3;
+						break;
+				}
+			}
+		}
+
+*//*		this.efficiencies = new Integer[][] {
+				{1,1,1},
+				{1,1,1},
+				{1,1,1}
+		};*//*
+
+	}*/
+
+	public void getPlayOrder() {
+
+
+		this.orderPlayers = new Player[3][alivePlayers];
+		for (int i = 0; i < 3; i++) {
+
+			//Set the default order for the ith action (the ith line of orderPlayers)
+			for (int j = 0; j < alivePlayers; j++) {
+				orderPlayers[i][j] = this.players[j];
+			}
+
+			//Bubble sort to order the players for the ith action
+			for (int j = 0; j < 3 - 1; j++) {
+				// Traverse the array up to the unsorted portion
+				for (int k = 0; k < alivePlayers - j - 1; k++) {
+					// Compare ith action of adjacent players
+					if (orderPlayers[i][k].getOrderCommands()[i] > orderPlayers[i][k + 1].getOrderCommands()[i]) {
+						//Switch players
+						Player temp = this.orderPlayers[i][k];
+						this.orderPlayers[i][k] = this.orderPlayers[i][k + 1];
+						this.orderPlayers[i][k+1] = temp;
+					}
+				}
+			}
+
+		}
+
+		// Calculate efficiency of each action
+		this.efficiencies = new Integer[3][alivePlayers];
+		for (int i = 0; i < 3; i++) {
+			int[] commandCount = new int[3]; // To count occurrences of each command (0: Expand, 1: Explore, 2: Exterminate)
+			for (int j = 0; j < alivePlayers; j++) {
+				int command = this.orderPlayers[i][j].getOrderCommands()[i];
+				commandCount[command]++;
+			}
+
+			for (int j = 0; j < alivePlayers; j++) {
+				int command = this.orderPlayers[i][j].getOrderCommands()[i];
+				switch (commandCount[command]) {
+					case 3:
+						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
+						break;
+					case 2:
+						this.efficiencies[i][j] = 2;
+						break;
+					default:
 						this.efficiencies[i][j] = 3;
 						break;
 				}
@@ -449,11 +513,33 @@ public class Game implements Runnable, Serializable {
 
 	//Switch the start player
 	public void switchStartPlayer() {
+		// Shift all players in the list
 		Player temp = this.players[0];
 		for (int i = 0; i < this.players.length-1; i++) {
 			this.players[i] = this.players[i+1];
 		}
 		this.players[this.players.length-1] = temp;
+
+		// Bubble sort the players to make sure the dead player is always on last position
+		boolean hasSwitched = true;
+		while (hasSwitched) {
+			hasSwitched = false;
+			for (int i = 0; i < NB_PLAYERS-1; i++) {
+				// Switch
+				if (!this.players[i].isAlive() && this.players[i+1].isAlive()) {
+					hasSwitched = true;
+					temp = this.players[i+1];
+					this.players[i+1] = this.players[i];
+					this.players[i] = temp;
+				}
+			}
+		}
+
+		System.out.println("New play order :");
+		for (Player player : this.players) {
+			System.out.println(player.getPseudo());
+		}
+
 	}
 
 	public void playRound() {
@@ -465,10 +551,10 @@ public class Game implements Runnable, Serializable {
 			player.resetShips();
 		}
 
-		for (Player player : this.players) {
-			player.chooseOrderCommands();
+		for (int i = 0; i < this.alivePlayers; i++) {
+			this.players[i].chooseOrderCommands();
 		}
-		
+
 		//Set play order and efficiencies for the round
 		this.getPlayOrder();
 		this.round_step = 0;
@@ -487,10 +573,46 @@ public class Game implements Runnable, Serializable {
 	}
 	
 	public void playRoundStep() {
-		for (int j=0; j<NB_PLAYERS; j++) {
+		for (int j=0; j<alivePlayers; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
 			triggerInterfaceUpdate();
         }
+		checkAlivePlayers();
+	}
+
+	public void checkAlivePlayers() {
+		alivePlayers = 0;
+		for (Player player : this.players) {
+			if (player.isAlive()) player.checkIsAlive();
+			alivePlayers += (player.isAlive()? 1:0);
+		}
+
+		// Bubble sort the players to make sure the dead player is always on last position
+		boolean hasSwitched = true;
+		Player temp = this.players[0];
+		while (hasSwitched) {
+			hasSwitched = false;
+			for (int i = 0; i < NB_PLAYERS-1; i++) {
+				// Switch
+				if (!this.players[i].isAlive() && this.players[i+1].isAlive()) {
+					hasSwitched = true;
+					temp = this.players[i+1];
+					this.players[i+1] = this.players[i];
+					this.players[i] = temp;
+				}
+			}
+		}
+
+		if (alivePlayers == 1) {
+			// Determine the winner
+			this.getWinner();
+
+			System.out.println("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!");
+			this.getController().getView().addLogMessage("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!", null, "bold");
+
+			this.stopGame();
+		}
+
 	}
 
 	public void triggerInterfaceUpdate() {
@@ -538,9 +660,11 @@ public class Game implements Runnable, Serializable {
 	
 		// Each player chooses a sector to score
 		for (Player player : this.players) {
-			Sector chosenSector = player.chooseSectorToScore(scoredSectors, this.sectors);
-			if (chosenSector != null) {
-				scoredSectors.add(chosenSector);
+			if (player.isAlive()) {
+				Sector chosenSector = player.chooseSectorToScore(scoredSectors, this.sectors);
+				if (chosenSector != null) {
+					scoredSectors.add(chosenSector);
+				}
 			}
 		}
 	
@@ -587,31 +711,30 @@ public class Game implements Runnable, Serializable {
 						int systemValue = system.getLevel() * 2; // Double the value of the system
 						finalScore += systemValue;
 					}
-					}
+				}
 			}
 			System.out.println("Score final de " + player.getPseudo() + ": " + finalScore);
 			player.setScore(finalScore);
 		}
 		
 		// Determine the winner
-		Player winner = this.getWinner();
+		this.getWinner();
 
 		System.out.println("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!");
 		this.getController().getView().addLogMessage("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!", null, "bold");
 
-		this.stopGame();
+        this.stopGame();
 	}
 
 	// Get the winner of the game
-	public Player getWinner() {
-		Player winner = this.players[0];
+	public void getWinner() {
+		this.winner = this.players[0];
 		for (Player player : this.players) {
 			if (player.getScore() > winner.getScore()) {
 				winner = player;
 			}
 		}
 
-		return winner;
 	}
 
 /*	// Assert that the expand move from the player is valid
@@ -793,14 +916,14 @@ public class Game implements Runnable, Serializable {
 		while (this.round < 9) {
 			this.playRound();
 	
-			// Verifies if a player lost all his ships
+/*			// Verifies if a player lost all his ships
 			for (Player player : this.players) {
 				if (player.countShips() == 0) {
 					System.out.println(player.getPseudo() + " lost all his ships.");
 					this.getController().getView().addLogMessage(player.getPseudo() + " a perdu tous ses vaisseaux.", null, "normal");
 					break;
 				}
-			}
+			}*/
 		}
 	
 		// Final scoring
