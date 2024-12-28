@@ -481,8 +481,8 @@ public class Game implements Runnable, Serializable {
 		this.sustainShips();
 		this.pcs.firePropertyChange("hexUpdated", null, null);
 		this.doScore();
-		this.round++;
 		this.pcs.firePropertyChange("roundOver", null, null);
+		this.round++;
 
 	}
 	

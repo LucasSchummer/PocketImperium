@@ -14,6 +14,7 @@ public class Expand implements Command, Serializable {
     private Player player;
     private List<Ship> shipsInvolved;
 
+    //TODO Change the logic so that expands applies only on a ship instead of a list of ships
     public Expand(Player player) {
         this.player = player;      
     }

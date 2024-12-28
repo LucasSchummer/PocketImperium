@@ -1,193 +1,236 @@
-/*
 package pimperium.players;
 
 import java.util.*;
+
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.util.Pair;
+
+import pimperium.elements.HSystem;
 import pimperium.elements.Hexagon;
+import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
+import pimperium.utils.Colors;
+import pimperium.utils.Debugger;
 
 public class OffensiveBot extends Bot {
 
-    public OffensiveBot(Game game, botColor) {
+    public OffensiveBot(Game game, Colors color) {
         super(game, color);
     }
 
     @Override
-    public void chooseOrderCommands() {
-        // Priorité : Exterminate, Expand, Explore
-        this.orderCommands = new int[]{2, 0, 1};
-    }
+    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 
-    @Override
-    public void doExterminate(int efficiency) {
-        System.out.println(this.getPseudo() + " utilise une stratégie offensive avancée pour exterminer.");
+        Set<Sector> availableSectors = new HashSet<>();
+        Collections.addAll(availableSectors, sectors);
+        availableSectors.removeIf(Sector::isTriPrime);
 
-        List<Pair<List<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
-        List<Pair<List<Ship>, Hexagon>> prioritizedMoves = prioritizeExtermination(possibleMoves);
+        Sector chosenSector = sectors[0];
 
-        List<Pair<List<Ship>, Hexagon>> moves = new ArrayList<>();
-        Set<Hexagon> targets = new HashSet<>();
-
-        for (Pair<List<Ship>, Hexagon> move : prioritizedMoves) {
-            if (moves.size() >= efficiency) break;
-            if (!targets.contains(move.getValue())) {
-                moves.add(move);
-                targets.add(move.getValue());
-            }
-        }
-
-        for (Pair<List<Ship>, Hexagon> move : moves) {
-            this.exterminate.setShips(move.getKey());
-            this.exterminate.setTargets(Collections.singletonList(move.getValue()));
-            this.exterminate.execute();
-        }
-    }
-
-    */
-/**
-     * Priorise les cibles en fonction de leur vulnérabilité et importance stratégique.
-     *//*
-
-    private List<Pair<List<Ship>, Hexagon>> prioritizeExtermination(List<Pair<List<Ship>, Hexagon>> possibleMoves) {
-        // Exemple d'évaluation basée sur le nombre de navires ennemis et le contrôle sectoriel
-        possibleMoves.sort((move1, move2) -> {
-            int score1 = evaluateHexagon(move1.getValue());
-            int score2 = evaluateHexagon(move2.getValue());
-            return Integer.compare(score2, score1); // Descendant
-        });
-        return possibleMoves;
-    }
-
-    */
-/**
-     * Évalue un hexagone en fonction de critères définis.
-     *//*
-
-    private int evaluateHexagon(Hexagon hex) {
+        int bestScore = -100;
         int score = 0;
-        Player controller = hex.getSystem().getController();
 
-        if (controller == null) {
-            score += 5; // Hexagone non contrôlé
-        } else {
-            score += 10 - controller.countShips(); // Moins de navires, plus c'est vulnérable
-            if (hex.getSystem().isStrategic()) {
-                score += 5; // Importance stratégique
-            }
-        }
-
-        return score;
-    }
-
-    @Override
-    public void doExpand(int efficiency) {
-        System.out.println(this.getPseudo() + " étend ses territoires de manière stratégique.");
-
-        List<Ship> possShips = possibilities.expand(this);
-        List<Ship> expandShips = new ArrayList<>();
-
-        // Prioriser les navires déjà proches des frontières
-        possShips.sort(Comparator.comparingInt(ship -> distanceToNearestEnemy(ship)));
-
-        for (int i = 0; i < Math.min(efficiency, possShips.size()); i++) {
-            expandShips.add(possShips.get(i));
-        }
-
-        this.expand.setShips(expandShips);
-        this.expand.execute();
-    }
-
-    */
-/**
-     * Calcule la distance au joueur ennemi le plus proche.
-     *//*
-
-    private int distanceToNearestEnemy(Ship ship) {
-        int minDistance = Integer.MAX_VALUE;
-        Hexagon[][] map = game.getMap();
-
-        for (Player player : game.getPlayers()) {
-            if (player == this) continue;
-            for (Ship enemyShip : player.getShips()) {
-                int distance = calculateDistance(ship.getPosition(), enemyShip.getPosition());
-                if (distance < minDistance) {
-                    minDistance = distance;
+        for (Sector sector : availableSectors) {
+            score = 0;
+            for (HSystem system : sector.getSystems()) {
+                if (system.getHex().getOccupant() != null) {
+                    score += system.getLevel() * ( system.getHex().getOccupant() == this ? 1 : -1);
                 }
             }
-        }
-
-        return minDistance;
-    }
-
-    */
-/**
-     * Calcule la distance entre deux hexagones.
-     *//*
-
-    private int calculateDistance(Hexagon a, Hexagon b) {
-        // Implémenter une méthode de calcul de distance adaptée à la grille hexagonale
-        // Exemple simplifié :
-        int dx = Math.abs(a.getx() - b.getx());
-        int dy = Math.abs(a.gety() - b.gety());
-        return dx + dy;
-    }
-
-    @Override
-    public void doExplore(int efficiency) {
-        System.out.println(this.getPseudo() + " explore de manière ciblée.");
-
-        List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(this);
-        List<Pair<List<Ship>, List<Hexagon>>> prioritizedMoves = prioritizeExploration(possibleMoves);
-
-        List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
-        Set<Hexagon> origins = new HashSet<>();
-
-        for (Pair<List<Ship>, List<Hexagon>> move : prioritizedMoves) {
-            if (moves.size() >= efficiency) break;
-            if (!origins.contains(move.getKey().get(0).getPosition())) {
-                moves.add(move);
-                origins.add(move.getKey().get(0).getPosition());
+            if (score > bestScore) {
+                bestScore = score;
+                chosenSector = sector;
             }
         }
 
-        for (Pair<List<Ship>, List<Hexagon>> move : moves) {
+        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
+
+        System.out.println(this.getPseudo() + " a choisi le secteur " + game.findSectorId(chosenSector) + " à scorer.");
+        game.getController().getView().addLogMessage(" A choisi le secteur " + game.findSectorId(chosenSector) + ".", this, "normal");
+        return chosenSector;
+    }
+
+    public Ship chooseExpand(List<Ship> possShips) {
+
+        // Current best options
+        List<Ship> bestShips = new ArrayList<>();
+        int sysLevel = 0;
+
+        for (Ship ship : possShips) {
+            // Find the maxSystemLevel among neighbors
+            List<Hexagon> possibleTargets = ship.getPosition()
+                    .getNeighbours()
+                    .stream()
+                    .filter(hex -> hex.getSystemLevel() > 0 && hex.getOccupant() != this)
+                    .toList();
+
+            int maxSystemLevel = possibleTargets
+                    .stream()
+                    .mapToInt(Hexagon::getSystemLevel)
+                    .max()
+                    .orElse(0);
+
+            // Check that the ship won't be deleted on next sustain
+            if (ship.getPosition().getShips().size() >= ship.getPosition().getSystemLevel() + 1) continue;
+
+
+            // This ship is better than all the ones currently in bestShips
+            if (maxSystemLevel > sysLevel) {
+                bestShips.clear();
+                bestShips.add(ship);
+                sysLevel = maxSystemLevel;
+            }
+            // This ship is as good as the ones currently in bestShips
+            else if (maxSystemLevel == sysLevel) {
+                bestShips.add(ship);
+            }
+
+        }
+
+        Random random = new Random();
+
+        if (!bestShips.isEmpty()) {
+            return bestShips.get(random.nextInt(bestShips.size()));
+        } else {
+            return possShips.get(random.nextInt(possShips.size()));
+        }
+
+
+    }
+
+    public Pair<List<Ship>, List<Hexagon>> chooseExplore(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
+
+        Random random = new Random();
+
+        return  possibleMoves.get(random.nextInt(possibleMoves.size()));
+
+    }
+
+    public Pair<Set<Ship>, Hexagon> chooseExterminate(List<Pair<Set<Ship>, Hexagon>> possibleMoves) {
+
+        List<Pair<Set<Ship>, Hexagon>> bestMoves = new ArrayList<>();
+        int bestShipsDestroyed = 0;
+
+        for (Pair<Set<Ship>, Hexagon> move : possibleMoves) {
+            int shipsDestroyed = Math.min(move.getKey().size(), move.getValue().getShips().size());
+
+            if (shipsDestroyed > bestShipsDestroyed) {
+                bestMoves.clear();
+                bestMoves.add(move);
+                bestShipsDestroyed = shipsDestroyed;
+            } else if (shipsDestroyed == bestShipsDestroyed) {
+                bestMoves.add(move);
+            }
+        }
+
+        Random random = new Random();
+
+        if (!bestMoves.isEmpty()) {
+            return bestMoves.get(random.nextInt(bestMoves.size()));
+        } else {
+            return possibleMoves.get(random.nextInt(possibleMoves.size()));
+        }
+    }
+
+    public void doExpand(int efficiency) {
+
+        System.out.println(this.getPseudo() + " s'étend");
+        game.getController().getView().addLogMessage("Expand (efficacité : " + efficiency + ")", this, "normal");
+
+        for (int i = 0; i < efficiency; i++) {
+
+            // Get the ships on which it is possible to expand
+            List<Ship> possShips = possibilities.expand(this);
+            List<Ship> expandShips = new ArrayList<Ship>();
+
+            // Verifies that the player can do at least a move
+            if (possShips.isEmpty()) {
+                System.out.println("Aucune expansion possible.");
+                game.getController().getView().addLogMessage("Aucune expansion possible.", this, "normal");
+                return;
+            }
+
+            Ship ship = chooseExpand(possShips);
+            expandShips.add(ship);
+
+            //Set the ships and execute the command
+            this.expand.setShips(expandShips);
+            this.expand.execute();
+
+            game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
+        }
+
+    }
+
+    public void doExplore(int efficiency) {
+
+        System.out.println(this.getPseudo() + " explore with efficiency " + efficiency);
+        game.getController().getView().addLogMessage("Explore (efficacité : " + efficiency + ")", this, "normal");
+
+        for (int i = 0; i < efficiency; i++) {
+
+            List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(this);
+
+            // Verifies that the player can do at least a move
+            if (possibleMoves.isEmpty()) {
+                System.out.println("Aucun mouvement d'exploration possible.");
+                game.getController().getView().addLogMessage("Aucune exploration possible.", this, "normal");
+                return;
+            }
+
+            Pair<List<Ship>, List<Hexagon>> move = chooseExplore(possibleMoves);
+
+            // Execute each move
             this.explore.setShips(move.getKey());
             this.explore.setTargets(move.getValue());
             this.explore.execute();
-        }
-    }
 
-    */
-/**
-     * Priorise les mouvements d'exploration en fonction de la découverte de nouveaux territoires.
-     *//*
-
-    private List<Pair<List<Ship>, List<Hexagon>>> prioritizeExploration(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
-        // Exemple d'évaluation basée sur la découverte de secteurs non explorés
-        possibleMoves.sort((move1, move2) -> {
-            int score1 = evaluateExploration(move1.getValue());
-            int score2 = evaluateExploration(move2.getValue());
-            return Integer.compare(score2, score1); // Descendant
-        });
-        return possibleMoves;
-    }
-
-    */
-/**
-     * Évalue un mouvement d'exploration.
-     *//*
-
-    private int evaluateExploration(List<Hexagon> targets) {
-        int score = 0;
-        for (Hexagon hex : targets) {
-            if (!hex.isExplored()) {
-                score += 3; // Découverte de nouveaux hexagones
+            int fleetSize = move.getKey().size();
+            if (fleetSize > 1) {
+                game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux déplacés en " + move.getValue(), this, "normal");
+            } else {
+                game.getController().getView().addLogMessage("Un vaisseau déplacé en " + move.getValue(), this, "normal");
             }
-            if (hex.getSystem().isStrategic()) {
-                score += 2; // Importance stratégique
-            }
+
         }
-        return score;
+
     }
-}*/
+
+    public void doExterminate(int efficiency) {
+
+        System.out.println(this.getPseudo() + " extermine");
+        game.getController().getView().addLogMessage("Exterminate (efficacité : " + efficiency + ")", this, "normal");
+
+        for (int i = 0; i < efficiency; i++) {
+
+            // Generate possible moves
+            List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
+
+            // Verifies that the player can do at least a move
+            if (possibleMoves.isEmpty()) {
+                System.out.println("Aucun mouvement d'extermination possible.");
+                game.getController().getView().addLogMessage("Aucune extermination possible", this, "normal");
+                return;
+            }
+
+            Pair<Set<Ship>, Hexagon> move = chooseExterminate(possibleMoves);
+
+            //Set the ships and execute the command
+            this.exterminate.setShips(move.getKey());
+            this.exterminate.setTarget(move.getValue());
+            this.exterminate.execute();
+
+            int fleetSize = move.getKey().size();
+            if (fleetSize > 1) {
+                game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux exterminent en " + move.getValue(), this, "normal");
+            } else {
+                game.getController().getView().addLogMessage("Un vaisseau extermine en " + move.getValue(), this, "normal");
+            }
+
+        }
+
+    }
+
+}

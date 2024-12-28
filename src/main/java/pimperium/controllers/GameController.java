@@ -32,10 +32,7 @@ import java.util.Set;
 import pimperium.elements.Hexagon;
 import pimperium.elements.Sector;
 import pimperium.models.Game;
-import pimperium.players.Bot;
-import pimperium.players.Human;
-import pimperium.players.Player;
-import pimperium.players.RandomBot;
+import pimperium.players.*;
 import pimperium.utils.Colors;
 import pimperium.views.Interface;
 import pimperium.views.MenuView;
@@ -125,7 +122,7 @@ public class GameController extends Application {
                 switch (strategy) {
                     case "Offensif":
                         // bot = new OffensiveBot(game, botColor);
-                        bot = new RandomBot(game, botColor);
+                        bot = new OffensiveBot(game, botColor);
                         break;
                     case "Défensif":
                         // bot = new DefensiveBot(game, botColor);
