@@ -556,7 +556,7 @@ public class Interface {
         topSection.getChildren().clear();
     
         // Round section
-        Text roundTitle = new Text("Round " + (controller.getGame().getRound() + 1) + "/9");
+        Text roundTitle = new Text("Round " + Math.min((controller.getGame().getRound() + 1), 9) + "/9");
         roundTitle.setFill(Color.WHITE); 
         roundTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
         topSection.getChildren().add(roundTitle);

@@ -101,7 +101,6 @@ public class Game implements Runnable, Serializable {
 		//this.createPlayers();
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
-		this.setupFleets();
 	}
 
 	public void startGame() {
@@ -482,7 +481,6 @@ public class Game implements Runnable, Serializable {
 		this.pcs.firePropertyChange("hexUpdated", null, null);
 		this.doScore();
 		this.pcs.firePropertyChange("roundOver", null, null);
-		this.round++;
 
 	}
 	
@@ -598,6 +596,8 @@ public class Game implements Runnable, Serializable {
 
 		System.out.println("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!");
 		this.getController().getView().addLogMessage("Le gagnant est " + winner.getPseudo() + " avec " + winner.getScore() + " points!", null, "bold");
+
+		this.pcs.firePropertyChange("scoreUpdated", null, null);
 
 		this.stopGame();
 	}
@@ -779,8 +779,8 @@ public class Game implements Runnable, Serializable {
 
 		// Setup the game if it has just been created
 		if (this.round == 0) {
-			this.setup();
-
+			//this.setup();
+			this.setupFleets();
 		}
 		// In case we are loading an existing game, instantiate the scanner and possibilities (which is transient)
 		else {
@@ -790,7 +790,7 @@ public class Game implements Runnable, Serializable {
 			}
 		}
 
-		while (this.round < 9) {
+		while (this.round < 9 && !gameEnded) {
 			this.playRound();
 	
 			// Verifies if a player lost all his ships
@@ -798,9 +798,11 @@ public class Game implements Runnable, Serializable {
 				if (player.countShips() == 0) {
 					System.out.println(player.getPseudo() + " lost all his ships.");
 					this.getController().getView().addLogMessage(player.getPseudo() + " a perdu tous ses vaisseaux.", null, "normal");
-					break;
+					player.setScore(0);
+					gameEnded = true;
 				}
 			}
+			this.round++;
 		}
 	
 		// Final scoring

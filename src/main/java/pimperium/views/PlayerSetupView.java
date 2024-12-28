@@ -46,7 +46,7 @@ public class PlayerSetupView {
         humanPlayersLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
 
         // Create and style the spinner for selecting the number of human players
-        humanPlayersSpinner = new Spinner<>(1, 3, 1);
+        humanPlayersSpinner = new Spinner<>(0, 3, 1);
         humanPlayersSpinner.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-text-fill: white;");
 
         

@@ -121,7 +121,6 @@ public class GameController extends Application {
                 Bot bot;
                 switch (strategy) {
                     case "Offensif":
-                        // bot = new OffensiveBot(game, botColor);
                         bot = new OffensiveBot(game, botColor);
                         break;
                     case "Défensif":
@@ -151,8 +150,19 @@ public class GameController extends Application {
             }
 
             game.setPlayers(players.toArray(new Player[0]));
+            game.setup();
 
-            
+            // Initialize the game view
+            hexPolygonMap = new HashMap<>();
+            polygonHexMap = new HashMap<>();
+            imageViewSectorMap = new HashMap<>();
+            view = new Interface(this);
+
+            game.setViewInitialized();
+
+            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
+
+
             // Start the game thread
             game.startGame();
 
@@ -165,18 +175,8 @@ public class GameController extends Application {
                 gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
             }
             gamePlayer.play();
-            
-            // Initialize the game view
-            hexPolygonMap = new HashMap<>();
-            polygonHexMap = new HashMap<>();
-            imageViewSectorMap = new HashMap<>();
-            view = new Interface(this);
 
-            game.setViewInitialized();
-            
 
-            Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
-    
             // Display the game interface
             Platform.runLater(() -> {
                 Scene scene = new Scene(view.getRoot(), 1200, 750);

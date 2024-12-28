@@ -52,8 +52,9 @@ public class RandomBot extends Bot {
     public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 
         Set<Sector> availableSectors = new HashSet<>();
-        Collections.addAll(availableSectors, sectors);
-        availableSectors.removeIf(Sector::isTriPrime);
+        for (Sector sector : sectors) {
+            if (!scoredSectors.contains(sector) && !sector.isTriPrime()) availableSectors.add(sector);
+        }
 
         Sector chosenSector = sectors[0];
 

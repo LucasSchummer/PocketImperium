@@ -24,8 +24,9 @@ public class OffensiveBot extends Bot {
     public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 
         Set<Sector> availableSectors = new HashSet<>();
-        Collections.addAll(availableSectors, sectors);
-        availableSectors.removeIf(Sector::isTriPrime);
+        for (Sector sector : sectors) {
+            if (!scoredSectors.contains(sector) && !sector.isTriPrime()) availableSectors.add(sector);
+        }
 
         Sector chosenSector = sectors[0];
 
@@ -52,38 +53,59 @@ public class OffensiveBot extends Bot {
         return chosenSector;
     }
 
+    private int distanceToNearestEnemy(Hexagon hexagon) {
+
+        int distance = 0;
+
+        if (!(hexagon.getOccupant() != null && hexagon.getOccupant() != this)) {
+            boolean enemyFound = false;
+            Set<Hexagon> hexsConsidered = new HashSet<>();
+            hexsConsidered.add(hexagon);
+            // Increase the distance by 1 hex while we don't find a hex controlled by an anemy
+            while (!enemyFound) {
+                distance ++;
+                Set<Hexagon> newHexs = new HashSet<>();
+                for (Hexagon hex : hexsConsidered) {
+                    newHexs.addAll(new HashSet<>(hex.getNeighbours()));
+                }
+                hexsConsidered.addAll(new HashSet<>(newHexs));
+                for (Hexagon hex : hexsConsidered) {
+                    if (hex.getOccupant() != null && hex.getOccupant() != this) enemyFound = true;
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    private int calculateHexScore(Hexagon hexagon) {
+        return hexagon.getSystemLevel() - distanceToNearestEnemy(hexagon);
+    }
+
     public Ship chooseExpand(List<Ship> possShips) {
 
         // Current best options
         List<Ship> bestShips = new ArrayList<>();
-        int sysLevel = 0;
+        int bestScore = -100;
 
         for (Ship ship : possShips) {
-            // Find the maxSystemLevel among neighbors
-            List<Hexagon> possibleTargets = ship.getPosition()
-                    .getNeighbours()
-                    .stream()
-                    .filter(hex -> hex.getSystemLevel() > 0 && hex.getOccupant() != this)
-                    .toList();
 
-            int maxSystemLevel = possibleTargets
-                    .stream()
-                    .mapToInt(Hexagon::getSystemLevel)
-                    .max()
-                    .orElse(0);
+            int score = calculateHexScore(ship.getPosition());
 
-            // Check that the ship won't be deleted on next sustain
-            if (ship.getPosition().getShips().size() >= ship.getPosition().getSystemLevel() + 1) continue;
+            // Penalty if the ship may be removed while sustaining
+            if (ship.getPosition().getShips().size() >= ship.getPosition().getSystemLevel() + 1) {
+                score -= 2 * (ship.getPosition().getShips().size()- ship.getPosition().getSystemLevel());
+            }
 
 
             // This ship is better than all the ones currently in bestShips
-            if (maxSystemLevel > sysLevel) {
+            if (score > bestScore) {
                 bestShips.clear();
                 bestShips.add(ship);
-                sysLevel = maxSystemLevel;
+                bestScore = score;
             }
             // This ship is as good as the ones currently in bestShips
-            else if (maxSystemLevel == sysLevel) {
+            else if (bestScore == score) {
                 bestShips.add(ship);
             }
 
@@ -102,9 +124,42 @@ public class OffensiveBot extends Bot {
 
     public Pair<List<Ship>, List<Hexagon>> chooseExplore(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
 
+        int bestScore = -100;
+        List<Pair<List<Ship>, List<Hexagon>>> bestMoves = new ArrayList<>();
+
+        for (Pair<List<Ship>, List<Hexagon>> move : possibleMoves) {
+
+            int score = 0;
+            for (int i = 0; i < move.getKey().size(); i++) {
+                // Add the points of the destination and subtract the ones from the origin
+                score += calculateHexScore(move.getValue().get(i));
+                score -= calculateHexScore(move.getKey().get(i).getPosition());
+                // Malus for an exploration of a new hex, bonus for a hex already controlled
+                score += (move.getValue().get(i).getOccupant() == this ? -1:1);
+            }
+
+            Set<Hexagon> targets = new HashSet<>(move.getValue());
+            for (Hexagon hex : targets) {
+                int shipsGoing = Collections.frequency(move.getValue(), hex);
+                // Penalty if some ships might be removed after sustaining
+                if (hex.getShips().size() + shipsGoing > hex.getSystemLevel() + 1) {
+                    score -= hex.getShips().size() + shipsGoing - (hex.getSystemLevel() + 1);
+                }
+            }
+
+            if (score > bestScore) {
+                bestMoves.clear();
+                bestMoves.add(move);
+                bestScore = score;
+            } else if (score == bestScore) {
+                bestMoves.add(move);
+            }
+
+        }
+
         Random random = new Random();
 
-        return  possibleMoves.get(random.nextInt(possibleMoves.size()));
+        return  bestMoves.get(random.nextInt(bestMoves.size()));
 
     }
 
