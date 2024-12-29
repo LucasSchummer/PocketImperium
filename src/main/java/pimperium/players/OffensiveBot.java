@@ -134,7 +134,7 @@ public class OffensiveBot extends Bot {
                 // Add the points of the destination and subtract the ones from the origin
                 score += calculateHexScore(move.getValue().get(i));
                 score -= calculateHexScore(move.getKey().get(i).getPosition());
-                // Malus for an exploration of a new hex, bonus for a hex already controlled
+                // Bonus for an exploration of a new hex, malus for a hex already controlled
                 score += (move.getValue().get(i).getOccupant() == this ? -1:1);
             }
 
@@ -166,27 +166,25 @@ public class OffensiveBot extends Bot {
     public Pair<Set<Ship>, Hexagon> chooseExterminate(List<Pair<Set<Ship>, Hexagon>> possibleMoves) {
 
         List<Pair<Set<Ship>, Hexagon>> bestMoves = new ArrayList<>();
-        int bestShipsDestroyed = 0;
+        int bestScore = -100;
 
         for (Pair<Set<Ship>, Hexagon> move : possibleMoves) {
+            int score = calculateHexScore(move.getValue());
             int shipsDestroyed = Math.min(move.getKey().size(), move.getValue().getShips().size());
+            score += shipsDestroyed;
 
-            if (shipsDestroyed > bestShipsDestroyed) {
+            if (score > bestScore) {
                 bestMoves.clear();
                 bestMoves.add(move);
-                bestShipsDestroyed = shipsDestroyed;
-            } else if (shipsDestroyed == bestShipsDestroyed) {
+                bestScore = score;
+            } else if (score == bestScore) {
                 bestMoves.add(move);
             }
         }
 
         Random random = new Random();
 
-        if (!bestMoves.isEmpty()) {
-            return bestMoves.get(random.nextInt(bestMoves.size()));
-        } else {
-            return possibleMoves.get(random.nextInt(possibleMoves.size()));
-        }
+        return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
     public void doExpand(int efficiency) {
@@ -215,6 +213,14 @@ public class OffensiveBot extends Bot {
             this.expand.execute();
 
             game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -247,6 +253,14 @@ public class OffensiveBot extends Bot {
                 game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux déplacés en " + move.getValue(), this, "normal");
             } else {
                 game.getController().getView().addLogMessage("Un vaisseau déplacé en " + move.getValue(), this, "normal");
+            }
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
         }
@@ -282,6 +296,14 @@ public class OffensiveBot extends Bot {
                 game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux exterminent en " + move.getValue(), this, "normal");
             } else {
                 game.getController().getView().addLogMessage("Un vaisseau extermine en " + move.getValue(), this, "normal");
+            }
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
         }

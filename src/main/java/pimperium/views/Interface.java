@@ -562,6 +562,7 @@ public class Interface {
         topSection.getChildren().add(roundTitle);
 
         // Add separator with HBox to remove padding
+
         HBox separatorBox = new HBox();
         separatorBox.setPadding(new Insets(0));
         separatorBox.setAlignment(Pos.CENTER);

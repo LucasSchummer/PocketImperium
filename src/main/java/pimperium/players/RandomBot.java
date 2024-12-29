@@ -109,6 +109,15 @@ public class RandomBot extends Bot {
             this.expand.execute();
 
             game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
         }
 
     }
@@ -161,6 +170,14 @@ public class RandomBot extends Bot {
                 game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux déplacés en " + move.getValue(), this, "normal");
             } else {
                 game.getController().getView().addLogMessage("Un vaisseau déplacé en " + move.getValue(), this, "normal");
+            }
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
 /*            // After selecting the moves
@@ -221,6 +238,14 @@ public class RandomBot extends Bot {
                 game.getController().getView().addLogMessage("Flotte de " + move.getKey().size() + " vaisseaux exterminent en " + move.getValue(), this, "normal");
             } else {
                 game.getController().getView().addLogMessage("Un vaisseau extermine en " + move.getValue(), this, "normal");
+            }
+
+            this.game.triggerInterfaceUpdate();
+
+            try {
+                Thread.sleep(Game.DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
 /*            // Adding randomly selected ships and targets to the list of ships/targets to explore
