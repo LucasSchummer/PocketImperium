@@ -125,7 +125,7 @@ public class GameController extends Application {
                         break;
                     case "Défensif":
                         // bot = new DefensiveBot(game, botColor);
-                        bot = new RandomBot(game, botColor);
+                        bot = new DefensiveBot(game, botColor);
                         break;
                     case "Aléatoire":
                     default:
@@ -394,7 +394,7 @@ public class GameController extends Application {
                 gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
             }
             gamePlayer.play();
-            
+
         } catch (IOException e) {
             System.out.println("Le jeu sauvegardé n'a pas pu être chargé.");
             System.out.println(e.getMessage());
