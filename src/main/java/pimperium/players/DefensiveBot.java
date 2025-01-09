@@ -306,7 +306,6 @@ public class DefensiveBot extends Bot {
 
         for (int i = 0; i < efficiency; i++) {
             List<Ship> possShips = possibilities.expand(this);
-            List<Ship> expandShips = new ArrayList<Ship>();
 
             if (possShips.isEmpty()) {
                 System.out.println("Aucune expansion possible.");
@@ -315,12 +314,11 @@ public class DefensiveBot extends Bot {
             }
 
             Ship ship = chooseExpand(possShips);
-            expandShips.add(ship);
 
-            this.expand.setShips(expandShips);
+            this.expand.setShip(ship);
             this.expand.execute();
 
-            game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
+            game.getController().getView().addLogMessage("Vaisseau ajouté en " + ship.getPosition(), this, "normal");
 
             this.game.triggerInterfaceUpdate();
 

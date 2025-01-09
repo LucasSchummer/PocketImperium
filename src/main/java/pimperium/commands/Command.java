@@ -1,6 +1,11 @@
 package pimperium.commands;
 
+/**
+ * An action performable by players
+ */
 public interface Command {
-    // Method for each command
+    /**
+     * Execute the command
+     */
     void execute();
 }

@@ -9,6 +9,9 @@ import pimperium.elements.Hexagon;
 import pimperium.elements.Ship;
 import pimperium.players.Player;
 
+/**
+ * Command card belonging to a player that enables him to perform Exterminate
+ */
 public class Exterminate implements Command, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,16 +22,27 @@ public class Exterminate implements Command, Serializable {
     public Exterminate(Player player) {
         this.player = player;
     }
-    
+
+    /**
+     * Set the fleet concerned by the Exterminate move
+     * @param shipsInvolved List of ships attacking
+     */
     public void setShips(Set<Ship> shipsInvolved) {
     	this.shipsInvolved = shipsInvolved;
     }
-    
+
+    /**
+     * Set the target hexagon of the Exterminate move
+     *
+     * @param target The targeted hexagon containing a system
+     */
     public void setTarget(Hexagon target) {
     	this.target = target;
     }
 
-    @Override
+    /**
+     * Execute the Exterminate move (Destroy ships in attacking and defending fleet and possibly moving the remaining ships to the conquered hexagon)
+     */
     public void execute() {
 
         List<Ship> attackingFleet = new ArrayList<>(this.shipsInvolved);

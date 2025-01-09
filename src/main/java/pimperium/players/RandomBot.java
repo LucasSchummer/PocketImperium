@@ -90,7 +90,6 @@ public class RandomBot extends Bot {
 
             // Get the ships on which it is possible to expand
             List<Ship> possShips = possibilities.expand(this);
-            List<Ship> expandShips = new ArrayList<Ship>();
 
             Random random = new Random();
 
@@ -102,13 +101,12 @@ public class RandomBot extends Bot {
             }
 
             Ship ship = possShips.get(random.nextInt(possShips.size()));
-            expandShips.add(ship);
 
-            //Set the ships and execute the command
-            this.expand.setShips(expandShips);
+            //Set the ship and execute the command
+            this.expand.setShip(ship);
             this.expand.execute();
 
-            game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");
+            game.getController().getView().addLogMessage("Vaisseau ajouté en " + ship.getPosition(), this, "normal");
 
             this.game.triggerInterfaceUpdate();
 

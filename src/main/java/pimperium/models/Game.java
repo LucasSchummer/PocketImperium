@@ -3,16 +3,12 @@ package pimperium.models;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-//import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 
@@ -25,34 +21,60 @@ import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.elements.SideSector;
 import pimperium.players.Bot;
-import pimperium.players.Human;
 import pimperium.players.Player;
-import pimperium.players.RandomBot;
-import pimperium.utils.Colors;
-import pimperium.utils.Debugger;
 import pimperium.utils.Possibilities;
 
 
 public class Game implements Runnable, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Number of rows of the map
+	 */
 	public static final int MAP_ROWS = 9;
+	/**
+	 * Number of columns of the map
+	 */
 	public static final int MAP_COLS = 6;
+	/**
+	 * Number of players
+	 */
 	public static final int NB_PLAYERS = 3;
-	public static final int DELAY = 2000;
+	/**
+	 * Delay between bot actions to make the game comprehensible for the user
+	 */
+	public static final int DELAY = 50;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	private int round;
 	private int round_step;
+	private boolean gameEnded;
+	/**
+	 * The map stored as a matrix of hexagons. The last hexagon of odd lines will be null (because we deal with hexagons and not squares)
+	 */
 	private Hexagon[][] hexs;
+	/**
+	 * The list of sectors ordered from left to right, top to bottom
+	 */
 	private Sector[] sectors;
+	/**
+	 * The list of players, with order switched each round
+	 */
 	private Player[] players;
 	//The players ordered for the round (line i is the order for the ith action)
+	/**
+	 * Matrix of players storing the play order for the round. Line i stores the order for the ith action of the round
+	 */
 	private Player[][] orderPlayers;
+	/**
+	 * Matrix of integers storing the action efficiencies for the round. Line i stores the efficiencies for the ith step of the round
+	 */
 	private Integer[][] efficiencies;
+	/**
+	 * Instance of Possibilities used to generate all possible moves for each action
+	 */
 	private  Possibilities possibilities;
-	private boolean gameEnded;
 
 	// Non-serializable variables
 	public transient Scanner scanner = new Scanner(System.in);
@@ -60,7 +82,9 @@ public class Game implements Runnable, Serializable {
 	private transient GameController controller;
 	public boolean viewInitialized = false;
 
-
+	/**
+	 * Constructor of Game initializing attributes
+	 */
 	public Game() {
 		//Initialization in the constructor
 		this.round = 0; 
@@ -70,30 +94,61 @@ public class Game implements Runnable, Serializable {
 		this.gameEnded = false;
 	}
 
+	/**
+	 * Set the instance of game controller
+	 *
+	 * @param controller Instance of controller that links the game with the view
+	 */
 	public void setController(GameController controller) {
         this.controller = controller;
     }
 
+	/**
+	 * Get the instance of game controller
+	 *
+	 * @return the instance of game controller
+	 */
     public GameController getController() {
         return this.controller;
     }
 
+	/**
+	 * Set the attribute storing the state of the view
+	 */
 	public void setViewInitialized() {
 		viewInitialized = true;
 	}
 
+	/**
+	 * Get the list of players
+	 *
+	 * @return the list of players as a length 3 array
+	 */
 	public Player[] getPlayers() {
 		return this.players;
 	}
 
+	/**
+	 * Set the list of players
+	 *
+	 * @param players The array of players (length 3)
+	 */
 	public void setPlayers(Player[] players) {
 		this.players = players;
 	}
-	
+
+	/**
+	 * Get the round number
+	 *
+	 * @return round number
+	 */
 	public int getRound() {
 		return this.round;
 	}
 
+	/**
+	 * Initial setup of the map
+	 */
 	public void setup() {
 		this.generateMap();
 		this.createHexNeighbours();
@@ -103,11 +158,17 @@ public class Game implements Runnable, Serializable {
 		System.out.println(this.displayMap());
 	}
 
+	/**
+	 * Start the game thread and launch the game
+	 */
 	public void startGame() {
 		this.t = new Thread(this, "Game");
 		this.t.start();
 	}
 
+	/**
+	 * Stop the game thread
+	 */
 	public void stopGame() {
 		this.gameEnded = true;
 		if (t != null) {
@@ -117,7 +178,10 @@ public class Game implements Runnable, Serializable {
 			scanner.close();
 		}
 	}
-	
+
+	/**
+	 * Random generation of the map by shuffling sector cards
+	 */
 	public void generateMap() {
 		
 		//Generate hexagons
@@ -201,7 +265,10 @@ public class Game implements Runnable, Serializable {
 		}
 				
 	}
-	
+
+	/**
+	 * Research of the set of neighbors for each hex of the map
+	 */
 	public void createHexNeighbours() {
 		
 		for (int i=0; i<MAP_ROWS; i++) {
@@ -257,7 +324,9 @@ public class Game implements Runnable, Serializable {
 		}
 	}
 
-	// Gather the 4 middle hexes into one hex to create Tri-Prime
+	/**
+	 * Gather the 4 middle hexagons to form TriPrime
+	 */
 	public void createTriPrime() {
 		// Create Tri-Prime
 		Hexagon triPrime = new Hexagon(4, 2);
@@ -305,56 +374,12 @@ public class Game implements Runnable, Serializable {
 
 	}
 
-	//Create the players according to their type
-	public void createPlayers() {
-		this.players = new Player[NB_PLAYERS];
-		List<String> chosenPseudos = new ArrayList<>();
-		List<Colors> availableColors = new ArrayList<>(Arrays.asList(Colors.values()));
-		Collections.shuffle(availableColors);
-
-		for (int i = 0; i < NB_PLAYERS; i++) {
-			boolean validInput = false;
-			while (!validInput) {
-				System.out.print("Le joueur " + (i + 1) + " est-il un humain ? (oui/non) : ");
-				String type = scanner.nextLine().trim().toLowerCase();
-
-				if (type.equals("oui") || type.equals("o")) {
-					System.out.print("Entrez le pseudo pour le joueur " + (i + 1) + " : ");
-					String pseudo = scanner.nextLine().trim();
-					chosenPseudos.add(pseudo);
-					Colors playerColor = availableColors.remove(0);
-					Human human = new Human(this, playerColor);
-					human.setPseudo(pseudo);
-					this.players[i] = human;
-					validInput = true;
-				} else if (type.equals("non") || type.equals("n")) {
-					List<String> botNames = Arrays.asList(
-						"Luke Skywalker", "Obiwan Kenobi", "Han Solo", 
-						"Darth Vader", "Leia Organa", "Yoda", 
-						"Anakin Skywalker", "Padmé Amidala", "Mace Windu", 
-						"Qui-Gon Jinn", "Ahsoka Tano", "Rey", 
-						"Kylo Ren", "Finn", "Poe Dameron"
-					);
-					Random random = new Random();
-					boolean validName = false;
-					String botPseudo = botNames.get(random.nextInt(botNames.size()));
-					// Make sure that 2 bots don't have the same pseudo
-					while (!validName) {
-						botPseudo = botNames.get(random.nextInt(botNames.size()));
-						validName = !chosenPseudos.contains(botPseudo);
-					}
-					Colors botColor = availableColors.remove(0);
-					Bot bot = new RandomBot(this, botColor);
-					bot.setPseudo(botPseudo);
-					this.players[i] = bot;
-					validInput = true;
-				} else {
-					System.out.println("Entrée invalide. Veuillez répondre par 'oui' ou 'non'.");
-				}
-			}
-		}
-	}
-
+	/**
+	 * Retrieve the sector that one hexagon belongs to
+	 *
+	 * @param hex A hexagon containing a system
+	 * @return the sector containing the hexagon
+	 */
 	public Sector findSector(Hexagon hex) {
 		//Initialize the sector as the first one
 		Sector sector = this.sectors[0];
@@ -367,6 +392,12 @@ public class Game implements Runnable, Serializable {
 		return sector;
 	}
 
+	/**
+	 * Find the id of a sector
+	 *
+	 * @param sector One of the 9 sectors
+	 * @return the id of the sector
+	 */
 	public int findSectorId(Sector sector) {
 		int id = 0;
 		for (int i = 0; i < this.sectors.length; i++) {
@@ -375,7 +406,9 @@ public class Game implements Runnable, Serializable {
 		return id;
 	}
 
-	//Ask all the players to place their initial fleet
+	/**
+	 * Ask all the players to place their 2 initial fleets
+	 */
 	public void setupFleets() {
 		for (Player player: this.players) {
 			player.setupInitialFleet();
@@ -387,6 +420,9 @@ public class Game implements Runnable, Serializable {
 		}
 	}
 
+	/**
+	 * Calculate the play order and the efficiency of each action for the 3 steps of the round to go
+	 */
 	public void getPlayOrder() {
 
 		this.orderPlayers = new Player[3][NB_PLAYERS];
@@ -438,15 +474,11 @@ public class Game implements Runnable, Serializable {
 			}
 		}
 
-/*		this.efficiencies = new Integer[][] {
-				{1,1,1},
-				{1,1,1},
-				{1,1,1}
-		};*/
-
 	}
 
-	//Switch the start player
+	/**
+	 * Change the default play order between players
+	 */
 	public void switchStartPlayer() {
 		Player temp = this.players[0];
 		for (int i = 0; i < this.players.length-1; i++) {
@@ -455,6 +487,9 @@ public class Game implements Runnable, Serializable {
 		this.players[this.players.length-1] = temp;
 	}
 
+	/**
+	 * Play a full round
+	 */
 	public void playRound() {
 
 		if (this.round > 0) this.switchStartPlayer();
@@ -483,7 +518,10 @@ public class Game implements Runnable, Serializable {
 		this.pcs.firePropertyChange("roundOver", null, null);
 
 	}
-	
+
+	/**
+	 * Play a round step (one action from each player)
+	 */
 	public void playRoundStep() {
 		for (int j=0; j<NB_PLAYERS; j++) {
 			this.orderPlayers[this.round_step][j].doAction(this.round_step, this.efficiencies[this.round_step][j]);
@@ -491,11 +529,16 @@ public class Game implements Runnable, Serializable {
         }
 	}
 
+	/**
+	 * Notify the controller that the map has changed
+	 */
 	public void triggerInterfaceUpdate() {
 		this.pcs.firePropertyChange("hexUpdated", null, null);
 	}
 
-	// Remove excess ships on every hexagon
+	/**
+	 * Perform the sustaining of ships at the end of the round (destroy excess ships)
+	 */
 	public void sustainShips() {
 		System.out.println("Suppression des vaisseaux en trop...");
 		this.getController().getView().addLogMessage("Suppression des vaisseaux en trop...", null, "normal");
@@ -519,7 +562,11 @@ public class Game implements Runnable, Serializable {
 		}
 	}
 
-	// Return the controller of the TriPrime (if existing)
+	/**
+	 * Retrieve the player currently controlling TriPrime
+	 *
+	 * @return the player controlling TriPrime if it exists
+	 */
 	public Player getTriPrimeController() {
 		// Get the TriPrime hexagon
 		Hexagon triPrimeHex = this.hexs[4][2]; 
@@ -530,7 +577,9 @@ public class Game implements Runnable, Serializable {
 		return null; // If no occupant
 	}
 
-	// Calculate the score of each player
+	/**
+	 * Perform the scoring of the round by asking each player to choose a sector to score
+	 */
 	public void doScore() {
 		Set<Sector> scoredSectors = new HashSet<>();
 	
@@ -572,7 +621,9 @@ public class Game implements Runnable, Serializable {
 		this.pcs.firePropertyChange("scoreUpdated", null, null);
 	}
 
-	// Calculate the final score of each player
+	/**
+	 * Perform the final scoring step at the end of the game where points are doubled
+	 */
 	public void doFinalScore() {
 		System.out.println("Calcul du score final...");
 		
@@ -602,7 +653,10 @@ public class Game implements Runnable, Serializable {
 		this.stopGame();
 	}
 
-	// Get the winner of the game
+	/**
+	 * Find the winner by comparing scores
+	 * @return the winner of the game
+	 */
 	public Player getWinner() {
 		Player winner = this.players[0];
 		for (Player player : this.players) {
@@ -614,26 +668,14 @@ public class Game implements Runnable, Serializable {
 		return winner;
 	}
 
-/*	// Assert that the expand move from the player is valid
-	public boolean checkExpandValidity(List<Ship> ships) {
-		// Check that no ship is expanded twice
-		Set<Ship> uniqueShips = new HashSet<>(ships);
-		boolean notTwice = uniqueShips.size() == ships.size();
-
-		// Get all the possible ships to expand on
-		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
-		boolean allPossible = possShips.containsAll(ships);
-
-		return notTwice && allPossible;
-	}*/
-
+	/**
+	 * Check the validity of an Expand move tried by a player
+	 *
+	 * @param hex The hexagon where the Expand would be performed
+	 * @param player The player trying the move
+	 * @return The validity of the move as a boolean
+	 */
 	public boolean checkExpandValidity(Hexagon hex, Player player) {
-
-		// Checks that the user controls all the selected hexagons
-/*		boolean controlsHexs = true;
-		for (Hexagon hex : hexs) {
-			if (hex.getOccupant() != player) controlsHexs = false;
-		}*/
 
 		boolean controlsHex = hex.getOccupant() == player;
 
@@ -644,32 +686,16 @@ public class Game implements Runnable, Serializable {
 
 		boolean enoughShips = !possibleShips.isEmpty();
 
-/*		boolean enoughShips = true;
-		List<Ship> ships = new ArrayList<>();
-		try {
-			for (Hexagon hex : new HashSet<Hexagon>(hexs)) {
-				int hexOccurences = Collections.frequency(hexs, hex);
-				for (int i = 0; i < hexOccurences; i++) {
-					ships.add(hex.getShips().get(i));
-				}
-			}
-		} catch (Exception e) {
-			enoughShips = false;
-		}*/
-
-/*		System.out.println("controls hexs : " + controlsHexs);
-		System.out.println("enough ships : " + enoughShips);*/
-
-
-/*		// Get all the possible ships to expand on
-		List<Ship> possShips = possibilities.expand(ships.getFirst().getOwner());
-		boolean allPossible = possShips.containsAll(ships);*/
-
 		return controlsHex && enoughShips;
 
 	}
-	
-	// Assert that the explore move from the player is valid
+
+	/**
+	 * Check the validity of an Explore move tried by a player
+	 *
+	 * @param move The move tried by the player, stored as a list of ships assigned to a list of destinations
+	 * @return The validity of the move as a boolean
+	 */
 	public boolean checkExploreValidity(Pair<List<Ship>, List<Hexagon>> move) {
 
 		// Check that no ship is moved twice
@@ -693,7 +719,13 @@ public class Game implements Runnable, Serializable {
 		return possible;
 	}
 
-	// Assert that the exterminate move from the player is valid
+	/**
+	 * Check the validity of an Exterminate move tried by a player
+	 *
+	 * @param move The move tried by the player, stored as a list of ships assigned to a hexagon
+	 * @param player The player performing the move
+	 * @return The validity of the move as a boolean
+	 */
 	public boolean checkExterminateValidity(Pair<Set<Ship>, Hexagon> move, Player player) {
 
 /*		// Check that no system is attacked twice
@@ -719,15 +751,29 @@ public class Game implements Runnable, Serializable {
 
 	}
 
+	/**
+	 * Get the map
+	 *
+	 * @return the map as a 9*6 array of hexagons
+	 */
 	public Hexagon[][] getMap() {
 		return this.hexs;
 	}
 
+	/**
+	 * Get the sectors
+	 *
+	 * @return the sectors as a length 9 array
+	 */
 	public Sector[] getSectors() {
 		return this.sectors;
 	}
 
-	// Test Methods
+	/**
+	 * Builds a printable String that represents the map
+	 *
+	 * @return the map in the form of a String
+	 */
 	public String displayMap() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < MAP_ROWS; i++) {
@@ -759,22 +805,10 @@ public class Game implements Runnable, Serializable {
 		}
 		return sb.toString();
 	}
-    
-    public String displayMap(int line) {
-		StringBuilder sb = new StringBuilder();
-		int lineWidth = 5 + (line % 2 == 0 ? 1 : 0);
-		for (int j = 0; j < lineWidth; j++) {
-			Hexagon hex = hexs[line][j];
-			if (hex != null && hex.getSystem() != null) {
-				sb.append(hex.getSystem().getLevel()).append(" ");
-			} else {
-				sb.append("0 ").append(" ");
-			}
-		}
-		sb.append("\n");
-		return sb.toString();
-	}
 
+	/**
+	 * Start the game and loop until it's over
+	 */
 	public void run() {
 
 		// Setup the game if it has just been created
@@ -809,13 +843,13 @@ public class Game implements Runnable, Serializable {
 		this.doFinalScore();
 	}
 
+	/**
+	 * Add the Property Change Listener to the game Property Change Support
+	 *
+	 * @param pcl
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		pcs.addPropertyChangeListener(pcl);
-	}
-
-	//Main method
-	public static void main(String[] args) {
-		System.out.println("Lancez le jeu depuis GameController.js");
 	}
 
 }

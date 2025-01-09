@@ -1,0 +1,8 @@
+module:com.example.pimperium
+pimperium.commands
+pimperium.controllers
+pimperium.elements
+pimperium.models
+pimperium.players
+pimperium.utils
+pimperium.views

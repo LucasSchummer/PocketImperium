@@ -1,38 +1,40 @@
 package pimperium.commands;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 import pimperium.elements.Ship;
 import pimperium.players.Player;
 
-
+/**
+ * Command card belonging to a player that enables him to perform Expand
+ */
 public class Expand implements Command, Serializable {
 
     private static final long serialVersionUID = 1L;
     private Player player;
-    private List<Ship> shipsInvolved;
+    private Ship shipInvolved;
 
-    //TODO Change the logic so that expands applies only on a ship instead of a list of ships
     public Expand(Player player) {
         this.player = player;      
     }
-    
-    public void setShips(List<Ship> shipsInvolved) {
-    	this.shipsInvolved = shipsInvolved;
-    }
-    
 
-    @Override
+    /**
+     * Set the ship to expand on
+     * @param ship The ship concerned by the Expand move
+     */
+    public void setShip(Ship ship) {
+        this.shipInvolved = ship;
+    }
+
+
+    /**
+     * Execute the expand move (Create the new ship)
+     */
     public void execute() {
 
-        // Add ships to hex
-        for (int i=0; i<this.shipsInvolved.size(); i++) {
-        	System.out.println(this.shipsInvolved.get(i) + " expanded");
-            this.player.createShip(this.shipsInvolved.get(i).getPosition());
-            shipsInvolved.get(i).setHasExpanded(true);
-        }
+        System.out.println(this.shipInvolved + " expanded");
+        this.player.createShip(this.shipInvolved.getPosition());
+        shipInvolved.setHasExpanded(true);
 
         this.player.deleteExtraShips();
 

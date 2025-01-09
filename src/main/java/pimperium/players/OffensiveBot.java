@@ -208,8 +208,8 @@ public class OffensiveBot extends Bot {
             Ship ship = chooseExpand(possShips);
             expandShips.add(ship);
 
-            //Set the ships and execute the command
-            this.expand.setShips(expandShips);
+            //Set the ship and execute the command
+            this.expand.setShip(ship);
             this.expand.execute();
 
             game.getController().getView().addLogMessage("Vaisseau ajouté en " + expandShips.get(0).getPosition(), this, "normal");

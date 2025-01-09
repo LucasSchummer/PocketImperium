@@ -174,12 +174,18 @@ public class Human extends Player {
 				}
 			}
 
-			// Set the ships and execute the command
+/*			// Set the ships and execute the command
 			List<Ship> ships = new ArrayList<>();
 			ships.add(hex.getShips().stream()
 					.filter(ship -> !ship.hasExpanded())
 					.toList().get(0));
 			this.expand.setShips(ships);
+			this.expand.execute();*/
+
+			List<Ship> usableShips = hex.getShips().stream()
+					.filter(ship -> !ship.hasExpanded())
+					.toList();
+			this.expand.setShip(usableShips.getFirst());
 			this.expand.execute();
 
 			possShips = Possibilities.getInstance(game).expand(this);
