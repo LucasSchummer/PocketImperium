@@ -289,10 +289,14 @@ public class Human extends Player {
 					try {
 						int input = this.game.getController().waitForUserInput();
 						if (input != 0 && input != 1) {
-							throw new Exception();
+							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+							game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");
+							continue;
 						}
+
 						newMove = input == 1;
 						validResponse = true;
+
 					} catch (Exception e) {
 						System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
 						game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");
@@ -430,7 +434,7 @@ public class Human extends Player {
 							System.out.println("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer");
 							game.getController().getView().addLogMessage("Le coup que vous avez essayé de jouer n'est pas valide. Veuillez réessayer", this, "error");
 
-							Debugger.displayAllExterminateMoves(this, this.game);
+							//Debugger.displayAllExterminateMoves(this, this.game);
 						}
 
 						validInput = true;
@@ -462,10 +466,14 @@ public class Human extends Player {
 						game.getController().getView().addLogMessage("Voulez-vous attaquer un autre système ? (0/1) : ", this, "normal");
 						int input = this.game.getController().waitForUserInput();
 						if (input != 0 && input != 1) {
-							throw new Exception();
+							System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
+							game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");
+							continue;
 						}
-						newMove = (input == 1);
+
+						newMove = input == 1;
 						validInput = true;
+
 					} catch (Exception e) {
 						System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
 						game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");

@@ -182,6 +182,7 @@ public class GameController extends Application {
                 Scene scene = new Scene(view.getRoot(), 1200, 750);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Pocket Imperium");
+                primaryStage.setFullScreen(true);
                 primaryStage.show();
             });
     
