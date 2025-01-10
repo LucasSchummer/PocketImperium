@@ -8,8 +8,6 @@ import javafx.scene.control.Spinner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import pimperium.controllers.GameController;
 
 public class PlayerSetupView {
