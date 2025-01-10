@@ -316,7 +316,6 @@ public class Human extends Player {
 					} catch (Exception e) {
 						System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
 						game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");
-						this.game.scanner.nextLine();
 					}
 				}
 			} else {
@@ -460,7 +459,6 @@ public class Human extends Player {
 					} catch (Exception e) {
 						System.out.println("Entrée invalide");
 						game.getController().getView().addLogMessage("Entrée invalide", this, "error");
-						this.game.scanner.nextLine();
 					}
 				}
 			}
@@ -496,7 +494,7 @@ public class Human extends Player {
 					} catch (Exception e) {
 						System.out.println("Entrée invalide. Veuillez entrer 0 ou 1");
 						game.getController().getView().addLogMessage("Entrée invalide. Veuillez entrer 0 ou 1", this, "error");
-											}
+					}
 				}
 			} else {
 				newMove = false;
