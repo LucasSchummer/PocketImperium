@@ -853,7 +853,7 @@ public class Game implements Runnable, Serializable {
 	/**
 	 * Add the Property Change Listener to the game Property Change Support
 	 *
-	 * @param pcl
+	 * @param pcl The Property Change Listener
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		pcs.addPropertyChangeListener(pcl);

@@ -29,7 +29,7 @@ public class Possibilities implements Serializable{
 
     /**
      * Return the instance of Possibilities according to the Singleton design pattern
-     * @param game
+     * @param game The singleton insance of Possibilities
      * @return
      */
     public static Possibilities getInstance(Game game) {

@@ -35,8 +35,8 @@ public class Ship implements Serializable {
 
     /**
      * Create a new ship for a given player at a given position
-     * @param position
-     * @param player
+     * @param position The position of the ship to be created
+     * @param player The owner of the ship
      */
     public Ship(Hexagon position, Player player) {
         this.position = position;
@@ -74,7 +74,7 @@ public class Ship implements Serializable {
 
     /**
      * Whether the ship has already been expanded on this round
-     * @return
+     * @return Whether the ship has expanded this round or not, as a boolean
      */
     public boolean hasExpanded() {
         return this.hasExpanded;
@@ -82,7 +82,7 @@ public class Ship implements Serializable {
 
     /**
      * Whether the ship has already explored this round
-     * @return
+     * @return Whether the ship has explored this round or not, as a boolean
      */
     public boolean hasExplored() {
         return this.hasExplored;
@@ -90,7 +90,7 @@ public class Ship implements Serializable {
 
     /**
      * Whether the ship has already exterminated this round
-     * @return
+     * @return Whether the ship has exterminated this round or not, as a boolean
      */
     public boolean hasExterminated() {
         return this.hasExterminated;

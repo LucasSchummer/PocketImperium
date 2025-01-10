@@ -76,7 +76,7 @@ public class Hexagon implements Serializable {
 
 	/**
 	 * Set the neighbors set
-	 * @param neighbours
+	 * @param neighbours The set of neighbors to set as the neighbors of the hexagon
 	 */
 	public void setNeighbours(Set<Hexagon> neighbours) {
 		this.neighbors = neighbours;

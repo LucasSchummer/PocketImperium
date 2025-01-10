@@ -20,7 +20,7 @@ public class OffensiveBot extends Bot {
 
     /**
      * Calculate the distance to the nearest enemy of a given hexagon
-     * @param hexagon
+     * @param hexagon The hexagon considered
      * @return The distance (in hexagons) of the closest controlled hexagon
      */
     private int distanceToNearestEnemy(Hexagon hexagon) {
@@ -50,7 +50,7 @@ public class OffensiveBot extends Bot {
 
     /**
      * Calculate the strategic score given the level of its system and the distance to enemies
-     * @param hexagon
+     * @param hexagon The hexagon considered
      * @return The score of the hexagon considered
      */
     private int calculateHexScore(Hexagon hexagon) {

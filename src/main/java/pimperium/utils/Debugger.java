@@ -17,7 +17,7 @@ public class Debugger {
     /**
      * Display all the hexagons targetable with an Exterminate by a certain player
      * @param targets The list of targets
-     * @param player
+     * @param player The player performing the Exterminate
      */
     public static void displayTargets(List<Hexagon> targets, Player player) {
         System.out.println("Generating exterminate moves for " + player.getPseudo());
@@ -86,7 +86,7 @@ public class Debugger {
 
     /**
      * Display an Exterminate move in a comprehensible way
-     * @param move
+     * @param move The move to display
      */
     public static void displayExterminateMove(Pair<Set<Ship>, Hexagon> move) {
         System.out.println("System attacked : " + move.getValue());
@@ -126,7 +126,7 @@ public class Debugger {
 
     /**
      * Display an Explore move in a comprehensible way
-     * @param move
+     * @param move The move to display
      */
     public static void displayExploreMove(Pair<List<Ship>, List<Hexagon>> move) {
         System.out.println("Num Ships : " + move.getKey().size());

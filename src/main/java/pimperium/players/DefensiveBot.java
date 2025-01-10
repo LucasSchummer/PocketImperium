@@ -76,7 +76,7 @@ public class DefensiveBot extends Bot {
 
     /**
      * Count the number of hexagons controlled by the player within a given range around a given position
-     * @param hexagon
+     * @param hexagon The hexagon considered
      * @param range The maximum distance to find allies
      * @return The number of allies within the range
      */
@@ -106,7 +106,7 @@ public class DefensiveBot extends Bot {
 
     /**
      * Count the number of systems controlled by the player in the sector containing a given hexagon
-     * @param hexagon
+     * @param hexagon The hexagon considered
      * @return The number os systems controlled in the sector
      */
     private int calculateSectorControl(Hexagon hexagon) {
@@ -134,7 +134,7 @@ public class DefensiveBot extends Bot {
 
     /**
      * Calculate a strategic score for a given hexagon
-     * @param hexagon
+     * @param hexagon The hexagon considered
      * @return The defensive score of the hexagon
      */
     private int calculateDefensiveScore(Hexagon hexagon) {
