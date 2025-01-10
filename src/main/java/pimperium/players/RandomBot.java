@@ -2,85 +2,26 @@ package pimperium.players;
 
 import java.util.*;
 
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 import javafx.util.Pair;
 
-import pimperium.elements.HSystem;
 import pimperium.elements.Hexagon;
-import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
-import pimperium.utils.Debugger;
 
+/**
+ * Bot player with a random strategy
+ */
 public class RandomBot extends Bot {
 
     public RandomBot(Game game, Colors color) {
         super(game, color);
     }
 
-/*    @Override
-    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
-        Random random = new Random();
-        Sector chosenSector = null;
-        boolean validChoice = false;
-        int sectorId = -1;
-        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
-
-        while (!validChoice) {
-            sectorId = random.nextInt(1, sectors.length+1);
-            chosenSector = sectors[sectorId-1];
-
-            if (chosenSector == null) {
-                continue; // Invalid sector, try another
-            } else if (chosenSector.isTriPrime()) {
-                continue; // Cannot choose the Tri-Prime sector
-            } else if (!chosenSector.isOccupied()) {
-                continue; // Cannot choose an unoccupied sector
-            } else if (scoredSectors.contains(chosenSector)) {
-                continue; // Sector already chosen, try another
-            } else {
-                validChoice = true;
-            }
-        }
-        System.out.println(this.getPseudo() + " a choisi le secteur " + sectorId + " à scorer.");
-        return chosenSector;
-    }*/
-
-    @Override
-    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
-
-        Set<Sector> availableSectors = new HashSet<>();
-        for (Sector sector : sectors) {
-            if (!scoredSectors.contains(sector) && !sector.isTriPrime()) availableSectors.add(sector);
-        }
-
-        Sector chosenSector = sectors[0];
-
-        int bestScore = -100;
-        int score = 0;
-
-        for (Sector sector : availableSectors) {
-            score = 0;
-            for (HSystem system : sector.getSystems()) {
-                if (system.getHex().getOccupant() != null) {
-                    score += system.getLevel() * ( system.getHex().getOccupant() == this ? 1 : -1);
-                }
-            }
-            if (score > bestScore) {
-                bestScore = score;
-                chosenSector = sector;
-            }
-        }
-
-        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
-
-        System.out.println(this.getPseudo() + " a choisi le secteur " + game.findSectorId(chosenSector) + " à scorer.");
-        game.getController().getView().addLogMessage(" A choisi le secteur " + game.findSectorId(chosenSector) + ".", this, "normal");
-        return chosenSector;
-    }
-
+    /**
+     * Choose and perform Expand
+     * @param efficiency Efficiency of the action
+     */
     public void doExpand(int efficiency) {
 
         System.out.println(this.getPseudo() + " s'étend");
@@ -120,6 +61,10 @@ public class RandomBot extends Bot {
 
     }
 
+    /**
+     * Choose and perform Explore
+     * @param efficiency Efficiency of the action
+     */
     public void doExplore(int efficiency) {
 
         System.out.println(this.getPseudo() + " explore with efficiency " + efficiency);
@@ -194,6 +139,10 @@ public class RandomBot extends Bot {
 
     }
 
+    /**
+     * Choose and perform Exterminate
+     * @param efficiency Efficiency of the action
+     */
     public void doExterminate(int efficiency) {
 
         System.out.println(this.getPseudo() + " extermine");

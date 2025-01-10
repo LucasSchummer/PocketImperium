@@ -4,13 +4,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-
 
 import java.beans.PropertyChangeEvent;
 import java.io.FileInputStream;
@@ -39,20 +37,44 @@ import pimperium.views.MenuView;
 import pimperium.views.PlayerNamesView;
 import pimperium.views.PlayerSetupView;
 
+/**
+ * Controller in the VCM design pattern
+ */
 public class GameController extends Application {
     private transient Stage primaryStage;
     private Game game;
     private transient Interface view;
+    /**
+     * Map linking game hexagons to view graphical hexagons (polygons)
+     */
     private transient Map<Hexagon, Polygon> hexPolygonMap;
+    /**
+     * Map linking view graphical hexagons to game hexagons
+     */
     private transient Map<Polygon, Hexagon> polygonHexMap;
+    /**
+     * Map linking view image sectors with game sectors
+     */
     private transient Map<ImageView, Sector> imageViewSectorMap;
 
+    /**
+     * Stores the hexagon that has been selected with the interface
+     */
     private Hexagon selectedHexagon;
+    /**
+     * Stores the sector that has been selected with the interface
+     */
     private Sector selectedSector;
 
     private String userInput;
 
+    /**
+     * Music player for the menu
+     */
     private MediaPlayer menuPlayer;
+    /**
+     * Music player in game
+     */
     private MediaPlayer gamePlayer;
 
     public void start(Stage primaryStage) {
@@ -62,21 +84,28 @@ public class GameController extends Application {
         showMainMenu();
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
+    /**
+     * Create a new game, as opposed to load an existing save
+     */
     public void startNewGame() {
         showPlayerSetup();
     }
 
+    /**
+     * Show the player setup interface to choose the number of human players
+     */
     public void showPlayerSetup() {
         PlayerSetupView setupView = new PlayerSetupView(this);
         Scene scene = new Scene(setupView.getRoot(), 750, 500);
         scene.getStylesheets().add("file:assets/style.css");
         primaryStage.setScene(scene);
     }
-    
+
+    /**
+     * Show the second player setup interface to choose pseudos and bot strategies
+     *
+     * @param humanPlayerCount The number of humans among players
+     */
     public void setupPlayerNames(int humanPlayerCount) {
         PlayerNamesView namesView = new PlayerNamesView(this, humanPlayerCount);
         Scene scene = new Scene(namesView.getRoot(), 750, 500);
@@ -84,6 +113,12 @@ public class GameController extends Application {
         primaryStage.setScene(scene);
     }
 
+    /**
+     * Create the players and set up the game to start the game
+     *
+     * @param playerNames The pseudos of the human players
+     * @param botStrategies The strategy for each bot
+     */
     public void startGameWithPlayers(List<String> playerNames, List<String> botStrategies) {
         try {
             System.out.println("Starting the game with players: " + playerNames);
@@ -191,6 +226,9 @@ public class GameController extends Application {
         }
     }
 
+    /**
+     * Display the main menu, where the user can start a game
+     */
     public void showMainMenu() {
         MenuView menuView = new MenuView(this);
         Scene scene = new Scene(menuView.getRoot(), 750, 500);
@@ -206,25 +244,30 @@ public class GameController extends Application {
         menuPlayer.play();
     }
 
+    /**
+     * Save the selected hexagon when the user clicks on the corresponding polygon
+     * @param polygon The interface polygon clicked by the user
+     */
     public synchronized void handleHexagonClick(Polygon polygon) {
         selectedHexagon = polygonHexMap.get(polygon);
         //System.out.println(selectedHexagon + " clicked");
         notify(); // Notify waiting threads
     }
 
+    /**
+     * Save the selected sector when the user clicks on the corresponding image view
+     * @param imageView The sector image clicked by the user
+     */
     public synchronized void handleSectorClick(ImageView imageView) {
         selectedSector = imageViewSectorMap.get(imageView);
         notify(); // Notify waiting threads
     }
 
-    public synchronized Hexagon getSelectedHexagon() {
-        return selectedHexagon;
-    }
-
-    public synchronized void resetSelectedHexagon() {
-        selectedHexagon = null;
-    }
-
+    /**
+     * Wait for the user to select a hexagon through the interface
+     * @return The hexagon chosen by the user
+     * @throws InterruptedException
+     */
     public synchronized Hexagon waitForHexagonSelection() throws InterruptedException {
         selectedHexagon = null;
         while (selectedHexagon == null) {
@@ -235,6 +278,11 @@ public class GameController extends Application {
         return hex;
     }
 
+    /**
+     * Wait for the user to select a sector through the interface
+     * @return The sector chosen by the user
+     * @throws InterruptedException
+     */
     public synchronized Sector waitForSectorSelection() throws InterruptedException {
         selectedSector = null;
         Platform.runLater(() -> this.view.changeSectorsTransparency(false));
@@ -249,6 +297,10 @@ public class GameController extends Application {
         return sector;
     }
 
+    /**
+     * React to game events and update the view accordingly
+     * @param event The game event triggered by the PCS/PCL
+     */
     public void onGameChange(PropertyChangeEvent event) {
         switch (event.getPropertyName()) {
             case "hexUpdated":
@@ -270,6 +322,11 @@ public class GameController extends Application {
         }
     }
 
+    /**
+     * Check the validity of the order of commands chosen by the user and set it in the game if it is correct
+     * @param player
+     * @param selectedCommands List of commands chosen by the user, in the desired order
+     */
     public synchronized void handleCommandSelection(Human player, List<String> selectedCommands) {
         // Commands to indexes
         Map<String, Integer> commandMap = new HashMap<>();
@@ -293,6 +350,10 @@ public class GameController extends Application {
         notify();
     }
 
+    /**
+     * Save the input entered by the user in the input text box
+     * @param input The user input
+     */
     public void handleUserInput(String input) {
         synchronized (this) {
             this.userInput = input;
@@ -301,6 +362,11 @@ public class GameController extends Application {
         }
     }
 
+    /**
+     * Wait for the user to enter a number in the input box
+     * @return The integer entered by the user
+     * @throws InterruptedException
+     */
     public synchronized int waitForUserInput() throws InterruptedException {
         userInput = null;
         while (userInput == null) {
@@ -319,10 +385,6 @@ public class GameController extends Application {
         return this.view;
     }
 
-    public MediaPlayer getMenuPlayer() {
-        return menuPlayer;
-    }
-    
     public MediaPlayer getGamePlayer() {
         return gamePlayer;
     }
@@ -339,17 +401,23 @@ public class GameController extends Application {
         return this.imageViewSectorMap;
     }
 
-    // Saves the game in the root of the project
+    /**
+     * Create a backup of the current game
+     * @param filename The name of the backup file to be created
+     * @throws IOException
+     */
     public void saveGame(String filename) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(filename);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(game); 
         out.close();
         fileOut.close();
-        System.out.println("Jeu sauvgardé");
+        System.out.println("Jeu sauvegardé");
     }
 
-    // Load the game from the SavedGames directory
+    /**
+     * Load the last game backup and start the game from this point
+     */
     public void loadGame() {
         String filename = "SavedGames/savedGame.dat";
         try {
@@ -396,11 +464,12 @@ public class GameController extends Application {
             }
             gamePlayer.play();
 
-        } catch (IOException e) {
-            System.out.println("Le jeu sauvegardé n'a pas pu être chargé.");
-            System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        }  catch (ClassNotFoundException e) {
             System.out.println("Fichier de jeu sauvegardé non trouvé.");
+            System.out.println(e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println("Le jeu sauvegardé n'a pas pu être chargé.");
             System.out.println(e.getMessage());
         }
     }

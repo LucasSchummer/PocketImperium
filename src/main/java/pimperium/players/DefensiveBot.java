@@ -9,13 +9,21 @@ import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
 
+/**
+ * Bot player with a defensive strategy
+ */
 public class DefensiveBot extends Bot {
 
     public DefensiveBot(Game game, Colors color) {
         super(game, color);
     }
 
-    @Override
+    /**
+     * Choose the sector to score
+     * @param scoredSectors The set of sectors that have already been chosen by other players this round (a sector can't be chosen twice)
+     * @param sectors The full list of sectors
+     * @return The chosen sector to score
+     */
     public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
         Set<Sector> availableSectors = new HashSet<>();
         for (Sector sector : sectors) {
@@ -66,30 +74,12 @@ public class DefensiveBot extends Bot {
         return chosenSector;
     }
 
-    private int distanceToNearestAlly(Hexagon hexagon) {
-        int distance = 0;
-
-        if (!(hexagon.getOccupant() == this)) {
-            boolean allyFound = false;
-            Set<Hexagon> hexsConsidered = new HashSet<>();
-            hexsConsidered.add(hexagon);
-            
-            while (!allyFound) {
-                distance++;
-                Set<Hexagon> newHexs = new HashSet<>();
-                for (Hexagon hex : hexsConsidered) {
-                    newHexs.addAll(new HashSet<>(hex.getNeighbours()));
-                }
-                hexsConsidered.addAll(new HashSet<>(newHexs));
-                for (Hexagon hex : hexsConsidered) {
-                    if (hex.getOccupant() == this) 
-                        allyFound = true;
-                }
-            }
-        }
-        return distance;
-    }
-
+    /**
+     * Count the number of hexagons controlled by the player within a given range around a given position
+     * @param hexagon
+     * @param range The maximum distance to find allies
+     * @return The number of allies within the range
+     */
     private int countNearbyAllies(Hexagon hexagon, int range) {
         Set<Hexagon> considered = new HashSet<>();
         Set<Hexagon> allies = new HashSet<>();
@@ -114,6 +104,11 @@ public class DefensiveBot extends Bot {
         return allies.size();
     }
 
+    /**
+     * Count the number of systems controlled by the player in the sector containing a given hexagon
+     * @param hexagon
+     * @return The number os systems controlled in the sector
+     */
     private int calculateSectorControl(Hexagon hexagon) {
         // Find which sector the hexagon belongs to
         Sector hexSector = null;
@@ -137,6 +132,11 @@ public class DefensiveBot extends Bot {
         return controlledSystems;
     }
 
+    /**
+     * Calculate a strategic score for a given hexagon
+     * @param hexagon
+     * @return The defensive score of the hexagon
+     */
     private int calculateDefensiveScore(Hexagon hexagon) {
         int score = hexagon.getSystemLevel() * 2; // Base score
         
@@ -174,6 +174,11 @@ public class DefensiveBot extends Bot {
         return score;
     }
 
+    /**
+     * Strategically choose which action to perform for Expand
+     * @param possShips The list of ships where the Expand is possible
+     * @return The ship chosen to Expand on
+     */
     public Ship chooseExpand(List<Ship> possShips) {
         List<Ship> bestShips = new ArrayList<>();
         int bestScore = -100;
@@ -207,6 +212,11 @@ public class DefensiveBot extends Bot {
         return possShips.get(random.nextInt(possShips.size()));
     }
 
+    /**
+     * Strategically choose which action to perform for Explore
+     * @param possibleMoves List of possible Explore moves
+     * @return The chosen move
+     */
     public Pair<List<Ship>, List<Hexagon>> chooseExplore(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
         int bestScore = -100;
         List<Pair<List<Ship>, List<Hexagon>>> bestMoves = new ArrayList<>();
@@ -264,6 +274,11 @@ public class DefensiveBot extends Bot {
         return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
+    /**
+     * Strategically choose which action to perform for Exterminate
+     * @param possibleMoves List of possible Exterminate moves
+     * @return The chosen move
+     */
     public Pair<Set<Ship>, Hexagon> chooseExterminate(List<Pair<Set<Ship>, Hexagon>> possibleMoves) {
         List<Pair<Set<Ship>, Hexagon>> bestMoves = new ArrayList<>();
         int bestScore = -100;
@@ -300,6 +315,10 @@ public class DefensiveBot extends Bot {
         return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
+    /**
+     * Choose and perform Expand
+     * @param efficiency Efficiency of the action
+     */
     public void doExpand(int efficiency) {
         System.out.println(this.getPseudo() + " s'étend");
         game.getController().getView().addLogMessage("Expand (efficacité : " + efficiency + ")", this, "normal");
@@ -329,6 +348,11 @@ public class DefensiveBot extends Bot {
             }
         }
     }
+
+    /**
+     * Choose and perform Explore
+     * @param efficiency Efficiency of the action
+     */
     public void doExplore(int efficiency) {
         System.out.println(this.getPseudo() + " explore");
         game.getController().getView().addLogMessage("Explore (efficacité : " + efficiency + ")", this, "normal");
@@ -364,7 +388,11 @@ public class DefensiveBot extends Bot {
             }
         }
     }
-    
+
+    /**
+     * Choose and perform Exterminate
+     * @param efficiency Efficiency of the action
+     */
     public void doExterminate(int efficiency) {
         System.out.println(this.getPseudo() + " extermine");
         game.getController().getView().addLogMessage("Exterminate (efficacité : " + efficiency + ")", this, "normal");

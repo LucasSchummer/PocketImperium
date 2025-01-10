@@ -9,17 +9,21 @@ import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
-import pimperium.utils.Debugger;
 import pimperium.utils.Possibilities;
 
 
+/**
+ * Human player that will play through the interface
+ */
 public class Human extends Player {
 
 	public Human(Game game, Colors color) {
 		super(game, color);
 	}
 
-	// Chooses a lvl-1 system to place 2 ships
+	/**
+	 * Perform the initial fleet setup through the interface
+	 */
 	public void setupInitialFleet() {
 		
 		// Wait for the view to be initialized
@@ -82,6 +86,9 @@ public class Human extends Player {
 		}
 	}
 
+	/**
+	 * Choose the order of commands using the buttons on the interface
+	 */
 	public void chooseOrderCommands() {
 		System.out.println(this.getPseudo() + ", veuillez choisir l'ordre des commandes.");
 		game.getController().getView().addLogMessage("Veuillez choisir l'ordre des commandes.", this, "normal");
@@ -101,7 +108,12 @@ public class Human extends Player {
 		}
 	}
 
-	@Override
+	/**
+	 * Choose the sector to score through the interface
+	 * @param scoredSectors The set of sectors that have already been chosen by other players this round (a sector can't be chosen twice)
+	 * @param sectors The full list of sectors
+	 * @return
+	 */
 	public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
 		boolean validChoice = false;
 		Sector sector = null;
@@ -135,7 +147,11 @@ public class Human extends Player {
 		game.getController().getView().addLogMessage("Vous avez choisi le secteur " + sectorId + ".", this, "normal");
 		return sector;
 	}
-	// With the clickable hexagons
+
+	/**
+	 * Perform the Expand move by clicking on hexagons on the interface
+	 * @param efficiency Efficiency of the action
+	 */
 	public void doExpand(int efficiency) {
 
 		System.out.println(this.getPseudo() + " rajoute un vaisseau avec une efficacité de " + efficiency);
@@ -174,14 +190,6 @@ public class Human extends Player {
 				}
 			}
 
-/*			// Set the ships and execute the command
-			List<Ship> ships = new ArrayList<>();
-			ships.add(hex.getShips().stream()
-					.filter(ship -> !ship.hasExpanded())
-					.toList().get(0));
-			this.expand.setShips(ships);
-			this.expand.execute();*/
-
 			List<Ship> usableShips = hex.getShips().stream()
 					.filter(ship -> !ship.hasExpanded())
 					.toList();
@@ -194,7 +202,10 @@ public class Human extends Player {
 		}
 	}
 
-	// With the clickable hexagons
+	/**
+	 * Perform the Explore move by clicking on the hexagons on the interface and entering integers in the interface input box
+	 * @param efficiency Efficiency of the action
+	 */
 	public void doExplore(int efficiency) {
 
 		System.out.println(this.getPseudo() + " explore le plateau avec une efficacité de " + efficiency);
@@ -315,7 +326,10 @@ public class Human extends Player {
 		}
 	}
 
-	// With the clickable hexagons
+	/**
+	 * Perform the Exterminate move by clicking on the hexagons on the interface and entering integers in the interface input box
+	 * @param efficiency Efficiency of the action
+	 */
 	public void doExterminate(int efficiency) {
 
 		System.out.println(this.getPseudo() + " extermine des systèmes avec une efficacité de " + efficiency);
@@ -490,10 +504,6 @@ public class Human extends Player {
 				newMove = false;
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		System.out.println("Lancez le jeu depuis GameController.js");
 	}
 
 }

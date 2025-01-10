@@ -25,6 +25,9 @@ import pimperium.players.Player;
 import pimperium.utils.Possibilities;
 
 
+/**
+ * The model in the VCM design pattern, performing all the game logic
+ */
 public class Game implements Runnable, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -40,6 +43,10 @@ public class Game implements Runnable, Serializable {
 	 * Number of players
 	 */
 	public static final int NB_PLAYERS = 3;
+	/**
+	 * Max amount of ships a player can control
+	 */
+	public static final int MAX_SHIPS = 15;
 	/**
 	 * Delay between bot actions to make the game comprehensible for the user
 	 */

@@ -1,4 +1,4 @@
-module:com.example.pimperium
+module:pimperium
 pimperium.commands
 pimperium.controllers
 pimperium.elements

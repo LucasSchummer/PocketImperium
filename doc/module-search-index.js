@@ -1,1 +1,1 @@
-moduleSearchIndex = [{"l":"com.example.pimperium"}];updateSearchResults();
+moduleSearchIndex = [{"l":"pimperium"}];updateSearchResults();

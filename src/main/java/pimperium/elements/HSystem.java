@@ -4,14 +4,22 @@ import pimperium.players.Player;
 
 import java.io.Serializable;
 
+/**
+ * A system positioned on a hexagon
+ */
 public class HSystem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The level of the system (between 1 and 3)
+	 */
 	private int level;
+	/**
+	 * The hexagon where the system is positioned
+	 */
 	private Hexagon hex;
-	private Player controller;
-	
+
 	public HSystem(int level) {
 		this.level = level;
 	}
@@ -26,10 +34,6 @@ public class HSystem implements Serializable {
 
 	public Hexagon getHex() {
 		return this.hex;
-	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 	}
 
 }

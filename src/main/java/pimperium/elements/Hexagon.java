@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
 
 import pimperium.players.Player;
 
-import java.util.HashSet;
 
+/**
+ * A hexagon constituting the map
+ */
 public class Hexagon implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -16,22 +19,43 @@ public class Hexagon implements Serializable {
 	private int pos_x;
 	private int pos_y;
 	private boolean isTriPrime = false;
+	/**
+	 * The set of direct neighbors
+	 */
 	private Set<Hexagon> neighbors;
+	/**
+	 * The system situated on the hexagon
+	 */
 	private HSystem system;
+	/**
+	 * The fleet currently on the hexagon
+	 */
 	private List<Ship> ships;
-	
+
+	/**
+	 * Create the hexagon and initialize attributes
+	 * @param x The x position of the hexagon on the map
+	 * @param y The y position of the hexagon on the map
+	 */
 	public Hexagon(int x, int y) {
 		this.pos_x = x;
 		this.pos_y = y;
 		this.neighbors = new HashSet<>();
 		this.ships = new ArrayList<Ship>();
 	}
-	
+
+	/**
+	 * Place a system on the hexagon
+	 * @param system The system previously created
+	 */
 	public void addSystem(HSystem system) {
 		this.system = system;
 		system.setHex(this);
 	}
 
+	/**
+	 * Make the hexagon TriPrime by adding it a lvl-3 system
+	 */
 	public void setTriPrime() {
 		this.isTriPrime = true;
 		HSystem system = new HSystem(3);
@@ -41,23 +65,28 @@ public class Hexagon implements Serializable {
 	public boolean isTriPrime() {
 		return this.isTriPrime;
 	}
-	
+
+	/**
+	 * Add a neighbor to the hexagon neighbors set
+	 * @param hex The hexagon to add to the neighbors set
+	 */
 	public void addNeighbor(Hexagon hex) {
 		this.neighbors.add(hex);
 	}
 
-	public void addNeighbor(Set<Hexagon> hexs) {
-		this.neighbors.addAll(hexs);
-	}
-	
+	/**
+	 * Set the neighbors set
+	 * @param neighbours
+	 */
 	public void setNeighbours(Set<Hexagon> neighbours) {
 		this.neighbors = neighbours;
 	}
 
-	public void removeNeighbor(Set<Hexagon> hexs) {
-		this.neighbors.removeAll(hexs);
-	}
-
+	/**
+	 * Retrieve all the hexagon neighbors that the designated player can attack from
+	 * @param player The player performing the Exterminate move
+	 * @return The list of hexagons the player can attack this hexagon from
+	 */
 	public List<Hexagon> getOriginsExterminate(Player player) {
 
 		List<Hexagon> origins = new ArrayList<Hexagon>();
@@ -86,16 +115,7 @@ public class Hexagon implements Serializable {
 			System.out.println(hex);
 		}
 	}
-	
-	public int getx() {
-		return this.pos_x;
-	}
-	
-	public int gety() {
-		return this.pos_y;
-	}
-	
-	@Override
+
 	public String toString() {
 		if (this.isTriPrime) {
 			return "TriPrime";
@@ -104,15 +124,14 @@ public class Hexagon implements Serializable {
 		}
 	}
 
-	// Remove all ships from the hexagon
-	public void removeShips() {
-		this.ships.clear(); 
-	}
-
 	public HSystem getSystem() {
 		return this.system;
 	}
 
+	/**
+	 * Get the level of the system on this hexagon (0 if there is no system)
+	 * @return The level of the system (0-1-2-3)
+	 */
 	public int getSystemLevel() {
 		if (this.system == null) {
 			return 0;
@@ -121,6 +140,10 @@ public class Hexagon implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the player currently occupying the hexagon
+	 * @return The occupant player (null if the hexagon is unoccupied)
+	 */
 	public Player getOccupant() {
 		if (this.ships.isEmpty()) {
 			return null;
@@ -145,16 +168,4 @@ public class Hexagon implements Serializable {
 		this.ships.remove(ship);
 	}
 
-	// Remove specific ships from the hexagon
-	public void removeShips(List<Ship> shipsToRemove) {
-		this.ships.removeAll(shipsToRemove);
-	}
-
-	public void setShips(List<Ship> ships) {
-		this.ships = ships;
-	}
-
-	public static void main(String[] args) {
-		System.out.println("Hello World !");
-	}
 }

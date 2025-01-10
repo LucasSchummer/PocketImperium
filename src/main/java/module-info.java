@@ -1,4 +1,7 @@
-module com.example.pimperium {
+/**
+ * This module contains the game Pocket Imperium playable with a Javafx interface
+ */
+module pimperium {
     requires javafx.controls;
     requires javafx.fxml;
     requires transitive javafx.media;

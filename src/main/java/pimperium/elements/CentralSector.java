@@ -1,5 +1,10 @@
 package pimperium.elements;
 
+import java.util.ArrayList;
+
+/**
+ * The central sector of the map containing TriPrime
+ */
 public class CentralSector extends Sector{
 	
 	//Testing commit
@@ -13,9 +18,12 @@ public class CentralSector extends Sector{
 		return true;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	/**
+	 *
+	 * @return an empty list
+	 */
+	public ArrayList<Integer> getSystemsCoordinates() {
+		return new ArrayList<>();
 	}
 
 }

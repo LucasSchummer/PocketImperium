@@ -3,29 +3,34 @@ package pimperium.elements;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Sector implements Serializable {
+/**
+ * Sector card constituting the game map
+ */
+public abstract class Sector implements Serializable {
 
 	protected static final long serialVersionUID = 1L;
 
+	/**
+	 * List of systems belonging to the sector
+	 */
 	protected ArrayList<HSystem> systems;
+	/**
+	 * Path of the image corresponding to the sector
+	 */
 	protected String path;
 	
 	public Sector() {
 		systems = new ArrayList<HSystem>();
 	}
-	
-	public int scoreSector() {
-		var score = 0;
-	    for (int i = 0; i < this.systems.size(); i++) {
-	        score += this.systems.get(i).getLevel();
-	      }
-	    return score;
-	}
-	
+
 	public ArrayList<HSystem> getSystems() {
 		return this.systems;
 	}
 
+	/**
+	 * Check if any of the sector system in controlled by a player
+	 * @return Whether the sector is occupied or not, as a boolean
+	 */
 	public boolean isOccupied() {
 		boolean occupied = false;
 		for (HSystem system : this.systems) {
@@ -36,11 +41,11 @@ public class Sector implements Serializable {
 		}
 		return occupied;
 	}
-	
-	public ArrayList<Integer> getSystemsCoordinates() {
-		return new ArrayList<Integer>();
-	}
-	
+
+	/**
+	 * Check if the sector is TriPrime
+	 * @return Whether the sector is TriPrime or not, as a boolean
+	 */
 	public boolean isTriPrime() {
 		return false;
 	}
@@ -49,9 +54,10 @@ public class Sector implements Serializable {
 		return this.path;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
+	/**
+	 * Get the coordinates of the systems among the sector
+	 * @return The list of coordinates as (x1,y1,x2,y2,...)
+	 */
+	public abstract ArrayList<Integer> getSystemsCoordinates();
 
 }

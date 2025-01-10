@@ -1,7 +1,6 @@
 package pimperium.utils;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,6 +14,9 @@ import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.players.Player;
 
+/**
+ * Singleton class used to generate all the possible moves for multiple actions
+ */
 public class Possibilities implements Serializable{
 
     protected static final long serialVersionUID = 1L;
@@ -25,6 +27,11 @@ public class Possibilities implements Serializable{
         Possibilities.game = game;
     }
 
+    /**
+     * Return the instance of Possibilities according to the Singleton design pattern
+     * @param game
+     * @return
+     */
     public static Possibilities getInstance(Game game) {
         if (instance == null) {
             instance = new Possibilities(game);
@@ -32,6 +39,10 @@ public class Possibilities implements Serializable{
         return instance;
     }
 
+    /**
+     * Generate all the possible hexagons for initial fleet setup
+     * @return The list of available hexagons
+     */
     public List<Hexagon> setupFleet() {
         List<Hexagon> hexs = new ArrayList<Hexagon>();
         for (Hexagon[] row : game.getMap()) {
@@ -44,6 +55,11 @@ public class Possibilities implements Serializable{
         return hexs;
     }
 
+    /**
+     * Generate all the possible Expand moves
+     * @param player The player for which we generate the move
+     * @return The list os possible moves as a list of Ships
+     */
     public List<Ship> expand(Player player) {
         List<Ship> ships = new ArrayList<>();
         for (Hexagon[] row : game.getMap()) {
@@ -58,6 +74,11 @@ public class Possibilities implements Serializable{
         return ships;
     }
 
+    /**
+     * Generate all the possible Explore moves
+     * @param player The player for which we generate the move
+     * @return The list of possible moves
+     */
     public List<Pair<List<Ship>, List<Hexagon>>> explore(Player player) {
 
         // The possible moves are all the pairs (Fleet, Set of Destination)
@@ -151,6 +172,11 @@ public class Possibilities implements Serializable{
 
     }
 
+    /**
+     * Generate all the possible Exterminate moves
+     * @param player The player for which we generate the move
+     * @return The list of possible moves
+     */
     public List<Pair<Set<Ship>, Hexagon>> exterminate(Player player) {
 
         List<Pair<Set<Ship>, Hexagon>> possibleMoves = new ArrayList<>();

@@ -1,5 +1,8 @@
 package pimperium.utils;
 
+/**
+ * Enumeration storing all the available colors for players
+ */
 public enum Colors {
     RED(0.0f), 
     ORANGE(0.17f),    

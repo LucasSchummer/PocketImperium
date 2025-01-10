@@ -2,57 +2,27 @@ package pimperium.players;
 
 import java.util.*;
 
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 import javafx.util.Pair;
 
-import pimperium.elements.HSystem;
 import pimperium.elements.Hexagon;
-import pimperium.elements.Sector;
 import pimperium.elements.Ship;
 import pimperium.models.Game;
 import pimperium.utils.Colors;
-import pimperium.utils.Debugger;
 
+/**
+ * Bot player with an offensive strategy
+ */
 public class OffensiveBot extends Bot {
 
     public OffensiveBot(Game game, Colors color) {
         super(game, color);
     }
 
-    @Override
-    public Sector chooseSectorToScore(Set<Sector> scoredSectors, Sector[] sectors) {
-
-        Set<Sector> availableSectors = new HashSet<>();
-        for (Sector sector : sectors) {
-            if (!scoredSectors.contains(sector) && !sector.isTriPrime()) availableSectors.add(sector);
-        }
-
-        Sector chosenSector = sectors[0];
-
-        int bestScore = -100;
-        int score = 0;
-
-        for (Sector sector : availableSectors) {
-            score = 0;
-            for (HSystem system : sector.getSystems()) {
-                if (system.getHex().getOccupant() != null) {
-                    score += system.getLevel() * ( system.getHex().getOccupant() == this ? 1 : -1);
-                }
-            }
-            if (score > bestScore) {
-                bestScore = score;
-                chosenSector = sector;
-            }
-        }
-
-        System.out.println(this.getPseudo() + " choisit le secteur à scorer");
-
-        System.out.println(this.getPseudo() + " a choisi le secteur " + game.findSectorId(chosenSector) + " à scorer.");
-        game.getController().getView().addLogMessage(" A choisi le secteur " + game.findSectorId(chosenSector) + ".", this, "normal");
-        return chosenSector;
-    }
-
+    /**
+     * Calculate the distance to the nearest enemy of a given hexagon
+     * @param hexagon
+     * @return The distance (in hexagons) of the closest controlled hexagon
+     */
     private int distanceToNearestEnemy(Hexagon hexagon) {
 
         int distance = 0;
@@ -78,10 +48,20 @@ public class OffensiveBot extends Bot {
         return distance;
     }
 
+    /**
+     * Calculate the strategic score given the level of its system and the distance to enemies
+     * @param hexagon
+     * @return The score of the hexagon considered
+     */
     private int calculateHexScore(Hexagon hexagon) {
         return hexagon.getSystemLevel() - distanceToNearestEnemy(hexagon);
     }
 
+    /**
+     * Strategically choose which action to perform for Expand
+     * @param possShips The list of ships where the Expand is possible
+     * @return The ship chosen to Expand on
+     */
     public Ship chooseExpand(List<Ship> possShips) {
 
         // Current best options
@@ -122,6 +102,11 @@ public class OffensiveBot extends Bot {
 
     }
 
+    /**
+     * Strategically choose which action to perform for Explore
+     * @param possibleMoves List of possible Explore moves
+     * @return The chosen move
+     */
     public Pair<List<Ship>, List<Hexagon>> chooseExplore(List<Pair<List<Ship>, List<Hexagon>>> possibleMoves) {
 
         int bestScore = -100;
@@ -163,6 +148,11 @@ public class OffensiveBot extends Bot {
 
     }
 
+    /**
+     * Strategically choose which action to perform for Exterminate
+     * @param possibleMoves List of possible Exterminate moves
+     * @return The chosen move
+     */
     public Pair<Set<Ship>, Hexagon> chooseExterminate(List<Pair<Set<Ship>, Hexagon>> possibleMoves) {
 
         List<Pair<Set<Ship>, Hexagon>> bestMoves = new ArrayList<>();
@@ -187,6 +177,10 @@ public class OffensiveBot extends Bot {
         return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
+    /**
+     * Choose and perform Expand
+     * @param efficiency Efficiency of the action
+     */
     public void doExpand(int efficiency) {
 
         System.out.println(this.getPseudo() + " s'étend");
@@ -225,6 +219,10 @@ public class OffensiveBot extends Bot {
 
     }
 
+    /**
+     * Choose and perform Explore
+     * @param efficiency Efficiency of the action
+     */
     public void doExplore(int efficiency) {
 
         System.out.println(this.getPseudo() + " explore with efficiency " + efficiency);
@@ -267,6 +265,10 @@ public class OffensiveBot extends Bot {
 
     }
 
+    /**
+     * Choose and perform Exterminate
+     * @param efficiency Efficiency of the action
+     */
     public void doExterminate(int efficiency) {
 
         System.out.println(this.getPseudo() + " extermine");
