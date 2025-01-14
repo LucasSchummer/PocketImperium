@@ -135,7 +135,7 @@ public class GameController extends Application {
 		    Collections.shuffle(availableColors);
 
             for (String name : playerNames) {
-                Colors playerColor = availableColors.remove(0);
+                Colors playerColor = availableColors.removeFirst();
                 Human human = new Human(game, playerColor);
                 human.setPseudo(name);
                 players.add(human);
@@ -179,7 +179,6 @@ public class GameController extends Application {
                 }
                 chosenPseudos.add(botPseudo);
 
-
                 bot.setPseudo(botPseudo);
                 players.add(bot);
             }
@@ -196,7 +195,6 @@ public class GameController extends Application {
             game.setViewInitialized();
 
             Platform.runLater(() -> this.view.updateScores(game.getPlayers()));
-
 
             // Start the game thread
             game.startGame();
@@ -250,7 +248,6 @@ public class GameController extends Application {
      */
     public synchronized void handleHexagonClick(Polygon polygon) {
         selectedHexagon = polygonHexMap.get(polygon);
-        //System.out.println(selectedHexagon + " clicked");
         notify(); // Notify waiting threads
     }
 
@@ -357,8 +354,7 @@ public class GameController extends Application {
     public void handleUserInput(String input) {
         synchronized (this) {
             this.userInput = input;
-            //System.out.println(userInput);
-            notify(); 
+            notify();
         }
     }
 

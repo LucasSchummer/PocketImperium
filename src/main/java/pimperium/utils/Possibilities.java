@@ -191,8 +191,6 @@ public class Possibilities implements Serializable{
         }
 
 
-        //Debugger.displayTargets(targets, player);
-
         for (Hexagon target : targets) {
             List<Hexagon> origins = new ArrayList<Hexagon>();
             // Find all the hexs the player can attack from
@@ -244,8 +242,6 @@ public class Possibilities implements Serializable{
                 }
             }
 
-/*            System.out.println("Distributions for target " + target);
-            Debugger.displayDistributions(distributions);*/
 
             // Convert ship distributions to moves
             for (int[] dist : distributions) {

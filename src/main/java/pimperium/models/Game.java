@@ -50,13 +50,14 @@ public class Game implements Runnable, Serializable {
 	/**
 	 * Delay between bot actions to make the game comprehensible for the user
 	 */
-	public static final int DELAY = 50;
+	public static final int DELAY = 2000;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	private int round;
 	private int round_step;
 	private boolean gameEnded;
+	public boolean viewInitialized = false;
 	/**
 	 * The map stored as a matrix of hexagons. The last hexagon of odd lines will be null (because we deal with hexagons and not squares)
 	 */
@@ -69,7 +70,6 @@ public class Game implements Runnable, Serializable {
 	 * The list of players, with order switched each round
 	 */
 	private Player[] players;
-	//The players ordered for the round (line i is the order for the ith action)
 	/**
 	 * Matrix of players storing the play order for the round. Line i stores the order for the ith action of the round
 	 */
@@ -87,14 +87,12 @@ public class Game implements Runnable, Serializable {
 	public transient Scanner scanner = new Scanner(System.in);
 	private transient Thread t;
 	private transient GameController controller;
-	public boolean viewInitialized = false;
 
 	/**
 	 * Constructor of Game initializing attributes
 	 */
 	public Game() {
-		//Initialization in the constructor
-		this.round = 0; 
+		this.round = 0;
 		this.hexs = new Hexagon[MAP_ROWS][MAP_COLS];
 		this.sectors = new Sector[9];
 		this.possibilities = Possibilities.getInstance(this);
@@ -160,7 +158,6 @@ public class Game implements Runnable, Serializable {
 		this.generateMap();
 		this.createHexNeighbours();
 		this.createTriPrime();
-		//this.createPlayers();
 		System.out.println("Plateau de jeu :");
 		System.out.println(this.displayMap());
 	}
@@ -265,7 +262,6 @@ public class Game implements Runnable, Serializable {
 				}
 				
 				//Link the system to the corresponding hex
-				//System.out.println(hex);
 				hex.addSystem(systems.get(j));
 
 			}
@@ -364,10 +360,8 @@ public class Game implements Runnable, Serializable {
 		}
 
 		for (Hexagon neighbor : triPrimeNeighbors) {
-			neighbor.printNeighbours();
 			neighbor.getNeighbours().removeAll(formerTriPrimes); // Remove old neighbors
 			neighbor.getNeighbours().add(triPrime); // Add Tri-Prime as a neighbor
-			neighbor.printNeighbours();
 		}
 
 		for (int[] coord : centralHexCoords) {
@@ -467,14 +461,12 @@ public class Game implements Runnable, Serializable {
 				int command = this.orderPlayers[i][j].getOrderCommands()[i];
 				switch (commandCount[command]) {
 					case 3:
-						this.efficiencies[i][j] = 1; // To work in the for loops in the doActions
+						this.efficiencies[i][j] = 1;
 						break;
 					case 2:
-						/*this.efficiencies[i][j] = Math.min(2, this.orderPlayers[i][j].countShips());*/
 						this.efficiencies[i][j] = 2;
 						break;
 					default:
-						/*this.efficiencies[i][j] = Math.min(3, this.orderPlayers[i][j].countShips());*/
 						this.efficiencies[i][j] = 3;
 						break;
 				}
@@ -522,7 +514,6 @@ public class Game implements Runnable, Serializable {
 		this.sustainShips();
 		this.pcs.firePropertyChange("hexUpdated", null, null);
 		this.doScore();
-		this.pcs.firePropertyChange("roundOver", null, null);
 
 	}
 
@@ -705,25 +696,9 @@ public class Game implements Runnable, Serializable {
 	 */
 	public boolean checkExploreValidity(Pair<List<Ship>, List<Hexagon>> move) {
 
-		// Check that no ship is moved twice
-/*		Set<Hexagon> origins = new HashSet<Hexagon>();
-		for (Pair<List<Ship>, List<Hexagon>> move : moves) {
-			origins.add(move.getKey().getFirst().getPosition());
-		}*/
-
-/*		List<Ship> goodShips = move.getKey().stream()
-				.filter(ship -> !ship.hasExplored()) // Condition: keep ships that have not explored yet
-				.toList();
-
-		boolean notTwice = move.getKey().size() == goodShips.size();*/
-
-		//boolean notTwice = origins.size() == moves.size();
-
-		// Check that all the moves are possible
 		List<Pair<List<Ship>, List<Hexagon>>> possibleMoves = possibilities.explore(move.getKey().getFirst().getOwner());
-		boolean possible = possibleMoves.contains(move);
 
-		return possible;
+		return possibleMoves.contains(move);
 	}
 
 	/**
@@ -735,26 +710,11 @@ public class Game implements Runnable, Serializable {
 	 */
 	public boolean checkExterminateValidity(Pair<Set<Ship>, Hexagon> move, Player player) {
 
-/*		// Check that no system is attacked twice
-		Set<Hexagon> targets = new HashSet<Hexagon>();
-		for (Pair<Set<Ship>, Hexagon> move : moves) {
-			targets.add(move.getValue());
-		}
-		boolean notTwice = targets.size() == moves.size();*/
 
 		// Check that all the moves are valid
 		List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(player);
-		boolean Possible = possibleMoves.contains(move);
 
-		//Debugger.displayAllExterminateMoves(possibleMoves, player);
-
-/*		for (Pair<Set<Ship>, Hexagon> move : moves) {
-			System.out.println("Moved checked :");
-			Debugger.displayExterminateMove(move);
-		}*/
-
-
-		return Possible;
+		return possibleMoves.contains(move);
 
 	}
 
@@ -820,7 +780,6 @@ public class Game implements Runnable, Serializable {
 
 		// Setup the game if it has just been created
 		if (this.round == 0) {
-			//this.setup();
 			this.setupFleets();
 		}
 		// In case we are loading an existing game, instantiate the scanner and possibilities (which is transient)
@@ -844,6 +803,7 @@ public class Game implements Runnable, Serializable {
 				}
 			}
 			this.round++;
+			this.pcs.firePropertyChange("roundOver", null, null);
 		}
 	
 		// Final scoring

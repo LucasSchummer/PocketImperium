@@ -54,7 +54,6 @@ public class Exterminate implements Command, Serializable {
                     + this.target.getOccupant().getPseudo()
                     + " at " + this.target
             );
-            //game.getController().getView().addLogMessage("Combat entre " + attackingFleet.getFirst().getOwner().getPseudo() + " et " + this.target.getOccupant().getPseudo() + " sur " + target, null, "normal");
         }
 
         while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
@@ -67,10 +66,9 @@ public class Exterminate implements Command, Serializable {
 
         }
 
-        // If the attacker won, move all his remainings ships to the target
+        // If the attacker won, move all his remaining ships to the target
         if (!attackingFleet.isEmpty()) {
             System.out.println(attackingFleet.getFirst().getOwner().getPseudo() + " took control of " + target);
-            //game.getController().getView().addLogMessage("A pris contrôle de " + target, attackingFleet.getFirst().getOwner(), "normal");
             for (Ship ship : attackingFleet) {
                 ship.move(this.target);
                 ship.setHasExterminated(true);

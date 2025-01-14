@@ -81,23 +81,7 @@ public class RandomBot extends Bot {
                 return;
             }
 
-            //Debugger.displayAllExploreMoves(possibleMoves);
-
-/*          List<Pair<List<Ship>, List<Hexagon>>> moves = new ArrayList<>();
-            Set<Hexagon> origins = new HashSet<Hexagon>();*/
-
             Random random = new Random();
-
-/*            // Adding randomly selected ships and targets to the list of ships/targets to explore
-            while (moves.size() < efficiency) {
-                int index = random.nextInt(possibleMoves.size());
-                Pair<List<Ship>, List<Hexagon>> move = possibleMoves.get(index);
-                // Check that the randomly chosen move doesn't start from the same hexagon that another ove that has already been chosen
-                if (!origins.contains(move.getKey().getFirst().getPosition())) {
-                    moves.add(move);
-                    origins.add(move.getKey().getFirst().getPosition());
-                }
-            }*/
 
             int index = random.nextInt(possibleMoves.size());
             Pair<List<Ship>, List<Hexagon>> move = possibleMoves.get(index);
@@ -123,18 +107,6 @@ public class RandomBot extends Bot {
                 throw new RuntimeException(e);
             }
 
-/*            // After selecting the moves
-            for (Pair<List<Ship>, List<Hexagon>> move : moves) {
-                // Ensure the lists are the same size
-                if (move.getKey().size() != move.getValue().size()) {
-                    continue; // Skip this move for now
-                }
-
-                this.explore.setShips(move.getKey());
-                this.explore.setTargets(move.getValue());
-                this.explore.execute();
-            }*/
-
         }
 
     }
@@ -153,8 +125,6 @@ public class RandomBot extends Bot {
             // Generate possible moves
             List<Pair<Set<Ship>, Hexagon>> possibleMoves = possibilities.exterminate(this);
 
-            //Debugger.displayAllExterminateMoves(possibleMoves, this);
-
 
             // Verifies that the player can do at least a move
             if (possibleMoves.isEmpty()) {
@@ -163,13 +133,7 @@ public class RandomBot extends Bot {
                 return;
             }
 
-/*            List<Pair<Set<Ship>, Hexagon>> moves = new ArrayList<>();
-            Set<Hexagon> targets = new HashSet<Hexagon>();*/
-
             Random random = new Random();
-
-/*            // Just another verification
-            int maxEfficiency = Math.min(efficiency, possibleMoves.size());*/
 
             // Randomly select a move among the possible ones
             int index = random.nextInt(possibleMoves.size());
@@ -194,25 +158,6 @@ public class RandomBot extends Bot {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
-/*            // Adding randomly selected ships and targets to the list of ships/targets to explore
-            while (moves.size() < maxEfficiency) {
-                int index = random.nextInt(possibleMoves.size());
-                Pair<Set<Ship>, Hexagon> move = possibleMoves.get(index);
-                // Check that the randomly chosen move doesn't target a hex that has has already been targeted
-                if (!targets.contains(move.getValue())) {
-                    moves.add(move);
-                    targets.add(move.getValue());
-                }
-            }*/
-
-/*            // Execute each move
-            for (Pair<Set<Ship>, Hexagon> move : moves) {
-                //Set the ships and execute the command
-                this.exterminate.setShips(move.getKey());
-                this.exterminate.setTarget(move.getValue());
-                this.exterminate.execute();
-            }*/
 
         }
 

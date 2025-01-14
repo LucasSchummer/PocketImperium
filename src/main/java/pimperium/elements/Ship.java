@@ -57,7 +57,6 @@ public class Ship implements Serializable {
      * @param newPosition The destination of the ship
      */
     public void move(Hexagon newPosition) {
-        //System.out.println(this + " moved to new position: " + newPosition);
         this.position.removeShip(this);
         this.position = newPosition;
         this.position.addShip(this);
@@ -69,7 +68,6 @@ public class Ship implements Serializable {
     public void destroy() {
         player.removeShip(this);
         position.removeShip(this);
-        //System.out.println(this + " destroyed");
     }
 
     /**
