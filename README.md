@@ -81,14 +81,15 @@ src/
 
 ## 💾 Sauvegarde
 
-- Les parties peuvent être sauvegardées à tout moment
+- Les parties sont sauvegardées à la fin de chaque tour
 - Les sauvegardes sont stockées dans [SavedGames](./SavedGames)
 
 ## 👥 Auteurs
 
 UTT - Université de Technologie de Troyes
-Romain GOLDENCHTEIN
-Lucas SCHUMMER
+
+- Romain GOLDENCHTEIN
+- Lucas SCHUMMER
 
 ## 📄 Licence
 

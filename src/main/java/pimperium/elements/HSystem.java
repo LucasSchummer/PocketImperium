@@ -1,7 +1,5 @@
 package pimperium.elements;
 
-import pimperium.players.Player;
-
 import java.io.Serializable;
 
 /**
