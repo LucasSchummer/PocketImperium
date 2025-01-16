@@ -43,69 +43,122 @@ import pimperium.utils.Colors;
 import pimperium.players.Bot;
 import pimperium.players.Human;
 
+/**
+ * Playable interface used to display the game state in real-time and get inputs from the user
+ */
 public class Interface {
 
+    /**
+     * The Controller in the VCM design pattern
+     */
     private GameController controller;
+    /**
+     * Base layer of the view
+     */
     private Pane root;
+    /**
+     * base layer for game map display
+     */
+    private Pane gamePane;
+    /**
+     * Grid containing the 9 sectors (3*3)
+     */
     private GridPane gridPane;
+    /**
+     * Hexagon layer on top of the sectors
+     */
     private Pane hexPane;
-    private ImageView[][] imageViews;
+    /**
+     * Panel on the right of the interface divided in 3 sections
+     */
     private VBox sidePanel;
+    /**
+     * Top section of the Side Panel containing the round display and the score
+     */
     private VBox topSection;
+    /**
+     * Middle section of the Side Panel containing the command selection
+     */
     private VBox middleSection;
+    /**
+     * Bottom section of the Side Panel containing the Text Box and the Music button
+     */
     private VBox bottomSection;
+    /**
+     * Panel on the left of the interface containing the logs
+     */
     private VBox gameLogPanel;
+    /**
+     * Scrollable Panel on the left of the interface containing the logs
+     */
+    private ScrollPane gameLogScrollPane;
+    /**
+     * Image of a speaker turned on used for the music control button
+     */
     private Image speakerOnImage = new Image("file:assets/speaker_high_volume.png");
+    /**
+     * Image of a speaker turned off used for the music control button
+     */
     private Image speakerOffImage = new Image("file:assets/speaker_muted.png");
+    /**
+     * Image view of a speaker turned on for the music control button
+     */
     private ImageView speakerImageOnView = new ImageView(speakerOnImage);
+    /**
+     * Image view of a speaker turned off for the music control button
+     */
     private ImageView speakerImageOffView = new ImageView(speakerOffImage);
-
+    /**
+     * Background image of the interface
+     */
+    private BackgroundImage background;
+    /**
+     * Button enabling the user to turn on/off the music
+     */
     private Button musicControlButton;
     private boolean isMusicPlaying = true;
 
+    /**
+     *
+     * @param controller The controller in VCM
+     */
     public Interface(GameController controller) {
+
         this.controller = controller;
+        this.createView();
 
-        gridPane = new GridPane();
-        imageViews = new ImageView[3][3];
+    }
 
-        gridPane.setPrefWidth(825);
-        gridPane.setPrefHeight(750);
-        // Remove spacing and padding
-        gridPane.setHgap(2); // Horizontal gap between columns
-        gridPane.setVgap(2); // Vertical gap between rows
-        gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
+    /**
+     * Initialize the view
+     */
+    public void createView() {
 
         // Load the background image from the assets folder
         Image backgroundImage = new Image("file:assets/background.jpg");
 
         // Create a BackgroundImage with properties to fit the screen
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        background = new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
 
-        gameLogPanel = new VBox();
-        gameLogPanel.setPadding(new Insets(10));
-        gameLogPanel.setAlignment(Pos.TOP_LEFT);
-        gameLogPanel.setPrefWidth(400);
-        gameLogPanel.setSpacing(10);
+        createLogPanel();
+        createSidePanel();
+        createGamePane();
 
-        Text logTitle = new Text("Déroulement de la partie");
-        logTitle.setFill(Color.WHITE);
-        logTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        VBox.setMargin(logTitle, new Insets(0, 0, 15, 0)); 
-        gameLogPanel.getChildren().add(logTitle);
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setCenter(gamePane);
+        mainLayout.setRight(sidePanel);
+        mainLayout.setLeft(gameLogScrollPane);
+        mainLayout.setBackground(new Background(background));
 
-        ScrollPane gameLogScrollPane = new ScrollPane(gameLogPanel);
-        gameLogScrollPane.setPrefWidth(400);
-        gameLogScrollPane.setFitToWidth(true); // Adjust the content width to the ScrollPane width
-        gameLogScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show the vertical scrollbar
-        gameLogScrollPane.setBackground(new Background(background));
-        gameLogScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;"); // Set background to transparent
-            
-        // Add empty space at the bottom
-        Text emptySpace = new Text("\n");
-        emptySpace.setFont(Font.font("Orbitron", 14));
-        gameLogPanel.getChildren().add(emptySpace);
+        this.root = mainLayout;
+
+    }
+
+    /**
+     * Create the Side Panel on the right of the interface
+     */
+    public void createSidePanel() {
 
         sidePanel = new VBox(20);
         sidePanel.setPadding(new Insets(10));
@@ -115,22 +168,53 @@ public class Interface {
 
         topSection = new VBox();
         topSection.setSpacing(10);
-        //topSection.setPrefHeight(174);
+
+        createMiddleSection();
+        createBottomSection();
+
+        Rectangle separator2 = new Rectangle();
+        separator2.setFill(Color.WHITE);
+        separator2.widthProperty().bind(sidePanel.widthProperty());
+        separator2.setHeight(2);
+
+        Rectangle separator3 = new Rectangle();
+        separator3.setFill(Color.WHITE);
+        separator3.widthProperty().bind(sidePanel.widthProperty());
+        separator3.setHeight(2);
+
+        sidePanel.getChildren().addAll(topSection, separator2, middleSection, separator3, bottomSection);
+
+    }
+
+    /**
+     * Create the Middle Section of the Side Panel containing Command Selection
+     */
+    public void createMiddleSection() {
 
         middleSection = new VBox();
         middleSection.setSpacing(10);
-        //middleSection.setPrefHeight(358);
+
+        Text title3 = new Text("Commandes");
+        title3.setFill(Color.WHITE);
+        title3.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        middleSection.getChildren().add(title3);
+
+    }
+
+    /**
+     * Create the Bottom Section of the Side Panel containing the Text Box and the Music Control Button
+     */
+    public void createBottomSection() {
 
         bottomSection = new VBox();
         bottomSection.setSpacing(20);
-        //bottomSection.setPrefHeight(228);
+
         Text inputTitle = new Text("Entrées");
         inputTitle.setFill(Color.WHITE);
         inputTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
         bottomSection.getChildren().add(inputTitle);
 
         TextField userInputField = new TextField();
-        //userInputField.setPromptText("Entrez votre commande ici");
         userInputField.setMaxWidth(150); // Set the maximum width
         // Set TextFormatter to allow only integers
         userInputField.setTextFormatter(new TextFormatter<>(change -> {
@@ -161,27 +245,10 @@ public class Interface {
             userInputField.clear();
         });
         validateButton.setPrefWidth(150);
-        VBox.setMargin(validateButton, new Insets(10, 0, 15, 0)); 
+        VBox.setMargin(validateButton, new Insets(10, 0, 15, 0));
         bottomSection.getChildren().add(validateButton);
 
-
-        Rectangle separator2 = new Rectangle();
-        separator2.setFill(Color.WHITE);
-        separator2.widthProperty().bind(sidePanel.widthProperty());
-        separator2.setHeight(2);
-
-        Rectangle separator3 = new Rectangle();
-        separator3.setFill(Color.WHITE);
-        separator3.widthProperty().bind(sidePanel.widthProperty());
-        separator3.setHeight(2);
-
-        Rectangle separator4 = new Rectangle();
-        separator4.setFill(Color.WHITE);
-        separator4.heightProperty().bind(sidePanel.heightProperty());
-        separator4.setWidth(2);
-
-        
-        // Adds the Controle music Button
+        // Adds the music control Button
         ImageView speakerImageView = new ImageView(speakerOnImage);
         speakerImageView.setFitWidth(20);
         speakerImageView.setFitHeight(20);
@@ -190,14 +257,14 @@ public class Interface {
         speakerImageOnView.setFitHeight(20);
         speakerImageOffView.setFitWidth(20);
         speakerImageOffView.setFitHeight(20);
-        
+
         musicControlButton = new Button();
         musicControlButton.setGraphic(speakerImageView);
         musicControlButton.setPrefSize(60, 60);
         musicControlButton.setStyle(
-            "-fx-background-radius: 30;"
-        + "-fx-background-color: white;"
-        + "-fx-padding: 0;"
+                "-fx-background-radius: 30;"
+                        + "-fx-background-color: white;"
+                        + "-fx-padding: 0;"
         );
         musicControlButton.setOnAction(event -> toggleMusic());
 
@@ -206,16 +273,54 @@ public class Interface {
 
         // Add the music control button to the bottom section
         bottomSection.getChildren().add(musicControlButton);
-        VBox.setMargin(musicControlButton, new Insets(10, 0, 20, 0)); // Add margin to the button     
-        
-        sidePanel.getChildren().addAll(topSection, separator2, middleSection, separator3, bottomSection);
+        VBox.setMargin(musicControlButton, new Insets(10, 0, 20, 0)); // Add margin to the button
 
-        Text title3 = new Text("Commandes");
-        title3.setFill(Color.WHITE);
-        title3.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
-        middleSection.getChildren().add(title3);
+    }
 
+    /**
+     * Create the Log Panel on the left of the view
+     */
+    public void createLogPanel() {
 
+        gameLogPanel = new VBox();
+        gameLogPanel.setPadding(new Insets(10));
+        gameLogPanel.setAlignment(Pos.TOP_LEFT);
+        gameLogPanel.setPrefWidth(400);
+        gameLogPanel.setSpacing(10);
+
+        Text logTitle = new Text("Déroulement de la partie");
+        logTitle.setFill(Color.WHITE);
+        logTitle.setFont(Font.font("Orbitron", FontWeight.BOLD, 18));
+        VBox.setMargin(logTitle, new Insets(0, 0, 15, 0));
+        gameLogPanel.getChildren().add(logTitle);
+
+        gameLogScrollPane = new ScrollPane(gameLogPanel);
+        gameLogScrollPane.setPrefWidth(400);
+        gameLogScrollPane.setFitToWidth(true); // Adjust the content width to the ScrollPane width
+        gameLogScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show the vertical scrollbar
+        gameLogScrollPane.setBackground(new Background(background));
+        gameLogScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;"); // Set background to transparent
+
+        // Add empty space at the bottom
+        Text emptySpace = new Text("\n");
+        emptySpace.setFont(Font.font("Orbitron", 14));
+        gameLogPanel.getChildren().add(emptySpace);
+
+    }
+
+    /**
+     * Create the Game Pane containing the Game map
+     */
+    public void createGamePane() {
+
+        gridPane = new GridPane();
+
+        gridPane.setPrefWidth(825);
+        gridPane.setPrefHeight(750);
+        // Remove spacing and padding
+        gridPane.setHgap(2); // Horizontal gap between columns
+        gridPane.setVgap(2); // Vertical gap between rows
+        gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
 
         for (int i = 0; i < this.controller.getGame().getSectors().length; i++) {
             Image image = new Image("file:assets/" + this.controller.getGame().getSectors()[i].getPath());
@@ -229,8 +334,6 @@ public class Interface {
                 Rotate rotate = new Rotate(180, imageView.getFitWidth() / 2, imageView.getFitHeight() / 2); // Rotate around the center
                 imageView.getTransforms().add(rotate);
             }
-
-            imageViews[(int) i / 3][i % 3] = imageView;
 
             // Create a white rectangle overlay
             Rectangle overlay = new Rectangle(imageView.getFitWidth(), imageView.getFitHeight());
@@ -250,30 +353,16 @@ public class Interface {
         }
 
         this.changeSectorsTransparency(true);
-
         this.addHexagons();
-        
-        StackPane gamePane = new StackPane();
+
+        gamePane = new StackPane();
         gamePane.getChildren().addAll(gridPane, hexPane);
-
-        Rectangle separator = new Rectangle();
-        separator.setFill(Color.WHITE);
-        separator.heightProperty().bind(sidePanel.heightProperty());
-        separator.setWidth(2);
-        
-
-        
-        BorderPane mainLayout = new BorderPane();
-        mainLayout.setCenter(gamePane);
-        mainLayout.setRight(sidePanel);
-        mainLayout.setLeft(gameLogScrollPane);
-        mainLayout.setBackground(new Background(background));
-
-        
-        this.root = mainLayout;
 
     }
 
+    /**
+     * Add the hexagon layer to the Game Pane
+     */
     public void addHexagons() {
 
         this.hexPane = new Pane();
@@ -328,6 +417,13 @@ public class Interface {
 
     }
 
+    /**
+     * Draw a hexagon
+     * @param centerX x coord of the center of the hex
+     * @param centerY y coord of the center of the hex
+     * @param radius radius of the hex
+     * @return The drawn hexagon as a Polygon
+     */
     public Polygon createHexagon(double centerX, double centerY, double radius) {
         Polygon hexagon = new Polygon();
         for (int i = 0; i < 6; i++) {
@@ -347,6 +443,10 @@ public class Interface {
         return hexagon;
     }
 
+    /**
+     * Draw Tri Prime in the middle of the Map
+     * @return The drawn Tri Prime as a Polygon
+     */
     public Polygon createTriPrime() {
         Polygon triPrime = new Polygon();
 
@@ -377,6 +477,10 @@ public class Interface {
         return triPrime;
     }
 
+    /**
+     * Update the content of a given hexagon according to the Game State
+     * @param hex The Game Hexagon that has been modified
+     */
     public void updateHexagon(Hexagon hex) {
 
         // Get the pane that the polygon belongs to
@@ -387,11 +491,7 @@ public class Interface {
 
         // Draw the ships on the hex
         if (!hex.getShips().isEmpty()) {
-/*            Text shipCount = new Text(hex.getOccupant().getPseudo() + " : " + String.valueOf(hex.getShips().size()));
-            shipCount.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 13));
-            shipCount.setFill(Color.WHITE);
-            shipCount.setWrappingWidth(80);
-            shipCount.setMouseTransparent(true);*/
+
             if (hex.isTriPrime()) {
                 pane.getChildren().add(drawShipsTriPrime(hex.getShips().size(), hex.getOccupant().getColor()));
             } else {
@@ -402,7 +502,10 @@ public class Interface {
 
     }
 
-    // Method to display command selection
+    /**
+     * Display the Command Selection on the Side Panel
+     * @param player The player currently choosing their action order
+     */
     public void showCommandSelection(Human player) {
         Platform.runLater(() -> {
             // Clear the side panel
@@ -465,6 +568,11 @@ public class Interface {
         });
     }
 
+    /**
+     * Retrieve the Color object value of a given color
+     * @param colorEnum The color from the Enum
+     * @return The color object corresponding
+     */
     private Color getPlayerColor(Colors colorEnum) {
         switch (colorEnum) {
             case RED:
@@ -484,6 +592,12 @@ public class Interface {
         }
     }
 
+    /**
+     * Add a new log message to the Log Panel
+     * @param message The content of the message to write
+     * @param player The player concerned by the message
+     * @param fontWeight The font weight of the message to write
+     */
     public void addLogMessage(String message, Player player, String fontWeight) {
         Platform.runLater(() -> {
             // Reduce the opacity of existing messages in groups of 3
@@ -542,8 +656,12 @@ public class Interface {
             // Add the message just after the title (index 1)
             gameLogPanel.getChildren().add(1, logEntry);
         });
-    }   
+    }
 
+    /**
+     * Update the Score display
+     * @param players The list of players
+     */
     public void updateScores(Player[] players) {
         // Clear the current content of the score section
         topSection.getChildren().clear();
@@ -592,12 +710,17 @@ public class Interface {
         topSection.setSpacing(10);
     }
 
+    /**
+     * Draw a given number of ships in a harmonious way
+     * @param numShips The number of ships to draw
+     * @param colorEnum The color of the player/ships to draw
+     * @return The pane containing the drawn ships
+     */
     public Pane drawShips(int numShips, Colors colorEnum) {
 
         Image shipImage = new Image("file:assets/spaceship3.png");
         Pane shipPane = new Pane();
 
-        
         float hue = colorEnum.getHue();
 
         if (numShips > 1) {
@@ -651,6 +774,12 @@ public class Interface {
         return shipPane;
     }
 
+    /**
+     * Draw a given number of ships in a harmonious way for Tri Prime
+     * @param numShips The number of ships to draw
+     * @param colorEnum The color of the player/ships to draw
+     * @return The pane containing the drawn ships
+     */
     public Pane drawShipsTriPrime(int numShips, Colors colorEnum) {
 
         Image shipImage = new Image("file:assets/spaceship3.png");
@@ -710,6 +839,9 @@ public class Interface {
 
     }
 
+    /**
+     * Toggle the Music State (Turn on/off)
+     */
     private void toggleMusic() {
         if (isMusicPlaying) {
             controller.getGamePlayer().pause();
@@ -732,10 +864,18 @@ public class Interface {
         isMusicPlaying = !isMusicPlaying;
     }
 
+    /**
+     * Change Sector Transparency
+     * @param transparent Whether the Sector pane should be transparent or not
+     */
     public void changeSectorsTransparency(boolean transparent) {
         this.gridPane.setMouseTransparent(transparent);
     }
 
+    /**
+     * Change Hexagons Transparency
+     * @param transparent Whether the Hex pane should be transparent or not
+     */
     public void changeHexsTransparency(boolean transparent) {
         this.hexPane.setMouseTransparent(transparent);
     }

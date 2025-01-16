@@ -9,28 +9,56 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+
 import pimperium.controllers.GameController;
 import pimperium.models.Game;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * View showing the Player name/strategy selection menu
+ */
 public class PlayerNamesView {
+    /**
+     * The controller in the VCM design pattern
+     */
     private GameController controller;
+    /**
+     * Base layer of the view
+     */
     private VBox root;
+    /**
+     * Input fields to enter pseudos
+     */
     private List<TextField> nameFields;
+    /**
+     * Labels of the text-fields
+     */
     private List<Label> nameLabels;
+    /**
+     * Number of humans among players (from 0 to 3)
+     */
     private int humanPlayerCount;
+    /**
+     * ComboBoxes for bot strategy selection
+     */
     private List<ComboBox<String>> botStrategyCombos;
 
-    // Constructor to initialize the view with the game controller and number of human players
+    /**
+     *
+     * @param controller The controller int VCM
+     * @param humanPlayerCount The number of human players among 3 players
+     */
     public PlayerNamesView(GameController controller, int humanPlayerCount) {
         this.controller = controller;
         this.humanPlayerCount = humanPlayerCount;
         createView();
     }
 
-    // Method to create the view layout and components
+    /**
+     * Inizialize the view
+     */
     private void createView() {
         // Load the background image from the assets folder
         Image backgroundImage = new Image("file:assets/background.jpg");
@@ -103,7 +131,10 @@ public class PlayerNamesView {
         root.setSpacing(30);
     }
 
-    // Method to get the player names from the text fields
+    /**
+     * Retrieve the player names from the text boxes
+     * @return The player names as a list of strings
+     */
     private List<String> getPlayerNames() {
         List<String> names = new ArrayList<>();
         for (TextField field : nameFields) {
@@ -112,7 +143,10 @@ public class PlayerNamesView {
         return names;
     }
 
-    // Method to get the strategies from the combobox
+    /**
+     * Retrieve the bot strategies from the combo boxes
+     * @return the bot strategies as a list of strings
+     */
     public List<String> getBotStrategies() {
         List<String> strategies = new ArrayList<>();
         for (ComboBox<String> combo : botStrategyCombos) {
@@ -121,9 +155,8 @@ public class PlayerNamesView {
         return strategies;
     }
 
-
-    // Method to get the root VBox
     public VBox getRoot() {
         return root;
     }
+
 }

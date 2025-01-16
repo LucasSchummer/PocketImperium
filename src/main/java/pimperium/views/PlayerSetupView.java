@@ -10,18 +10,35 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import pimperium.controllers.GameController;
 
+/**
+ * View for choosing the number of human players
+ */
 public class PlayerSetupView {
+    /**
+     * The Controller in the VCM design pattern
+     */
     private GameController controller;
+    /**
+     * Base layer of the view
+     */
     private VBox root;
+    /**
+     * Spinner used for integer selection (between 0 and 3)
+     */
     private Spinner<Integer> humanPlayersSpinner;
 
-    // Constructor to initialize the view with the given GameController
+    /**
+     *
+     * @param controller The cotroller in VCM
+     */
     public PlayerSetupView(GameController controller) {
         this.controller = controller;
         createView();
     }
 
-    // Method to create the view layout and components
+    /**
+     * Initialize the view
+     */
     private void createView() {
         // Load the background image from the assets folder
         Image backgroundImage = new Image("file:assets/background.jpg");
@@ -67,8 +84,8 @@ public class PlayerSetupView {
         root.setSpacing(30);
     }
 
-    // Method to get the root VBox
     public VBox getRoot() {
         return root;
     }
+
 }

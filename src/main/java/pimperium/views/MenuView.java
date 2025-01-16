@@ -8,16 +8,33 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import pimperium.controllers.GameController;
 
+/**
+ * View showing the game main menu
+ */
 public class MenuView {
+    /**
+     * The Controller in the VCM design pattern
+     */
     private GameController controller;
+    /**
+     * Base layer of the view
+     */
     private VBox root;
 
+    /**
+     *
+     * @param controller The controller in VCM
+     */
     public MenuView(GameController controller) {
         this.controller = controller;
         createView();
     }
 
     // Method to create the view for the menu
+
+    /**
+     * Initialize the view with buttons to start game
+     */
     private void createView() {
         // Load the background image from the assets folder
         Image backgroundImage = new Image("file:assets/background.jpg");
@@ -56,7 +73,6 @@ public class MenuView {
         root.setSpacing(30);
     }
 
-    // Method to get the root layout
     public VBox getRoot() {
         return root;
     }
