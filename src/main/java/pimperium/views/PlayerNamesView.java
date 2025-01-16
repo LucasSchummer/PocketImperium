@@ -61,7 +61,7 @@ public class PlayerNamesView {
      */
     private void createView() {
         // Load the background image from the assets folder
-        Image backgroundImage = new Image("file:assets/background.jpg");
+        Image backgroundImage = new Image(getClass().getResource("/assets/background.jpg").toExternalForm());
 
         // Create a BackgroundImage with properties to fit the screen
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
@@ -72,7 +72,7 @@ public class PlayerNamesView {
         root.setBackground(new Background(background));
 
         // Load the title image from the assets folder
-        ImageView titleImage = new ImageView(new Image("file:assets/title.png"));
+        ImageView titleImage = new ImageView(new Image(getClass().getResource("/assets/title.png").toExternalForm()));
         titleImage.setFitWidth(300); // Set the desired width
         titleImage.setPreserveRatio(true); // Preserve the aspect ratio
 

@@ -30,14 +30,12 @@ public class MenuView {
         createView();
     }
 
-    // Method to create the view for the menu
-
     /**
      * Initialize the view with buttons to start game
      */
     private void createView() {
         // Load the background image from the assets folder
-        Image backgroundImage = new Image("file:assets/background.jpg");
+        Image backgroundImage = new Image(getClass().getResource("/assets/background.jpg").toExternalForm());
 
         // Create a BackgroundImage with properties to fit the screen
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
@@ -48,7 +46,7 @@ public class MenuView {
         root.setBackground(new Background(background));
 
         // Load the title image from the assets folder
-        ImageView titleImage = new ImageView(new Image("file:assets/title.png"));
+        ImageView titleImage = new ImageView(new Image(getClass().getResource("/assets/title.png").toExternalForm()));
         titleImage.fitWidthProperty().bind(root.widthProperty().multiply(0.5)); 
         titleImage.setPreserveRatio(true); // Preserve the aspect ratio
 

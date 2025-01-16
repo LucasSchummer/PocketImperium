@@ -95,11 +95,11 @@ public class Interface {
     /**
      * Image of a speaker turned on used for the music control button
      */
-    private Image speakerOnImage = new Image("file:assets/speaker_high_volume.png");
+    private Image speakerOnImage = new Image(getClass().getResource("/assets/speaker_high_volume.png").toExternalForm());
     /**
      * Image of a speaker turned off used for the music control button
      */
-    private Image speakerOffImage = new Image("file:assets/speaker_muted.png");
+    private Image speakerOffImage = new Image(getClass().getResource("/assets/speaker_muted.png").toExternalForm());
     /**
      * Image view of a speaker turned on for the music control button
      */
@@ -135,7 +135,8 @@ public class Interface {
     public void createView() {
 
         // Load the background image from the assets folder
-        Image backgroundImage = new Image("file:assets/background.jpg");
+        Image backgroundImage = new Image(getClass().getResource("/assets/background.jpg").toExternalForm());
+
 
         // Create a BackgroundImage with properties to fit the screen
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
@@ -323,7 +324,8 @@ public class Interface {
         gridPane.setPadding(new javafx.geometry.Insets(0));// Padding around the grid
 
         for (int i = 0; i < this.controller.getGame().getSectors().length; i++) {
-            Image image = new Image("file:assets/" + this.controller.getGame().getSectors()[i].getPath());
+            Image image = new Image(getClass().getResource("/assets/" + this.controller.getGame().getSectors()[i].getPath()).toExternalForm());
+
             ImageView imageView = new ImageView(image);
             imageView.setPreserveRatio(false);
             imageView.setFitHeight(250);
@@ -718,7 +720,7 @@ public class Interface {
      */
     public Pane drawShips(int numShips, Colors colorEnum) {
 
-        Image shipImage = new Image("file:assets/spaceship3.png");
+        Image shipImage = new Image(getClass().getResource("/assets/spaceship3.png").toExternalForm());
         Pane shipPane = new Pane();
 
         float hue = colorEnum.getHue();
@@ -782,8 +784,8 @@ public class Interface {
      */
     public Pane drawShipsTriPrime(int numShips, Colors colorEnum) {
 
-        Image shipImage = new Image("file:assets/spaceship3.png");
-        Pane shipPane = new Pane();
+        Image shipImage = new Image(getClass().getResource("/assets/spaceship3.png").toExternalForm());
+                Pane shipPane = new Pane();
 
         float hue = colorEnum.getHue();
 

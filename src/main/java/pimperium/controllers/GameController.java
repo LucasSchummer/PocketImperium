@@ -97,7 +97,7 @@ public class GameController extends Application {
     public void showPlayerSetup() {
         PlayerSetupView setupView = new PlayerSetupView(this);
         Scene scene = new Scene(setupView.getRoot(), 750, 500);
-        scene.getStylesheets().add("file:assets/style.css");
+        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
 
@@ -109,7 +109,7 @@ public class GameController extends Application {
     public void setupPlayerNames(int humanPlayerCount) {
         PlayerNamesView namesView = new PlayerNamesView(this, humanPlayerCount);
         Scene scene = new Scene(namesView.getRoot(), 750, 500);
-        scene.getStylesheets().add("file:assets/style.css");
+        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
 
@@ -203,7 +203,7 @@ public class GameController extends Application {
             menuPlayer.dispose();
             
             if (gamePlayer == null) {
-                Media gameMedia = new Media(Paths.get("assets/music/space-ranger.mp3").toUri().toString());
+                Media gameMedia = new Media(getClass().getResource("/assets/music/space-ranger.mp3").toExternalForm());
                 gamePlayer = new MediaPlayer(gameMedia);
                 gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
             }
@@ -230,12 +230,13 @@ public class GameController extends Application {
     public void showMainMenu() {
         MenuView menuView = new MenuView(this);
         Scene scene = new Scene(menuView.getRoot(), 750, 500);
-        scene.getStylesheets().add("file:assets/style.css");
+        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium - Main Menu");
         primaryStage.show();
         if (menuPlayer == null) {
-            Media menuMedia = new Media(Paths.get("assets/music/milky-way.mp3").toUri().toString());
+            Media menuMedia = new Media(getClass().getResource("/assets/music/milky-way.mp3").toExternalForm());
+
             menuPlayer = new MediaPlayer(menuMedia);
             menuPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         }
@@ -454,7 +455,7 @@ public class GameController extends Application {
             menuPlayer.dispose();
             
             if (gamePlayer == null) {
-                Media gameMedia = new Media(Paths.get("assets/music/space-ranger.mp3").toUri().toString());
+                Media gameMedia = new Media(getClass().getResource("/assets/music/milky-way.mp3").toExternalForm());
                 gamePlayer = new MediaPlayer(gameMedia);
                 gamePlayer.setCycleCount(MediaPlayer.INDEFINITE);
             }
