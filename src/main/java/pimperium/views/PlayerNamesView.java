@@ -91,7 +91,7 @@ public class PlayerNamesView {
             nameLabels.add(nameLabel);
             TextField nameField = new TextField();
             nameField.setMaxWidth(200);
-            nameField.setStyle("-fx-background-color: rgba(255, 255, 255, 0.7); -fx-text-fill: black;");
+            nameField.setStyle("-fx-background-color: rgba(255, 255, 255); -fx-text-fill: black;");
             nameFields.add(nameField);
             fieldsBox.getChildren().addAll(nameLabel, nameField);
         }

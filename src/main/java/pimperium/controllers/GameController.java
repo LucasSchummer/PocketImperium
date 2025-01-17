@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javafx.scene.media.Media;
@@ -97,7 +98,28 @@ public class GameController extends Application {
     public void showPlayerSetup() {
         PlayerSetupView setupView = new PlayerSetupView(this);
         Scene scene = new Scene(setupView.getRoot(), 750, 500);
-        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
+        Font.loadFont(getClass().getResourceAsStream("/assets/fonts/Orbitron-Regular.ttf"), 14);
+    
+        scene.getRoot().setStyle(
+            "-fx-font-family: 'Orbitron';" +
+            "-fx-font-size: 14px;"
+        );
+    
+        scene.getRoot().lookupAll(".button").forEach(node -> 
+            node.setStyle(
+                "-fx-font-family: 'Orbitron';" +
+                "-fx-font-weight: bold;" +
+                "-fx-cursor: hand;"
+            )
+        );
+    
+        scene.getRoot().lookupAll(".label").forEach(node -> 
+            node.setStyle(
+                "-fx-font-family: 'Orbitron';" +
+                "-fx-font-size: 14px;"+
+                "-fx-text-fill: white;"
+            )
+        );
         primaryStage.setScene(scene);
     }
 
@@ -109,7 +131,28 @@ public class GameController extends Application {
     public void setupPlayerNames(int humanPlayerCount) {
         PlayerNamesView namesView = new PlayerNamesView(this, humanPlayerCount);
         Scene scene = new Scene(namesView.getRoot(), 750, 500);
-        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
+        Font.loadFont(getClass().getResourceAsStream("/assets/fonts/Orbitron-Regular.ttf"), 14);
+    
+        scene.getRoot().setStyle(
+            "-fx-font-family: 'Orbitron';" +
+            "-fx-font-size: 14px;"
+        );
+    
+        scene.getRoot().lookupAll(".button").forEach(node -> 
+            node.setStyle(
+                "-fx-font-family: 'Orbitron';" +
+                "-fx-font-weight: bold;" +
+                "-fx-cursor: hand;"
+            )
+        );
+    
+        scene.getRoot().lookupAll(".label").forEach(node -> 
+            node.setStyle(
+            "-fx-font-family: 'Orbitron';" +
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: white;"
+            )
+        );
         primaryStage.setScene(scene);
     }
 
@@ -230,7 +273,29 @@ public class GameController extends Application {
     public void showMainMenu() {
         MenuView menuView = new MenuView(this);
         Scene scene = new Scene(menuView.getRoot(), 750, 500);
-        scene.getStylesheets().add(getClass().getResource("/assets/style.css").toExternalForm());
+        
+        Font.loadFont(getClass().getResourceAsStream("/assets/fonts/Orbitron-Regular.ttf"), 14);
+    
+        scene.getRoot().setStyle(
+            "-fx-font-family: 'Orbitron';" +
+            "-fx-font-size: 14px;"
+        );
+
+        scene.getRoot().lookupAll(".button").forEach(node -> 
+            node.setStyle(
+                "-fx-font-family: 'Orbitron';" +
+                "-fx-font-weight: bold;" +
+                "-fx-cursor: hand;"
+            )
+        );
+
+        scene.getRoot().lookupAll(".label").forEach(node -> 
+            node.setStyle(
+                "-fx-font-family: 'Orbitron';" +
+                "-fx-font-size: 14px;"+
+                "-fx-text-fill: white;"
+            )
+        );
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pocket Imperium - Main Menu");
         primaryStage.show();

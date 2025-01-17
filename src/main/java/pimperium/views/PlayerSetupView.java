@@ -62,7 +62,7 @@ public class PlayerSetupView {
 
         // Create and style the spinner for selecting the number of human players
         humanPlayersSpinner = new Spinner<>(0, 3, 1);
-        humanPlayersSpinner.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-text-fill: white;");
+        humanPlayersSpinner.setStyle("-fx-background-color: rgba(255, 255, 255); -fx-text-fill: white;");
 
         
         // Create and style the next button (just a try for now)
