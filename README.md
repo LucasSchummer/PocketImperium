@@ -1,7 +1,7 @@
 # Pocket Imperium
 <br>
 
-[English](#description-en) | [Français](#description-fr) 
+[English](#-description--en) | [Français](#-description--fr) 
 
 <br>
 
